@@ -1,4 +1,3 @@
-const { raw } = require("express");
 const fs = require("fs");
 const PATH = "./data.json";
 
@@ -14,15 +13,23 @@ class Post {
     // Get one Blog Post
   }
 
-  add() {
-    // Add New Post
-    console.log("ok");
+  addNewPost(newPost) {
+    const currentPosts = this.readData();
+
+    currentPosts.unshift(newPost);
+    console.log(currentPosts);
+    this.storeData(currentPosts);
   }
 
   readData() {
     const rawdata = fs.readFileSync(PATH);
     const posts = JSON.parse(rawdata);
     return (module.exports = posts);
+  }
+
+  storeData(rawData) {
+    let data = JSON.stringify(rawData);
+    fs.writeFileSync(PATH, data);
   }
 }
 

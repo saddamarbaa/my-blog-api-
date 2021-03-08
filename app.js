@@ -11,6 +11,11 @@ app.get("/", (req, res) => {
 });
 
 app.get("/api/posts", (req, res) => {
+  let test = {
+    test: "12",
+  };
+
+  postData.addNewPost(test);
   res.status(200).send(postData.get());
 });
 
