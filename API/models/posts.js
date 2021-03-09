@@ -1,4 +1,5 @@
 const fs = require("fs");
+const { posix } = require("path");
 const PATH = "./data.json";
 
 class Post {
@@ -9,25 +10,31 @@ class Post {
     return this.readData();
   }
 
-  getIndividualBlog() {
-    // Get one Blog Post
+  getIndividualBlog(postId) {
+    // Get one Blog Post bae on Id
+    let ob = "";
+    const posts = this.readData();
+    const foundPost = posts.find((post) => post.id === postId);
+    return foundPost;
   }
 
   addNewPost(newPost) {
+    // add new given post
     const currentPosts = this.readData();
-
     currentPosts.unshift(newPost);
     console.log(currentPosts);
     this.storeData(currentPosts);
   }
 
   readData() {
+    // read JSON data
     const rawdata = fs.readFileSync(PATH);
     const posts = JSON.parse(rawdata);
     return (module.exports = posts);
   }
 
   storeData(rawData) {
+    // (store) write data to JSON file
     let data = JSON.stringify(rawData);
     fs.writeFileSync(PATH, data);
   }
