@@ -4,18 +4,23 @@ const port = 3000;
 const post = require("./api/models/posts");
 const postData = new post();
 
+const http = require("http");
+const url = require("url");
+
 app.get("/", (req, res) => {
   res
     .status(200)
     .send("Hell, my friends Nice to Meet You welcome to My blog Post API");
 });
 
-app.get("/api/posts", (req, res) => {
-  let test = {
-    test: "12",
-  };
+app.get("/api/posts/:postId", (req, res) => {
+  const postId = req.params.postId;
+  const foundPost = postData.getIndividualBlog(postId);
+  if (foundPost) res.status(200).send({ foundPost });
+  res.status(404).send("post Not Found");
+});
 
-  postData.addNewPost(test);
+app.get("/api/posts", (req, res) => {
   res.status(200).send(postData.get());
 });
 
