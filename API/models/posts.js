@@ -12,7 +12,6 @@ class Post {
 
   getIndividualBlog(postId) {
     // Get one Blog Post bae on Id
-    let ob = "";
     const posts = this.readData();
     const foundPost = posts.find((post) => post.id === postId);
     return foundPost;
