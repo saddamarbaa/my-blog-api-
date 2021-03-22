@@ -23,7 +23,7 @@ class Post {
 		// add new given post
 		const currentPosts = this.readData();
 		currentPosts.unshift(newPost);
-		console.log(currentPosts);
+		// console.log(currentPosts);
 		this.storeData(currentPosts);
 	}
 
@@ -31,7 +31,7 @@ class Post {
 		// read JSON data
 		const rawdata = fs.readFileSync(PATH);
 		const posts = JSON.parse(rawdata);
-		return (module.exports = posts);
+		return posts;
 	}
 
 	storeData(rawData) {

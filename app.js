@@ -1,18 +1,14 @@
 /** @format */
-// vew this latter
-// https://stackabuse.com/handling-file-uploads-in-node-js-with-expres-and-multer/
-// https://lo-victoria.com/build-rest-api-with-nodejs-upload-files-mongodb
-// https://www.npmjs.com/package/multer
 
 // import express framework from node_modules
 const express = require("express");
 
+// Create a new instance of express (initialize express)
+const app = express();
+
 // Requiring http and url
 const http = require("http");
 const url = require("url");
-
-// Create a new instance of express (initializ express)
-const app = express();
 
 // import multer from node_modules
 const multer = require("multer");
@@ -23,6 +19,8 @@ const storage = multer.diskStorage({
 	destination: (req, file, cb) => {
 		cb(null, "public/uploads");
 	},
+
+	// By default, multer removes file extensions so let's add them back
 	filename: (req, file, cb) => {
 		cb(
 			null,
@@ -36,12 +34,18 @@ const getImageExtension = (mimetype) => {
 	switch (mimetype) {
 		case "image/png":
 			return ".png";
+		case "image/PNG":
+			return ".PNG";
+		case "image/jpg":
+			return ".jpg";
+		case "image/JPG":
+			return ".JPG";
+		case "image/JPEG":
+			return ".JPEG";
 		case "image/jpeg":
 			return ".jpeg";
 		case "image/webp":
 			return ".webp";
-		default:
-			break;
 	}
 };
 
@@ -56,7 +60,6 @@ app.use(cors());
 
 // Requiring models
 const post = require("./api/models/posts");
-const { groupEnd } = require("console");
 const postData = new post();
 
 // parses incoming requests with JSON payloads
@@ -76,6 +79,11 @@ app.get("/", (req, res) => {
 	);
 });
 
+// API Endpoint to return all Posts
+app.get("/api/posts", (req, res) => {
+	return res.status(200).send(postData.get());
+});
+
 // API Endpoint to return one post based on id
 app.get("/api/posts/:postId", (req, res) => {
 	const postId = req.params.postId;
@@ -87,18 +95,25 @@ app.get("/api/posts/:postId", (req, res) => {
 	}
 });
 
-// API Endpoint to return all Posts
-app.get("/api/posts", (req, res) => {
-	return res.status(200).send(postData.get());
-});
-
 //  API Endpoint to add new Post
 //  upload Single file(image)
 app.post("/api/posts", upload.single("post_image"), (req, res) => {
+	const image = req.file;
+	const postTitle = req.body.title;
+	const postContent = req.body.content;
+
+	if (!image) {
+		return res.status(400).send("Please upload Image");
+	} else if (!postTitle) {
+		return res.status(400).send("Please add post title");
+	} else if (!postContent) {
+		return res.status(400).send("Please add post content");
+	}
+
 	const newPost = {
 		id: `${Date.now()}`,
-		title: req.body.title,
-		content: req.body.content,
+		title: postTitle,
+		content: postContent,
 		post_image: `uploads/${req.file.filename}`,
 		added_date: `${Date.now()}`,
 	};
