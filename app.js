@@ -6,7 +6,8 @@ const express = require("express");
 // Create a new instance of express (initialize express)
 const app = express();
 
-// Requiring dotenv(Environment variables)
+// require dotenv(to manage secrets and configs)
+// Using dotenv package to create environment variables
 const dotenv = require("dotenv");
 dotenv.config();
 
@@ -17,10 +18,10 @@ const url = require("url");
 // Import multer from node_modules
 const multer = require("multer");
 
-//Import the mongoose module
+// import mongoose from node_modules
 const mongoose = require("mongoose");
 
-// Grab the Schema Object from mongoose
+// Grab The Schema Object from mongoose
 const { Schema } = mongoose;
 
 // Access Environment variables
@@ -46,9 +47,8 @@ const db = mongoose.connection;
 db.on("error", console.error.bind(console, "MongoDB connection error:"));
 // console.log("MongoDB database connection established successfully");
 
-// Defining a Model
-// and Creating a Database Schema
-// Define schema
+// Defining a Model and Creating a Database Schema
+// define user a schema
 const UserModelSchema = new Schema({
 	name: {
 		type: String,
@@ -196,7 +196,7 @@ app.get("/api/posts/:postId", (req, res) => {
 	}
 });
 
-//  API Endpoint to add new Post  (Add Route)
+//  API Endpoint to add new Post (Add Route)
 //  upload Single file(image)
 app.post("/api/posts", upload.single("post_image"), (req, res) => {
 	const image = req.file;
