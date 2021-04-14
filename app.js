@@ -18,7 +18,10 @@ const url = require("url");
 // Import multer from node_modules
 const multer = require("multer");
 
-// import mongoose from node_modules
+// Create User model just by requiring the User
+const User = require("./models/User");
+
+//Import the mongoose module from node_modules
 const mongoose = require("mongoose");
 
 // Grab The Schema Object from mongoose
@@ -40,32 +43,12 @@ mongoose.connect(mongoDB, {
 	useCreateIndex: true,
 });
 
-//Get the default connection
+// Get the default connection
 const db = mongoose.connection;
 
-//Bind connection to error event (to get notification of connection errors)
+// Bind connection to error event (to get notification of connection errors)
 db.on("error", console.error.bind(console, "MongoDB connection error:"));
 // console.log("MongoDB database connection established successfully");
-
-// Defining a Model and Creating a Database Schema
-// define user a schema
-const UserModelSchema = new Schema({
-	name: {
-		type: String,
-	},
-	email: {
-		type: String,
-		unique: true,
-		required: true,
-	},
-	password: {
-		type: String,
-		required: true,
-	},
-});
-
-// Compile model from schema
-const User = mongoose.model("User", UserModelSchema);
 
 // Set Storage Engine
 // Configuring and validating the upload
@@ -134,7 +117,8 @@ app.get("/", (req, res) => {
 // API Endpoint for register
 app.post("/api/posts/register", (req, res) => {
 	const newUser = new User({
-		name: req.body.name,
+		firstName: req.body.firstName,
+		lastName: req.body.firstName,
 		email: req.body.email,
 		password: req.body.password,
 	});
@@ -145,13 +129,13 @@ app.post("/api/posts/register", (req, res) => {
 		if (err) {
 			console.log("unable to save to database");
 			console.log(err);
-			res.send(400, {
+			res.status(400).send({
 				status: err,
 			});
 		} else {
 			console.log("item saved to database");
 			console.log(User);
-			res.send({
+			res.status(200).send({
 				status: "registered",
 			});
 		}
@@ -168,8 +152,9 @@ app.post("/api/posts/login", (req, res) => {
 	User.findOne({ email: email, password: password }, (err, user) => {
 		if (user) {
 			{
-				res.send({
+				res.status(200).send({
 					status: "Valid",
+					token: user.id,
 				});
 			}
 		} else {
