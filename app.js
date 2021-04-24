@@ -6,55 +6,19 @@ const express = require("express");
 // Create a new instance of express (initialize express)
 const app = express();
 
-// Require dotenv(to manage secrets and configs)
-// Using dotenv package to create environment variables
-const dotenv = require("dotenv");
-dotenv.config();
-
-// Requiring http and url
-const http = require("http");
-const url = require("url");
-
-// Create User model just by requiring the User
-const User = require("./models/User");
-
 // Import the mongoose module from node_modules
 const mongoose = require("mongoose");
-
-// Grab The Schema Object from mongoose
-const { Schema } = mongoose;
-
-// Access Environment variables
-const MONGO_USER = process.env.MONGO_USER;
-const MONGO_PASSWORD = process.env.MONGO_PASSWORD;
-const MONGO_DB_NAME = process.env.MONGO_DB_NAME;
-const PORT = process.env.PORT || 5000;
-
-// Connecting to MongoDB(Connecting to the Database)
-const mongoDB = `mongodb+srv://${MONGO_USER}:${MONGO_PASSWORD}@cluster0.poqja.mongodb.net/${MONGO_DB_NAME}?retryWrites=true&w=majority`;
-
-mongoose.connect(mongoDB, {
-	useNewUrlParser: true,
-	useUnifiedTopology: true,
-	useFindAndModify: false,
-	useCreateIndex: true,
-});
-
-// Get the default connection
-const db = mongoose.connection;
-
-// Bind connection to error event (to get notification of connection errors)
-db.on("error", console.error.bind(console, "MongoDB connection error:"));
-// console.log("MongoDB database connection established successfully");
 
 // Import cors from node_modules (Using cors)
 const cors = require("cors");
 
-// Determine which domain can access the website
-app.use(cors());
+// HTTP request logger middleware for node.js
+const morgan = require("morgan");
 
-// Parses incoming requests with JSON payloads
-app.use(express.json());
+// Require dotenv(to manage secrets and configs)
+// Using dotenv package to create environment variables
+const dotenv = require("dotenv");
+dotenv.config();
 
 // Import get post routes
 const getPosts = require("./routes/getPosts");
@@ -68,26 +32,62 @@ const register = require("./routes/register");
 // Import login routes
 const login = require("./routes/login");
 
+// Access Environment variables
+const MONGO_USER = process.env.MONGO_USER;
+const MONGO_PASSWORD = process.env.MONGO_PASSWORD;
+const MONGO_DB_NAME = process.env.MONGO_DB_NAME;
+
+// Connecting to MongoDB(Connecting to the Database)
+const mongoDB = `mongodb+srv://${MONGO_USER}:${MONGO_PASSWORD}@cluster0.poqja.mongodb.net/${MONGO_DB_NAME}?retryWrites=true&w=majority`;
+
+mongoose
+	.connect(mongoDB, {
+		useNewUrlParser: true,
+		useUnifiedTopology: true,
+		useFindAndModify: false,
+		useCreateIndex: true,
+	})
+	.then(() =>
+		console.log("MongoDB database connection established successfully ..."),
+	)
+	.catch((error) => console.log("MongoDB connection error:", error));
+
+// Log the request
+app.use(morgan("dev"));
+
+// Determine which domain can access the website
+app.use(cors());
+
+// Parses incoming requests with JSON payloads
+app.use(express.json());
+
 // Public file
 // Serve all static files inside public directory.
 app.use("/static", express.static("public"));
 
-//  Now we can use all the Routes
-// (/api) is the base URL for getting post Routes
+// Routes which Should handle the requests
 app.use("/api", getPosts);
-
-// (/api/addPost) is the base URL for addPost Routes
 app.use("/api/addPost", addPost);
-
-// (/api/register) is the base URL for register Route
 app.use("/api/register", register);
-
-// (/api/login) is the base URL for register Route
 app.use("/api/login", login);
 
-// Server setup
-// Tell our app to listen on port 3000
-console.log(PORT);
-app.listen(PORT, () =>
-	console.log(`Hello World app is listening on port ${PORT} !`),
-);
+// Error Handling
+// Handle error if the routes not found or there's any problem in DB connection
+app.use((req, res, next) => {
+	// Create an error and pass it to the next function
+	const error = new Error("Not found");
+	error.status = 404;
+	next(error);
+});
+
+// Error Handling
+// An error handling middleware
+app.use((error, req, res, next) => {
+	res.status(error.status || 500).send({
+		error: {
+			Message: error.message,
+		},
+	});
+});
+
+module.exports = app;

@@ -1,28 +1,30 @@
 {
-  "name": "my-blog-api",
-  "version": "1.0.0",
-  "description": "This My Node JS Blog API",
-  "main": "app.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/saddamarbaa/my-blog-api.git"
-  },
-  "author": "Saddam Arbaa",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/saddamarbaa/my-blog-api/issues"
-  },
-  "homepage": "https://github.com/saddamarbaa/my-blog-api#readme",
-  "dependencies": {
-    "cors": "^2.8.5",
-    "dotenv": "^8.2.0",
-    "express": "^4.17.1",
-    "mongoose": "^5.12.3",
-    "multer": "^1.4.2",
-    "nodemon": "^2.0.7",
-    "save": "^2.4.0"
-  }
+	"name": "my-blog-api",
+	"version": "1.0.0",
+	"description": "This My Node JS Blog API",
+	"main": "server.js",
+	"scripts": {
+		"test": "echo \"Error: no test specified\" && exit 1"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/saddamarbaa/my-blog-api.git"
+	},
+	"author": "Saddam Arbaa",
+	"license": "ISC",
+	"bugs": {
+		"url": "https://github.com/saddamarbaa/my-blog-api/issues"
+	},
+	"homepage": "https://github.com/saddamarbaa/my-blog-api#readme",
+	"dependencies": {
+		"cors": "^2.8.5",
+		"dotenv": "^8.2.0",
+		"express": "^4.17.1",
+		"jsonwebtoken": "^8.5.1",
+		"mongoose": "^5.12.3",
+		"morgan": "^1.10.0",
+		"multer": "^1.4.2",
+		"nodemon": "^2.0.7",
+		"save": "^2.4.0"
+	}
 }

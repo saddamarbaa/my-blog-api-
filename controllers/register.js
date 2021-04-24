@@ -16,7 +16,7 @@ const register = (req, res) => {
 	newUser.save(function (err, User) {
 		//if user already exist(already been register)
 		if (err) {
-			console.log("unable to save to database");
+			console.log("unable to save to database User already been register");
 			console.log(err);
 			res.status(400).send({
 				status: err,

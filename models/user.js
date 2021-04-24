@@ -15,11 +15,14 @@ const userSchema = new Schema({
 	lastName: {
 		type: String,
 	},
+
 	email: {
 		type: String,
 		required: true,
 		unique: true, // `email` must be unique
 		index: true,
+		// a regular expression to validate an email address(stackoverflow)
+		match: /[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?/,
 	},
 	password: {
 		type: String,
@@ -30,6 +33,8 @@ const userSchema = new Schema({
 	// strict: true,
 });
 
-//Export model
 // Compile model from schema
+const User = mongoose.model("User", userSchema);
+
+//Export model
 module.exports = mongoose.model("User", userSchema);
