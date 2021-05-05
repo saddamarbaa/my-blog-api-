@@ -6,32 +6,24 @@ const express = require("express");
 // Create a new instance of express (initialize express)
 const app = express();
 
-// Import the mongoose module from node_modules
+// Import the mongoose
 const mongoose = require("mongoose");
 
-// Import cors from node_modules (Using cors)
+// Import cors (Using cors)
 const cors = require("cors");
 
-// HTTP request logger middleware for node.js
+// morgan is HTTP Request logger middleware for node.js
 const morgan = require("morgan");
 
 // Require dotenv(to manage secrets and configs)
 // Using dotenv package to create environment variables
-const dotenv = require("dotenv");
-dotenv.config();
+const dotenv = require("dotenv").config();
 
-// Import get post routes
-const getPosts = require("./routes/getPosts");
+// Import Routes
+const userRoutes = require("./routes/users");
+const postRoutes = require("./routes/posts");
 
-// Import add post routes
-const addPost = require("./routes/addPost");
-
-// Import register routes
-const register = require("./routes/register");
-
-// Import login routes
-const login = require("./routes/login");
-
+// Connecting to MongoDB(Connecting to the Database)
 // Access Environment variables
 const MONGO_USER = process.env.MONGO_USER;
 const MONGO_PASSWORD = process.env.MONGO_PASSWORD;
@@ -61,15 +53,19 @@ app.use(cors());
 // Parses incoming requests with JSON payloads
 app.use(express.json());
 
-// Public file
 // Serve all static files inside public directory.
 app.use("/static", express.static("public"));
 
 // Routes which Should handle the requests
-app.use("/api", getPosts);
-app.use("/api/addPost", addPost);
-app.use("/api/register", register);
-app.use("/api/login", login);
+app.use("/api/users", userRoutes);
+app.use("/api/posts", postRoutes);
+
+// Home page API Endpoint (define the home page route)
+app.get("/", (req, res) => {
+	res.status(200).send({
+		Message: "Welcome to My blog Post API",
+	});
+});
 
 // Error Handling
 // Handle error if the routes not found or there's any problem in DB connection
@@ -80,7 +76,6 @@ app.use((req, res, next) => {
 	next(error);
 });
 
-// Error Handling
 // An error handling middleware
 app.use((error, req, res, next) => {
 	res.status(error.status || 500).send({
