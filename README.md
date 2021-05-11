@@ -8,7 +8,7 @@
 ##  <a href="https://saddamarbaa-blog.netlify.app/"> LIVE Webside DEMO </a>
 
 
-##  <a href="https://github.com/saddamarbaa/blog-api">See My Blog Front-End REPO</a>
+##  <a href="https://github.com/saddamarbaa/blog-post-front-end-vanillaJS">See My Blog Front-End REPO</a>
  
  
 
