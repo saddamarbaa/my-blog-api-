@@ -1,7 +1,7 @@
 {
-  "name": "express-api-starter-ts",
+  "name": "node-express-mongodb-typescript-blog-rest-api",
   "version": "1.2.0",
-  "description": " A basic starter for an express.js API with Typescript",
+  "description": " An open-source RESTful API built with Node.js, Express, MongoDB, and TypeScript, offering user authentication, blog management, and features like filtering, pagination, sorting, and search for seamless integration into your application",
   "main": "src/server.ts",
   "scripts": {
     "start": "ts-node -r tsconfig-paths/register src/server.ts",
