@@ -1,32 +1,139 @@
-# **Blog API Application Project**
+# **Blog REST API**
 
-## Tech Stack
+An open-source RESTful API built with Node.js, Express, MongoDB, and TypeScript, offering user authentication, blog management, and advanced features like filtering, pagination, sorting, and search.
 
-**Server:** Node, Express, Typescript, MongoDB, Mongoose, JWT
+# **Tech Stack**
 
-# API FEATURES
+### **Backend Framework & Libraries**
 
-- Authentication & Authorization
-- Post CRUD operations
-- Comment functionality
-- System blocking user if inactive for 30 days
-- Admin can block a user
-- A user can block different users
-- A user who block another user cannot see his/her posts
-- Last date a post was created
-- Check if a user is active or not
-- Check last date a user was active
-- Changing user award base on number of posts created by the user
-- A user can follow and unfollow another user
-- Get following and followers count
-- Get total profile viewers count
-- Get posts created count
-- Get blocked counts
-- Get all users who views someone's profile
-- Admin can unblock a blocked user
-- Update password
-- Profile photo uploaded
-- A user can close his/her account
+- **Node.js**: JavaScript runtime for building server-side applications.
+- **Express**: Web framework for Node.js to handle routing and middleware.
+- **MongoDB**: NoSQL database for storing and managing data.
+- **Mongoose**: ODM (Object Data Modeling) library for MongoDB and Node.js.
+- **TypeScript**: Superset of JavaScript that adds static typing, enabling better development tools and error checking.
+- **JWT (jsonwebtoken)**: JSON Web Token for handling authentication and authorization.
+
+### **Security & Middleware**
+
+- **bcrypt**: Library for hashing passwords to store them securely.
+- **cookie-parser**: Middleware for handling cookies in requests.
+- **cors**: Middleware for enabling Cross-Origin Resource Sharing (CORS) in Express.
+- **helmet**: Helps secure Express apps by setting various HTTP headers.
+- **dotenv**: Loads environment variables from `.env` files into `process.env`.
+- **dotenv-safe**: Ensures required environment variables are set.
+
+### **Validation & Error Handling**
+
+- **Joi**: Data validation library for JavaScript, used for request validation.
+- **http-errors**: Simplifies creating HTTP errors for better error handling.
+
+### **File Uploading**
+
+- **multer**: Middleware for handling `multipart/form-data`, used for file uploads (like profile images).
+
+### **Logging & Monitoring**
+
+- **morgan**: HTTP request logger middleware for Node.js.
+
+### **Swagger for API Documentation**
+
+- **swagger-jsdoc**: Generates API documentation from JSDoc comments.
+- **swagger-ui-express**: Middleware to serve Swagger UI for API documentation.
+
+### **Utilities & Other Libraries**
+
+- **uuid**: Library for generating unique identifiers, useful for handling user sessions or database records.
+- **node-fetch**: A lightweight library for making HTTP requests.
+- **resend**: Tool for handling email sending and verification.
+- **yamljs**: A library for parsing and writing YAML files.
+- **check-lint**: Linter checker for code quality.
+- **colors**: Library for adding color to console logs.
+- **tsconfig-paths**: TypeScript module to support path mapping in `tsconfig.json`.
+
+### **Dev Tools & Testing**
+
+- **ESLint**: Linter for identifying and fixing problems in JavaScript code.
+- **Prettier**: Code formatter to maintain consistent code style.
+- **Jest**: JavaScript testing framework, used for unit and integration tests.
+- **Supertest**: Library for testing HTTP requests and responses.
+- **Nodemon**: Tool for automatically restarting the Node.js application when file changes are detected.
+- **ts-jest**: A Jest transformer for TypeScript.
+- **ts-node**: TypeScript execution engine for Node.js.
+- **simple-git-hooks**: Simple tool to manage git hooks, such as pre-commit or pre-push hooks.
+- **rimraf**: Used for removing files or directories recursively, similar to `rm -rf`.
+
+### **Code Quality & Formatting**
+
+- **eslint-plugin-import**: ESLint plugin for ensuring proper import syntax and organization.
+- **eslint-plugin-prettier**: Integrates Prettier with ESLint.
+- **eslint-plugin-simple-import-sort**: Sorts imports for better organization and readability.
+- **eslint-config-airbnb-base**: Airbnb’s base ESLint configuration for JavaScript/TypeScript.
+- **eslint-config-prettier**: Configures ESLint to work with Prettier.
+- **eslint-import-resolver-typescript**: Resolves TypeScript paths in ESLint.
+
+---
+
+# **API Features**
+
+### **Authentication & Authorization**
+
+- User can sign up, log in, and log out.
+- Token-based authentication (JWT).
+- Users can refresh their tokens.
+- Password reset functionality.
+- Email verification during signup.
+
+### **Post CRUD Operations**
+
+- Create, read, update, and delete posts.
+- Admin can perform post management actions (create, update, delete, clear all posts, delete posts for a user).
+
+### **Comment Functionality**
+
+- Users can comment on posts.
+- Admin can delete comments in posts or clear all comments for a specific post.
+
+### **User Management**
+
+- System blocks a user if inactive for 30 days.
+- Admin can block or unblock a user.
+- A user can block other users.
+- A user who blocks another user cannot see their posts.
+- Users can follow and unfollow other users.
+- Users can update their password.
+- Users can upload a profile photo.
+- Users can close their account.
+
+### **Admin Management**
+
+- **Admin User Management**:
+  - Admin can add, get, update, or remove users.
+  - Admin can view all users.
+  - Admin can update user details (like profile and permissions).
+- **Admin Post Management**:
+  - Admin can create, read, update, or delete posts.
+  - Admin can delete all posts for a specific user.
+  - Admin can clear all posts in the system.
+- **Admin Comment Management**:
+  - Admin can delete all comments in a post.
+  - Admin can delete specific comments in a post.
+
+### **Post and User Activity Tracking**
+
+- Track the last date a post was created.
+- Check if a user is active or not.
+- Check the last date a user was active.
+- Change user awards based on the number of posts created by the user.
+
+### **User Statistics**
+
+- Get following and followers count.
+- Get total profile viewers count.
+- Get the number of posts created.
+- Get blocked users count.
+- Get all users who view someone's profile.
+
+---
 
 # ENDPOINTS
 
@@ -66,18 +173,25 @@
   - [Update post](#Update-Comment)
   - [Delete post](#Delete-Comment)
 
+## **Getting Started**
+
+### **Prerequisites**
+
+- Node.js (v20.1.0.x or higher)
+- MongoDB (Running locally or via MongoDB Atlas)
+
 ## Run Locally
 
 Clone the project
 
 ```bash
-  git clone https://link-to-project
+  git clone https://github.com/saddamarbaa/node-express-mongodb-typescript-blog-rest-api
 ```
 
 Go to the project directory
 
 ```bash
-  cd my-project
+  cd node-express-mongodb-typescript-blog-rest-api
 ```
 
 Install dependencies
@@ -94,27 +208,30 @@ Start the server
 
 ## Environment Variables
 
-To run this project, you will need to add the following environment variables to your .env file
-
-`MONGODB_URL`
-
-##### baseURL = `https://blog-api-v3-inovotek.onrender.com/`
+To run this project, you will need to add the necessary environment variables to your .env file by checking .env.example for reference.
 
 # API Authentication
 
-Some endpoints may require authentication for example. To create a create/delete/update post, you need to register your API client and obtain an access token.
+Some endpoints may require authentication. For example, to create, delete, or update a post, you need to register your API client and obtain an access token.
 
-The endpoints that require authentication expect a bearer token sent in the `Authorization header`.
+Upon successful login, the server will return both the access token and refresh token, which are stored as cookies.
 
-**Example**:
+## Making Authenticated Requests
 
-`Authorization: Bearer YOUR TOKEN`
+For future requests, you need to pass the token in the `Authorization` header, or it will automatically be retrieved from cookies.
 
-## Register a new API client
+### **Example Authorization Header**:
 
 ```http
-POST /api/v1/auth/signup
+Authorization: Bearer YOUR_TOKEN
 ```
+
+Alternatively, if the Authorization header is not provided, the token will be checked in the cookies:
+
+- `authToken` (primary token)
+- `accessToken` (backup token)
+
+If neither token is provided, the request will be denied with an authentication error.
 
 The request body needs to be in JSON format.
 
@@ -126,24 +243,23 @@ The request body needs to be in JSON format.
 POST /api/v1/auth/signup
 ```
 
-
-| Parameter         | Type      | Description                           | Required |
-| `authentication` | `string` | Your token    | no       |
+| Parameter | Type | Description | Required |
+| `authentication` | `string` | Your token | no |
 | :---------------- | :-------- | :------------------------------------ | :------- |
-| `firstName`       | `string`  | User's first name (3-15 characters)   | yes      |
-| `lastName`        | `string`  | User's last name (3-15 characters)    | yes      |
-| `email`           | `string`  | Valid email address                   | yes      |
-| `password`        | `string`  | Minimum 6 characters                  | yes      |
-| `confirmPassword` | `string`  | Must match the password               | yes      |
-| `bio`             | `string`  | User's bio (max 500 characters)       | no       |
-| `skills`          | `array`   | Array of skills (optional)            | no       |
-| `profileUrl`      | `string`  | Valid URL for profile picture         | no       |
-| `acceptTerms`     | `boolean` | Accept the terms and conditions       | no       |
-| `phoneNumber`     | `string`  | Phone number (E.164 format)           | no       |
-| `gender`          | `string`  | Gender: male, female, or other        | no       |
-| `userAward`       | `string`  | Award options based on defined values | no       |
-| `plan`            | `string`  | Plan options based on defined values  | no       |
-| `dateOfBirth`     | `date`    | User's date of birth                  | no       |
+| `firstName` | `string` | User's first name (3-15 characters) | yes |
+| `lastName` | `string` | User's last name (3-15 characters) | yes |
+| `email` | `string` | Valid email address | yes |
+| `password` | `string` | Minimum 6 characters | yes |
+| `confirmPassword` | `string` | Must match the password | yes |
+| `bio` | `string` | User's bio (max 500 characters) | no |
+| `skills` | `array` | Array of skills (optional) | no |
+| `profileUrl` | `string` | Valid URL for profile picture | no |
+| `acceptTerms` | `boolean` | Accept the terms and conditions | no |
+| `phoneNumber` | `string` | Phone number (E.164 format) | no |
+| `gender` | `string` | Gender: male, female, or other | no |
+| `userAward` | `string` | Award options based on defined values | no |
+| `plan` | `string` | Plan options based on defined values | no |
+| `dateOfBirth` | `date` | User's date of birth | no |
 
 Example Request Body:
 
@@ -167,8 +283,6 @@ Example Request Body:
 
 ```
 
-
-
 ## **Verify Email**
 
 ```http
@@ -176,18 +290,17 @@ POST /api/v1/auth/verify-email/:userId/:token
 
 ```
 
-| Parameter         | Type      | Description                           | Required |
-| `authentication`  | `string`  | Your token    | no       |
+| Parameter | Type | Description | Required |
+| `authentication` | `string` | Your token | no |
 | :---------------- | :-------- | :------------------------------------ | :------- |
-| `userId`          | `string`  | The ID of the user whose email is being verified   | yes      |
-| `token`           | `string`  | The email verification token | yes      |
+| `userId` | `string` | The ID of the user whose email is being verified | yes |
+| `token` | `string` | The email verification token | yes |
 
 Example request body:
 
 ```javascript
-POST /api/v1/auth/verify-email/12345/your-verification-token
+POST / api / v1 / auth / verify - email / 12345 / your - verification - token;
 ```
-
 
 ## **User Login**
 
@@ -210,17 +323,16 @@ Example request body:
 }
 ```
 
-
 ## **User Logout**
 
 ```http
 POST /api/v1/auth/logout
 ```
 
-| Parameter        | Type     | Description    | Required |
-| :--------------- | :------- | :------------  | :------- |
-| `authentication` | `string` | Your authToken     | no   |
-| `refreshToken`   | `string` | Your refreshToken   | yes     |
+| Parameter        | Type     | Description       | Required |
+| :--------------- | :------- | :---------------- | :------- |
+| `authentication` | `string` | Your authToken    | no       |
+| `refreshToken`   | `string` | Your refreshToken | yes      |
 
 Example request body:
 
@@ -230,18 +342,16 @@ Example request body:
 }
 ```
 
-
 ## **Delete Account**
 
 ```http
 POST /api/v1/auth/remove/:userId
 ```
 
-| Parameter        | Type     | Description      | Required |
-| :--------------- | :------- | :------------                      | :------- |
-| `authentication` | `string` | Your authToken     | yes           |
-| `userId`         | `string` | The ID of the user to be deleted   | yes     |
-
+| Parameter        | Type     | Description                      | Required |
+| :--------------- | :------- | :------------------------------- | :------- |
+| `authentication` | `string` | Your authToken                   | yes      |
+| `userId`         | `string` | The ID of the user to be deleted | yes      |
 
 Example request body:'
 
@@ -253,29 +363,26 @@ To delete a user, send a DELETE request with the userId in the URL path:
 }
 ```
 
-
-
 ## **Update Account**
 
 ```http
 PATCH  /api/v1/auth/update/:userId
 ```
 
-
-| Parameter         | Type      | Description                           | Required |
-| `authentication` | `string` | Your token    | yes       |
+| Parameter | Type | Description | Required |
+| `authentication` | `string` | Your token | yes |
 | :---------------- | :-------- | :------------------------------------ | :------- |
-| `firstName`       | `string`  | User's first name (3-15 characters)   | no       |
-| `lastName`        | `string`  | User's last name (3-15 characters)    | no      |
-| `email`           | `string`  | Valid email address                   | no       |
-| `bio`             | `string`  | User's bio (max 500 characters)       | no       |
-| `skills`          | `array`   | Array of skills (optional)            | no       |
-| `profileUrl`      | `string`  | Valid URL for profile picture         | no       |
-| `phoneNumber`     | `string`  | Phone number (E.164 format)           | no       |
-| `gender`          | `string`  | Gender: male, female, or other        | no       |
-| `userAward`       | `string`  | Award options based on defined values | no       |
-| `plan`            | `string`  | Plan options based on defined values  | no       |
-| `dateOfBirth`     | `date`    | User's date of birth                  | no       |
+| `firstName` | `string` | User's first name (3-15 characters) | no |
+| `lastName` | `string` | User's last name (3-15 characters) | no |
+| `email` | `string` | Valid email address | no |
+| `bio` | `string` | User's bio (max 500 characters) | no |
+| `skills` | `array` | Array of skills (optional) | no |
+| `profileUrl` | `string` | Valid URL for profile picture | no |
+| `phoneNumber` | `string` | Phone number (E.164 format) | no |
+| `gender` | `string` | Gender: male, female, or other | no |
+| `userAward` | `string` | Award options based on defined values | no |
+| `plan` | `string` | Plan options based on defined values | no |
+| `dateOfBirth` | `date` | User's date of birth | no |
 
 Example Request Body:
 
@@ -303,14 +410,12 @@ Example Request Body:
 
 ```
 
-
-
 ## **Get new access and refresh token**
 
-| Parameter        | Type     | Description    | Required |
-| :--------------- | :------- | :------------  | :------- |
-| `authentication` | `string` | Your authToken     | no   |
-| `refreshToken`   | `string` | Your refreshToken    | yes     |
+| Parameter        | Type     | Description       | Required |
+| :--------------- | :------- | :---------------- | :------- |
+| `authentication` | `string` | Your authToken    | no       |
+| `refreshToken`   | `string` | Your refreshToken | yes      |
 
 Example request body:
 
@@ -319,8 +424,6 @@ Example request body:
   "refreshToken":"your refreshToken"
 }
 ```
-
-
 
 ## **Get my profile**
 
@@ -332,23 +435,19 @@ GET /api/v1/auth/profile
 | :--------------- | :------- | :---------- | :------- |
 | `authentication` | `string` | Your token  | yes      |
 
-
-
-
 ## **Forgot Password**
 
 ```http
 POST /api/v1/auth/forget-password
 ```
 
-
-| Parameter         | Type      | Description              Required |
-| `authentication`  | `string` | Your token    | no       |
+| Parameter | Type | Description Required |
+| `authentication` | `string` | Your token | no |
 | :---------------- | :-------- | :------------------------------------ | :------- |
-| `refreshToken`    | `string`  | Your refresh token      | yes       |
-| `email`           | `string`  | Valid email address     | yes       |
+| `refreshToken` | `string` | Your refresh token | yes |
+| `email` | `string` | Valid email address | yes |
 
- Example Request Body:
+Example Request Body:
 
 ```javascript
 {
@@ -358,32 +457,27 @@ POST /api/v1/auth/forget-password
 
 ```
 
-
-
 ## **Rest Password**
 
 ```http
 POST /api/v1/auth/reset-password/:userId/:token
 ```
 
-
-| Parameter         | Type      | Description                           | Required |
-| `authentication` | `string` | Your token    | no       |
+| Parameter | Type | Description | Required |
+| `authentication` | `string` | Your token | no |
 | :---------------- | :-------- | :------------------------------------ | :------- |
-| `userId`          | `string`  | User id    | yes                     |
-| `token`           | `string`  | The rest password verification token | yes      |
-| `password`        | `string`  | Minimum 6 characters                  | yes      |
-| `confirmPassword` | `string`  | Must match the password               | yes      |
-
+| `userId` | `string` | User id | yes |
+| `token` | `string` | The rest password verification token | yes |
+| `password` | `string` | Minimum 6 characters | yes |
+| `confirmPassword` | `string` | Must match the password | yes |
 
 Example Request Body:
 
 ```javascript
-
-POST /api/v1/auth/reset-password/userid/token
+POST / api / v1 / auth / reset - password / userid / token;
 ```
 
-```javascript
+````javascript
 {
   "password": "12345test8",
   "confirmPassword":  "12345test8"
@@ -397,7 +491,7 @@ POST /api/v1/auth/reset-password/userid/token
 
 ```http
 GET /api/v1/users/users
-```
+````
 
 | Parameter        | Type     | Description | Required |
 | :--------------- | :------- | :---------- | :------- |
@@ -436,14 +530,13 @@ GET /api/v1/users/unfollowing/:id
 | `authentication` | `string` | Your token                        | yes      |
 | `id`             | `string` | ID of the user you want to follow | yes      |
 
-
-```
+````
 
 ## **Block another user**
 
 ```http
 PUT /api/v1/users/block/:id
-```
+````
 
 | Parameter        | Type     | Description                      | Required |
 | :--------------- | :------- | :------------------------------- | :------- |
@@ -482,8 +575,6 @@ PUT /api/v1/users/admin-unblock/:id
 | :--------------- | :------- | :--------------------------------- | :------- |
 | `authentication` | `string` | Your token                         | yes      |
 | `id`             | `string` | Id of the user you want to unblock | yes      |
-
-
 
 ## **Upload Profile Photo**
 
@@ -641,8 +732,6 @@ Example request body:
 ## Feedback
 
 If you have any feedback, please reach out to us at saddamarbaas@gmail.com
-
-
 
 ## 🔗 Social Links
 
