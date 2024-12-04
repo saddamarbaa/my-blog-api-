@@ -21,12 +21,17 @@
     "test-all": "npm run format && npm run check-lint && npm run typecheck && npm run test && npm run build"
   },
   "keywords": [],
-  "author": "CJ R. <cj@null.computer> (https://w3cj.now.sh)",
+  "author": "saddamarbaa (https://github.com/saddamarbaa)",
   "repository": {
     "type": "git",
-    "url": "https://github.com/w3cj/express-api-starter.git"
+    "url": "https://github.com/saddamarbaa/node-express-mongodb-typescript-blog-rest-api"
   },
   "license": "MIT",
+  "husky": {
+    "hooks": {
+      "pre-commit": "pretty-quick --staged"
+    }
+  },
   "dependencies": {
     "@types/cookie-parser": "^1.4.8",
     "@types/swagger-jsdoc": "^6.0.4",
@@ -41,6 +46,7 @@
     "express": "^4.21.1",
     "helmet": "^8.0.0",
     "http-errors": "^2.0.0",
+    "husky": "^9.1.7",
     "joi": "^17.13.3",
     "joi-objectid": "^4.0.2",
     "jsonwebtoken": "^9.0.2",
@@ -81,8 +87,10 @@
     "import-sort-style-module": "^6.0.0",
     "jest": "^29.7.0",
     "nodemon": "^3.1.7",
-    "prettier": "^3.4.1",
+    "prettier": "^3.4.2",
+    "pretty-quick": "^4.0.0",
     "rimraf": "^6.0.1",
+    "simple-git-hooks": "^2.11.1",
     "supertest": "^7.0.0",
     "ts-jest": "^29.2.5",
     "ts-node": "^10.9.2",
