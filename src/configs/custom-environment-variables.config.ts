@@ -3,6 +3,7 @@ import dotenv from 'dotenv-safe';
 dotenv.config();
 
 export const environmentConfig = {
+  NODE_ENV: process.env.NODE_ENV,
   PORT: process.env.PORT || 8000,
   MONGODB_CONNECTION_STRING: process.env.MONGODB_CONNECTION_STRING,
   TEST_ENV_MONGODB_CONNECTION_STRING: process.env.TEST_ENV_MONGODB_CONNECTION_STRING,
@@ -12,8 +13,8 @@ export const environmentConfig = {
   API_VERSION: process.env.API_VERSION,
   JWT_EXPIRE_TIME: process.env.JWT_EXPIRE_TIME,
   JWT_ISSUER: process.env.JWT_ISSUER,
-  // SEND_GRID_API_KEY: process.env.SEND_GRID_API_KEY,
-  // ADMIN_SEND_GRID_EMAIL: process.env.ADMIN_SEND_GRID_EMAIL,
+  RESEND_EMAIL_API_KEY: process.env.RESEND_EMAIL_API_KEY,
+  EMAIL_SENDER: process.env.EMAIL_SENDER,
   // CLIENT_URL: process.env.CLIENT_URL,
   ACCESS_TOKEN_SECRET_KEY: process.env.ACCESS_TOKEN_SECRET_KEY,
   REFRESH_TOKEN_SECRET_KEY: process.env.REFRESH_TOKEN_SECRET_KEY,
