@@ -1,1 +1,1 @@
-export * from "./multer"
+export * from './multer';

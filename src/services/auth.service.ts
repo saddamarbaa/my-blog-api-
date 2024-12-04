@@ -4,7 +4,16 @@ import { SignOptions } from 'jsonwebtoken';
 
 import { AuthenticatedRequestBody, IUser, ResponseT } from '@src/interfaces';
 import { environmentConfig } from '@src/configs';
-import { customResponse, deleteFile, getProfilePicture, getRoleFromEmail } from '@src/utils';
+import {
+  customResponse,
+  deleteFile,
+  getProfilePicture,
+  getRoleFromEmail,
+  sendConfirmResetPasswordEmailTemplate,
+  sendEmailVerificationTemplate,
+  sendMail,
+  sendResetPasswordEmailTemplate
+} from '@src/utils';
 import Token from '@src/models/Token.model';
 import User from '@src/models/User.model';
 import { verifyRefreshToken } from '@src/middlewares';
@@ -68,7 +77,6 @@ export const signupService = async (req: Request, res: Response<ResponseT<null>>
     const payload = { userId: user._id };
 
     // Define secret keys and options for both access and refresh tokens
-
     const accessTokenSecretKey = environmentConfig.ACCESS_TOKEN_SECRET_KEY as string;
     const refreshTokenSecretKey = environmentConfig.REFRESH_TOKEN_SECRET_KEY as string;
 
@@ -102,9 +110,22 @@ export const signupService = async (req: Request, res: Response<ResponseT<null>>
 
     const verifyEmailLink = `${environmentConfig.WEBSITE_URL}/verify-email?id=${user._id}&token=${token.refreshToken}`;
 
-    // todo
     // send mail for email verification
-    // await sendEmailVerificationEmail(email, name, verifyEmailLink);
+    const { data: resendEmailData, error } = await sendMail({
+      to: user.email,
+      ...sendEmailVerificationTemplate(verifyEmailLink, firstName)
+    });
+
+    // ignore email errors for now
+    if (error) {
+      if (process?.env?.NODE_ENV && process.env.NODE_ENV === 'development') {
+        console.log('Sending Email error:', error);
+        console.log('Sending Email error:');
+      }
+    } else if (process?.env?.NODE_ENV && process.env.NODE_ENV === 'development') {
+      console.log(`Successfully  send email to ${email}...`);
+      console.log(resendEmailData);
+    }
 
     const data = {
       user: {
@@ -191,7 +212,21 @@ export const loginService = async (req: Request, res: Response, next: NextFuncti
 
       // todo
       // Again send verification email
-      // sendEmailVerificationEmail(email, user.firstName, verifyEmailLink);
+      const { data: resendEmailData, error } = await sendMail({
+        to: user.email,
+        ...sendEmailVerificationTemplate(verifyEmailLink, user.firstName)
+      });
+
+      // ignore email errors for now
+      if (error) {
+        if (environmentConfig?.NODE_ENV && environmentConfig.NODE_ENV === 'development') {
+          console.log('Sending Email error:', error);
+          console.log('Sending Email error:');
+        }
+      } else if (environmentConfig?.NODE_ENV && environmentConfig.NODE_ENV === 'development') {
+        console.log(`Successfully  send email to ${email}...`);
+        console.log(resendEmailData);
+      }
 
       const responseData = {
         accessToken: token.accessToken,
@@ -621,9 +656,22 @@ export const forgotPasswordService: RequestHandler = async (req, res, next) => {
 
     const passwordResetEmailLink = `${environmentConfig.WEBSITE_URL}/reset-password?id=${user._id}&token=${token.refreshToken}`;
 
-    // todo
     // password Reset Email
-    // sendResetPasswordEmail(email, user.name, passwordResetEmailLink);
+    const { data: resendEmailData, error } = await sendMail({
+      to: user.email,
+      ...sendResetPasswordEmailTemplate(passwordResetEmailLink, user.firstName)
+    });
+
+    // ignore email errors for now
+    if (error) {
+      if (process?.env?.NODE_ENV && process.env.NODE_ENV === 'development') {
+        console.log('Sending Email error:', error);
+        console.log('Sending Email error:');
+      }
+    } else if (process?.env?.NODE_ENV && process.env.NODE_ENV === 'development') {
+      console.log(`Successfully  send email to ${email}...`);
+      console.log(resendEmailData);
+    }
 
     const data = {
       user: {
@@ -664,11 +712,27 @@ export const resetPasswordService: RequestHandler = async (req, res, next) => {
     user.confirmPassword = req.body.confirmPassword;
     await user.save();
     await Token.deleteOne({ userId: req.params.userId, refreshToken: req.params.token });
+    // Clear cookies
+    res.clearCookie('accessToken');
+    res.clearCookie('refreshToken');
 
     const confirmResetPasswordEmailLink = `${environmentConfig.WEBSITE_URL}/login`;
 
-    // todo
-    // sendConfirmResetPasswordEmail(user.email, user.name, confirmResetPasswordEmailLink);
+    const { data: resendEmailData, error } = await sendMail({
+      to: user.email,
+      ...sendConfirmResetPasswordEmailTemplate(confirmResetPasswordEmailLink, user.firstName)
+    });
+
+    // ignore email errors for now
+    if (error) {
+      if (process?.env?.NODE_ENV && process.env.NODE_ENV === 'development') {
+        console.log('Sending Email error:', error);
+        console.log('Sending Email error:');
+      }
+    } else if (process?.env?.NODE_ENV && process.env.NODE_ENV === 'development') {
+      console.log(`Successfully  send email to ${user.email}...`);
+      console.log(resendEmailData);
+    }
 
     const data = {
       loginLink: confirmResetPasswordEmailLink
