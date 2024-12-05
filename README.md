@@ -286,7 +286,7 @@ Example Request Body:
 ## **Verify Email**
 
 ```http
-POST /api/v1/auth/verify-email/:userId/:token
+GET /api/v1/auth/verify-email/:userId/:token
 
 ```
 
@@ -299,7 +299,7 @@ POST /api/v1/auth/verify-email/:userId/:token
 Example request body:
 
 ```javascript
-POST / api / v1 / auth / verify - email / 12345 / your - verification - token;
+GET / api / v1 / auth / verify - email / 12345 / your - verification - token;
 ```
 
 ## **User Login**
@@ -345,7 +345,7 @@ Example request body:
 ## **Delete Account**
 
 ```http
-POST /api/v1/auth/remove/:userId
+DELETE /api/v1/auth/remove/:userId
 ```
 
 | Parameter        | Type     | Description                      | Required |

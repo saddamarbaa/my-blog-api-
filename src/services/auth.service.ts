@@ -417,14 +417,12 @@ export const updateAccountService = async (req: AuthenticatedRequestBody<IUser>,
       return next(new createHttpError.BadRequest());
     }
 
-    // @ts-ignore
     if (!req.user?._id.equals(user._id)) {
       return next(createHttpError(403, `Auth Failed (Unauthorized)`));
     }
 
     if (email) {
       const existingUser = await User.findOne({ email: new RegExp(`^${email}$`, 'i') });
-      // @ts-ignore
       if (existingUser && !existingUser._id.equals(user._id)) {
         if (req.file?.filename) {
           const localFilePath = `${process.env.PWD}/public/uploads/users/${req.file.filename}`;
@@ -488,7 +486,6 @@ export const deleteAccountService = async (req: AuthenticatedRequestBody<IUser>,
 
     const reqUser = req.user;
 
-    // @ts-ignore
     if (reqUser && !reqUser?._id.equals(user._id) && reqUser?.role !== 'admin') {
       return next(createHttpError(403, `Auth Failed (Unauthorized)`));
     }

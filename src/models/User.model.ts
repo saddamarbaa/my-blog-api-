@@ -1,5 +1,5 @@
 import bcrypt from 'bcrypt';
-import mongoose, { Schema, Document } from 'mongoose';
+import mongoose, { Schema } from 'mongoose';
 import jwt from 'jsonwebtoken';
 import { environmentConfig } from '@src/configs';
 import {
@@ -11,7 +11,7 @@ import {
 } from '@src/constants';
 import { IUser } from '@src/interfaces';
 
-export interface IUserDocument extends Document, IUser {
+export interface IUserDocument extends IUser {
   // document level operations
   comparePassword(password: string): Promise<boolean>;
   createJWT(): Promise<void>;
