@@ -518,7 +518,7 @@ export const getProfileService = async (req: AuthenticatedRequestBody<IUser>, re
     const user = await User.findById(req.user?._id)
       .select('-password -confirmPassword  -status -isDeleted -acceptTerms -isVerified')
       .populate('following', 'firstName  lastName  profileUrl bio')
-      .populate('following', 'firstName  lastName  profileUrl bio')
+      .populate('followers', 'firstName  lastName  profileUrl bio')
       .exec();
 
     if (!user) {
