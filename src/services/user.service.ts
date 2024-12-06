@@ -233,7 +233,7 @@ export const unBlockUserService = async (req: AuthenticatedRequestBody<IUser>, r
       );
     }
 
-    return next(createHttpError(403, `This user is not blocked`));
+    return next(createHttpError(403, `You have not blocked this user`));
   } catch (error) {
     return next(InternalServerError);
   }
