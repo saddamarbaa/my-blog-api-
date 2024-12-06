@@ -140,17 +140,18 @@ An open-source RESTful API built with Node.js, Express, MongoDB, and TypeScript,
 - [API Authentication](#API-Authentication)
 
   - [User Signup](#user-signup)
-  - [login](#User-Login)
-  - [User logout](#user-logout)
-  - [Refresh token](#refresh-token)
-  - [Remove account](#remove-account)
-  - [Get profile](#get-profile)
-  - [Verify email](#verify-email)
-  - [Update user profile](#update-user-profile)
-  - [Forget password](#forget-password)
-  - [Reset password](#reset-password)
+  - [User Login](#user-login)
+  - [User Logout](#user-logout)
+  - [Refresh Token](#refresh-token)
+  - [Remove Account](#remove-account)
+  - [Get Profile](#get-profile)
+  - [Upload Profile Photo](#Upload-Profile-Photo)
+  - [Verify Email](#verify-email)
+  - [Update User Profile](#update-user-profile)
+  - [Forget Password](#forget-password)
+  - [Reset Password](#reset-password)
 
-- [Users](#api)
+- [Users](#users-api-reference)
 
   - [Get all users](#Get-all-users)
   - [View a user profile Count](#view-a-user-profile)
@@ -158,9 +159,13 @@ An open-source RESTful API built with Node.js, Express, MongoDB, and TypeScript,
   - [UnFollowing-a-user](#UnFollowing-a-user)
   - [Block another user](#Block-user)
   - [Unblock another user](#Unblock-user)
-  - [Admin blocking a user](#Admin-blocking-a-user)
-  - [Admin Unblocking a user](#Admin-unblocking-a-user)
-  - [Upload Profile Photo](#Upload-Profile-Photo)
+
+- [Admin API References](#admin-api-reference)
+
+  - [Admin Block a User](#admin-blocking-a-user)
+  - [Admin Unblock a User](#admin-unblocking-a-user)
+  - [Admin Delete User Account](#admin-delete-user-account)
+  -
 
 - [Posts](#Posts-API-Refeference)
 
@@ -239,7 +244,7 @@ If neither token is provided, the request will be denied with an authentication 
 
 The request body needs to be in JSON format.
 
-# **API Reference**
+# **Authentication API Reference**
 
 ## **User Signup**
 
@@ -439,6 +444,17 @@ GET /api/v1/auth/profile
 | :--------------- | :------- | :---------- | :------- |
 | `authentication` | `string` | Your token  | yes      |
 
+## **Upload Profile Photo**
+
+```http
+  DELETE /api/v1/users/profile-photo-upload
+```
+
+| Parameter        | Type     | Description     | Required |
+| :--------------- | :------- | :-------------- | :------- |
+| `authentication` | `string` | Your token      | yes      |
+| `profilePhoto`   | `string` | Image to upload | yes      |
+
 ## **Forgot Password**
 
 ```http
@@ -488,6 +504,8 @@ POST / api / v1 / auth / reset - password / userId / token;
 }
 ```
 
+# **Users API Reference**
+
 ## **Get all users**
 
 ```http
@@ -498,7 +516,7 @@ GET /api/v1/users/users
 | :--------------- | :------- | :---------- | :------- |
 | `authentication` | `string` | Your token  | no       |
 
-## **view a user profile**
+## **View a user profile**
 
 ```http
 GET /api/v1/users/profile-viewers/:id
@@ -548,6 +566,8 @@ PUT /api/v1/user/:userId/block
 PUT /api/v1/user/:userId/unblock
 ```
 
+# **Admin API Reference**
+
 | Parameter        | Type     | Description                        | Required |
 | :--------------- | :------- | :--------------------------------- | :------- |
 | `authentication` | `string` | Your token                         | yes      |
@@ -575,18 +595,7 @@ PUT /api/v1/users/admin-unblock/:id
 | `authentication` | `string` | Your token                         | yes      |
 | `id`             | `string` | Id of the user you want to unblock | yes      |
 
-## **Upload Profile Photo**
-
-```http
-  DELETE /api/v1/users/profile-photo-upload
-```
-
-| Parameter        | Type     | Description     | Required |
-| :--------------- | :------- | :-------------- | :------- |
-| `authentication` | `string` | Your token      | yes      |
-| `profilePhoto`   | `string` | Image to upload | yes      |
-
-# **Posts API Refeference**
+# **Posts API Reference**
 
 ## **Create Post**
 
