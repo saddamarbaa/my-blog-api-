@@ -160,7 +160,7 @@ An open-source RESTful API built with Node.js, Express, MongoDB, and TypeScript,
   - [Block another user](#Block-user)
   - [Unblock another user](#Unblock-user)
 
-- [Admin API References](#admin-api-reference)
+- [Admin](#admin-api-reference)
 
   - [Admin Block a User](#admin-blocking-a-user)
   - [Admin Unblock a User](#admin-unblocking-a-user)
@@ -509,17 +509,17 @@ POST / api / v1 / auth / reset - password / userId / token;
 ## **Get all users**
 
 ```http
-GET /api/v1/users/users
+GET /api/v1/user/users
 ```
 
 | Parameter        | Type     | Description | Required |
 | :--------------- | :------- | :---------- | :------- |
-| `authentication` | `string` | Your token  | no       |
+| `authentication` | `string` | Your token  | yes      |
 
 ## **View a user profile**
 
 ```http
-GET /api/v1/users/profile-viewers/:id
+GET /api/v1/user/:id
 ```
 
 | Parameter        | Type     | Description                                 | Required |
@@ -566,12 +566,12 @@ PUT /api/v1/user/:userId/block
 PUT /api/v1/user/:userId/unblock
 ```
 
-# **Admin API Reference**
-
 | Parameter        | Type     | Description                        | Required |
 | :--------------- | :------- | :--------------------------------- | :------- |
 | `authentication` | `string` | Your token                         | yes      |
 | `id`             | `string` | Id of the user you want to unblock | yes      |
+
+# **Admin API Reference**
 
 ## **Admin blocking a user**
 

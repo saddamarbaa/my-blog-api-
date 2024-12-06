@@ -5,6 +5,58 @@ import { AuthenticatedRequestBody, IUser } from '@src/interfaces';
 import { customResponse } from '@src/utils';
 import User from '@src/models/User.model';
 
+export const getUsersService = async (req: AuthenticatedRequestBody<IUser>, res: Response, next: NextFunction) => {
+  try {
+    const users = await User.find({})
+      .select('-password -confirmPassword  -status -isDeleted -acceptTerms -isVerified -isDeleted')
+      .populate('followers', 'firstName lastName profileUrl bio')
+      .populate('following', 'firstName lastName profileUrl bio')
+      .populate('blocked', 'firstName lastName profileUrl bio')
+      .exec();
+
+    return res.status(200).send(
+      customResponse({
+        success: true,
+        error: false,
+        message: `Users retrieved successfully`,
+        status: 200,
+        data: { users }
+      })
+    );
+  } catch (error) {
+    return next(InternalServerError);
+  }
+};
+
+export const getUserService = async (req: AuthenticatedRequestBody<IUser>, res: Response, next: NextFunction) => {
+  try {
+    const { userId } = req.params;
+
+    const user = await User.findById(userId)
+      .select('-password -confirmPassword -status -isDeleted -acceptTerms -isVerified')
+      .populate('followers', 'firstName lastName profileUrl bio')
+      .populate('following', 'firstName lastName profileUrl bio')
+      .populate('blocked', 'firstName lastName profileUrl bio')
+      .exec();
+
+    if (!user) {
+      return next(createHttpError(400, `User not found`));
+    }
+
+    return res.status(200).send(
+      customResponse({
+        success: true,
+        error: false,
+        message: 'User retrieved successfully',
+        status: 200,
+        data: { user }
+      })
+    );
+  } catch (error) {
+    return next(InternalServerError);
+  }
+};
+
 export const followUserService = async (req: AuthenticatedRequestBody<IUser>, res: Response, next: NextFunction) => {
   try {
     if (req.user?._id.equals(req.params.userId)) {
