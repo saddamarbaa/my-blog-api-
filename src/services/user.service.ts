@@ -139,8 +139,9 @@ export const blockUserService = async (req: AuthenticatedRequestBody<IUser>, res
     }
 
     // Check if the user is already blocked
-    const isAlreadyBlocked = currentUser.blocked.some((blockedUser) => {
-      return blockedUser.toString() === toBeBlockedUser._id.toString();
+    const isAlreadyBlocked = currentUser.blocked.some(function (user) {
+      if (user._id.toString() === toBeBlockedUser._id.toString()) return true;
+      return false;
     });
 
     if (isAlreadyBlocked) {
@@ -232,7 +233,7 @@ export const unBlockUserService = async (req: AuthenticatedRequestBody<IUser>, r
       );
     }
 
-    return next(createHttpError(403, `This user is not blocked`));
+    return next(createHttpError(403, `You have not blocked this user`));
   } catch (error) {
     return next(InternalServerError);
   }
