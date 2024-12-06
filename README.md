@@ -530,7 +530,7 @@ PUT /api/v1/user/:userId/un-follow
 ## **Block another user**
 
 ```http
-PUT /api/v1/users/block/:id
+PUT /api/v1/user/:userId/block
 ```
 
 | Parameter        | Type     | Description                      | Required |
@@ -541,7 +541,7 @@ PUT /api/v1/users/block/:id
 ## **Unblock user**
 
 ```http
-PUT /api/v1/users/unblock/:id
+PUT /api/v1/user/:userId/unblock
 ```
 
 | Parameter        | Type     | Description                        | Required |
