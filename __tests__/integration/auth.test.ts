@@ -5,7 +5,7 @@ import { environmentConfig } from '@src/configs';
 import User from '@src/models/User.model';
 import Token from '@src/models/Token.model';
 import app from '@src/app';
-import { adminEmails, AUTHORIZATION_ROLES, userPayload, validMongooseObjectId } from '@src/constants';
+import { AUTHORIZATION_ROLES, userPayload } from '@src/constants';
 
 // Increase the timeout for initial setup
 beforeAll(async () => {

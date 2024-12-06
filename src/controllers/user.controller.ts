@@ -1,6 +1,12 @@
 import { Response, NextFunction } from 'express';
 
-import { blockUserService, followUserService, unBlockUserService, unFollowUserService } from '@src/services';
+import {
+  blockUserService,
+  followUserService,
+  getUsersService,
+  unBlockUserService,
+  unFollowUserService
+} from '@src/services';
 import { AuthenticatedRequestBody, IUser } from '@src/interfaces';
 
 export const followUserController = (req: AuthenticatedRequestBody<IUser>, res: Response, next: NextFunction) =>
@@ -14,3 +20,6 @@ export const blockUserController = (req: AuthenticatedRequestBody<IUser>, res: R
 
 export const unBlockUserController = (req: AuthenticatedRequestBody<IUser>, res: Response, next: NextFunction) =>
   unBlockUserService(req, res, next);
+
+export const getUsersController = (req: AuthenticatedRequestBody<IUser>, res: Response, next: NextFunction) =>
+  getUsersService(req, res, next);

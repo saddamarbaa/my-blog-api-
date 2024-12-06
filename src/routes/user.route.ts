@@ -3,6 +3,7 @@ import express from 'express';
 import {
   blockUserController,
   followUserController,
+  getUsersController,
   unBlockUserController,
   unFollowUserController
 } from '@src/controllers';
@@ -17,5 +18,7 @@ router.put('/:userId/un-follow', isLogin, updateUserValidation, unFollowUserCont
 // Block and unblock routes
 router.put('/:userId/block', isLogin, updateUserValidation, blockUserController);
 router.put('/:userId/unblock', isLogin, updateUserValidation, unBlockUserController);
+
+router.get('/users', isLogin, getUsersController);
 
 export = router;

@@ -160,7 +160,7 @@ An open-source RESTful API built with Node.js, Express, MongoDB, and TypeScript,
   - [Block another user](#Block-user)
   - [Unblock another user](#Unblock-user)
 
-- [Admin API References](#admin-api-reference)
+- [Admin](#admin-api-reference)
 
   - [Admin Block a User](#admin-blocking-a-user)
   - [Admin Unblock a User](#admin-unblocking-a-user)
