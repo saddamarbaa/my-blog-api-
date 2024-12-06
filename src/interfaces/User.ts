@@ -1,5 +1,5 @@
 import { Request } from 'express';
-import mongoose from 'mongoose';
+import mongoose, { Types } from 'mongoose';
 import { GENDER_OPTIONS, STATUS_OPTIONS, USER_AWARD_OPTIONS, USER_PLAN_OPTIONS } from '@src/constants';
 
 export interface FollowT {
@@ -9,7 +9,7 @@ export interface FollowT {
   bio?: string;
   userId?: string;
 }
-export interface IUser extends mongoose.Document {
+export interface IUser extends Document {
   firstName: string;
   lastName: string;
   email: string;
@@ -43,6 +43,7 @@ export interface IUser extends mongoose.Document {
   dateOfBirth?: Date;
   userId?: string;
   timestamps?: boolean;
+  _id: Types.ObjectId;
 }
 
 export interface IRequestUser extends Request {

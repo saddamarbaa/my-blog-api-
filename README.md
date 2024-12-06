@@ -286,7 +286,7 @@ Example Request Body:
 ## **Verify Email**
 
 ```http
-POST /api/v1/auth/verify-email/:userId/:token
+GET /api/v1/auth/verify-email/:userId/:token
 
 ```
 
@@ -299,7 +299,7 @@ POST /api/v1/auth/verify-email/:userId/:token
 Example request body:
 
 ```javascript
-POST / api / v1 / auth / verify - email / 12345 / your - verification - token;
+GET /api/v1/auth/verify-email/:userId/:token
 ```
 
 ## **User Login**
@@ -345,7 +345,7 @@ Example request body:
 ## **Delete Account**
 
 ```http
-POST /api/v1/auth/remove/:userId
+DELETE /api/v1/auth/remove/:userId
 ```
 
 | Parameter        | Type     | Description                      | Required |
@@ -474,24 +474,21 @@ POST /api/v1/auth/reset-password/:userId/:token
 Example Request Body:
 
 ```javascript
-POST / api / v1 / auth / reset - password / userid / token;
+POST / api / v1 / auth / reset - password / userId / token;
 ```
 
-````javascript
+```javascript
 {
   "password": "12345test8",
   "confirmPassword":  "12345test8"
 }
-
-
-
-
+```
 
 ## **Get all users**
 
 ```http
 GET /api/v1/users/users
-````
+```
 
 | Parameter        | Type     | Description | Required |
 | :--------------- | :------- | :---------- | :------- |
@@ -508,10 +505,10 @@ GET /api/v1/users/profile-viewers/:id
 | `authentication` | `string` | Your token                                  | yes      |
 | `id`             | `string` | ID of the user you want to view his profile | yes      |
 
-#### **Following a user**
+## **Following a user**
 
 ```http
-GET /api/v1/users/following/:id
+PUT /api/v1/user/:userId/follow
 ```
 
 | Parameter        | Type     | Description                       | Required |
@@ -522,7 +519,7 @@ GET /api/v1/users/following/:id
 ## **UnFollowing a user**
 
 ```http
-GET /api/v1/users/unfollowing/:id
+PUT /api/v1/user/:userId/un-follow
 ```
 
 | Parameter        | Type     | Description                       | Required |
@@ -530,13 +527,11 @@ GET /api/v1/users/unfollowing/:id
 | `authentication` | `string` | Your token                        | yes      |
 | `id`             | `string` | ID of the user you want to follow | yes      |
 
-````
-
 ## **Block another user**
 
 ```http
-PUT /api/v1/users/block/:id
-````
+PUT /api/v1/user/:userId/block
+```
 
 | Parameter        | Type     | Description                      | Required |
 | :--------------- | :------- | :------------------------------- | :------- |
@@ -546,7 +541,7 @@ PUT /api/v1/users/block/:id
 ## **Unblock user**
 
 ```http
-PUT /api/v1/users/unblock/:id
+PUT /api/v1/user/:userId/unblock
 ```
 
 | Parameter        | Type     | Description                        | Required |

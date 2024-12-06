@@ -15,22 +15,22 @@ info:
     url: 'https://www.apache.org/licenses/LICENSE-2.0.html'
 
 servers:
-- url: '{serverUrl}/api/{apiVersion}'
-  variables:
-    apiVersion:
-      default: v1
-      enum:
-      - v1
-      - v2
-      - v3
-    serverUrl:
-      description: Environment -  Production, Staging, Test or Dev
-      default: http://localhost:8000
-      enum:
-      - https://saddam-rest-api.herokuapp.com
-      - https://saddam-rest-api.herokuapp.com
-      - https://saddam-rest-api.herokuapp.com
-      - http://localhost:8000
+  - url: '{serverUrl}/api/{apiVersion}'
+    variables:
+      apiVersion:
+        default: v1
+        enum:
+          - v1
+          - v2
+          - v3
+      serverUrl:
+        description: Environment -  Production, Staging, Test or Dev
+        default: http://localhost:8000
+        enum:
+          - https://saddam-rest-api.herokuapp.com
+          - https://saddam-rest-api.herokuapp.com
+          - https://saddam-rest-api.herokuapp.com
+          - http://localhost:8000
 
 paths:
   # Root Health Check
@@ -51,7 +51,7 @@ paths:
     get:
       summary: Root endpoint (API Version 1)
       tags:
-      - HealthCheck
+        - HealthCheck
       responses:
         '200':
           description: API version 1 route
@@ -66,7 +66,7 @@ paths:
     get:
       summary: Api health check endpoint
       tags:
-      - HealthCheck
+        - HealthCheck
       responses:
         '200':
           description: OK
@@ -84,7 +84,7 @@ paths:
       description: 'This endpoint creates a new user'
       operationId: 'createUser'
       tags:
-      - Auth
+        - Auth
       requestBody:
         description: 'User object to be created'
         required: true
@@ -144,25 +144,25 @@ paths:
     get:
       summary: Verify auth email
       tags:
-      - Auth
+        - Auth
       description:
       parameters:
-      - in: path
-        name: userId
-        required: true
-        description: Unique id
-        schema:
-          type: string
-          minimum: 1
-          example: 6394b75d22f4732bfa7ca6ef
-      - in: path
-        name: token
-        required: true
-        description: Unique token
-        schema:
-          type: string
-          minimum: 1
-          example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2Mzk0Yjc1ZDIyZjQ3MzJiZmE3Y2E2ZWYiLCJpYXQiOjE2NzA2OTI5NzgsImV4cCI6MTcwMjI1MDU3OCwiYXVkIjoiNjM5NGI3NWQyMmY0NzMyYmZhN2NhNmVmIiwiaXNzIjoidGVzdG5kb2Vqcy5jb20ifQ.lb-IL1iEI8yIth62i8pwj7N8C-Ce5QVfsKNBIb9Pa7k
+        - in: path
+          name: userId
+          required: true
+          description: Unique id
+          schema:
+            type: string
+            minimum: 1
+            example: 6394b75d22f4732bfa7ca6ef
+        - in: path
+          name: token
+          required: true
+          description: Unique token
+          schema:
+            type: string
+            minimum: 1
+            example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2Mzk0Yjc1ZDIyZjQ3MzJiZmE3Y2E2ZWYiLCJpYXQiOjE2NzA2OTI5NzgsImV4cCI6MTcwMjI1MDU3OCwiYXVkIjoiNjM5NGI3NWQyMmY0NzMyYmZhN2NhNmVmIiwiaXNzIjoidGVzdG5kb2Vqcy5jb20ifQ.lb-IL1iEI8yIth62i8pwj7N8C-Ce5QVfsKNBIb9Pa7k
       responses:
         '200':
           description: OK
@@ -207,7 +207,7 @@ paths:
     post:
       summary: Logs in and returns the authentication  cookie and token
       tags:
-      - Auth
+        - Auth
       requestBody:
         required: true
         description: A JSON object containing the login and password.
@@ -224,7 +224,7 @@ paths:
                   example: 12345test
       security: [] # no authentication
       responses:
-        "200":
+        '200':
           description: >
             Successfully authenticated. The accessToken ane refreshToken are returned in a cookie named `accessToken`, `refreshToken`. You need to include this cookie in subsequent requests or include Ber token which will be returned as well.
           headers:
@@ -279,7 +279,7 @@ paths:
     post:
       summary: Un authenticate a user
       tags:
-      - Auth
+        - Auth
       requestBody:
         description: ''
         required: true
@@ -336,7 +336,7 @@ paths:
     post:
       summary: Get new access and refresh token
       tags:
-      - Auth
+        - Auth
       requestBody:
         description: ''
         required: true
@@ -398,10 +398,10 @@ paths:
   /auth/profile:
     get:
       security:
-      - Authorization: []
+        - Authorization: []
       summary: Return user profile
       tags:
-      - Auth
+        - Auth
       responses:
         '200':
           description: OK
@@ -446,19 +446,19 @@ paths:
   /auth/update/{userId}:
     patch:
       security:
-      - Authorization: []
+        - Authorization: []
       summary: Edit user based on request id
       tags:
-      - Auth
+        - Auth
       parameters:
-      - in: path
-        name: userId
-        required: true
-        description: Unique id
-        schema:
-          type: string
-          minimum: 1
-          example: 6358c2odca30b98e0e68d063
+        - in: path
+          name: userId
+          required: true
+          description: Unique id
+          schema:
+            type: string
+            minimum: 1
+            example: 6358c2odca30b98e0e68d063
       requestBody:
         required: true
         content:
@@ -507,19 +507,19 @@ paths:
   /auth/remove/{userId}:
     delete:
       security:
-      - Authorization: []
+        - Authorization: []
       summary: Delete user based on request id
       tags:
-      - Auth
+        - Auth
       parameters:
-      - in: path
-        name: userId
-        required: true
-        description: Unique id
-        schema:
-          type: string
-          minimum: 1
-          example: 6358c2odca30b98e0e68d063
+        - in: path
+          name: userId
+          required: true
+          description: Unique id
+          schema:
+            type: string
+            minimum: 1
+            example: 6358c2odca30b98e0e68d063
       responses:
         '200':
           description: OK
@@ -563,7 +563,7 @@ paths:
     post:
       summary: Allow user to get new password (send rest password token to user email)
       tags:
-      - Auth
+        - Auth
       requestBody:
         description: ''
         required: true
@@ -629,25 +629,25 @@ paths:
     post:
       summary: Endpoint to rest user password using magic link which is been sent to their email
       tags:
-      - Auth
+        - Auth
       description:
       parameters:
-      - in: path
-        name: userId
-        required: true
-        description: Unique id
-        schema:
-          type: string
-          minimum: 1
-          example: 6358c27dca30b98e0e68d063
-      - in: path
-        name: token
-        required: true
-        description: Unique token
-        schema:
-          type: string
-          minimum: 1
-          example: 6358c27dca30b98e0e68d063
+        - in: path
+          name: userId
+          required: true
+          description: Unique id
+          schema:
+            type: string
+            minimum: 1
+            example: 6358c27dca30b98e0e68d063
+        - in: path
+          name: token
+          required: true
+          description: Unique token
+          schema:
+            type: string
+            minimum: 1
+            example: 6358c27dca30b98e0e68d063
       requestBody:
         description: ''
         required: true
@@ -707,47 +707,281 @@ paths:
               schema:
                 '$ref': '#/components/schemas/ServerErrorResponse'
 
+  # User
+
+  /user/{userId}/follow:
+    put:
+      security:
+        - Authorization: []
+      summary: Flow given user based on request id
+      tags:
+        - User
+      parameters:
+        - in: path
+          name: userId
+          required: true
+          description: Unique id
+          schema:
+            type: string
+            minimum: 1
+            example: 639593f33994948bfb0756d0
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                    description:
+                  error:
+                    type: boolean
+                    example: false
+                  status:
+                    type: integer
+                    example: 200
+                  message:
+                    type: string
+                    example: User has been followed successfully
+                  data:
+                    type: object
+                    properties:
+                      user:
+                        type: object
+                        '$ref': '#/components/schemas/AuthResponse'
+
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                '$ref': '#/components/schemas/BadRequestResponse'
+
+        '500':
+          description: 500 Internal Server Error
+          content:
+            application/json:
+              schema:
+                '$ref': '#/components/schemas/ServerErrorResponse'
+
+  /user/{userId}/un-follow:
+    put:
+      security:
+        - Authorization: []
+      summary: Un flow given user based on request id
+      tags:
+        - User
+      parameters:
+        - in: path
+          name: userId
+          required: true
+          description: Unique id
+          schema:
+            type: string
+            minimum: 1
+            example: 639593f33994948bfb0756d0
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                    description:
+                  error:
+                    type: boolean
+                    example: false
+                  status:
+                    type: integer
+                    example: 200
+                  message:
+                    type: string
+                    example: User has been un followed successfully
+                  data:
+                    type: object
+                    properties:
+                      user:
+                        type: object
+                        '$ref': '#/components/schemas/AuthResponse'
+
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                '$ref': '#/components/schemas/BadRequestResponse'
+
+        '500':
+          description: 500 Internal Server Error
+          content:
+            application/json:
+              schema:
+                '$ref': '#/components/schemas/ServerErrorResponse'
+
+  /user/{userId}/block:
+    put:
+      security:
+        - Authorization: []
+      summary: Block a given user based on request ID
+      tags:
+        - User
+      parameters:
+        - in: path
+          name: userId
+          required: true
+          description: Unique id
+          schema:
+            type: string
+            minimum: 1
+            example: 639593f33994948bfb0756d0
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                    description:
+                  error:
+                    type: boolean
+                    example: false
+                  status:
+                    type: integer
+                    example: 200
+                  message:
+                    type: string
+                    example: User has been blocked successfully
+                  data:
+                    type: object
+                    properties:
+                      user:
+                        type: object
+                        '$ref': '#/components/schemas/AuthResponse'
+
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                '$ref': '#/components/schemas/BadRequestResponse'
+
+        '500':
+          description: 500 Internal Server Error
+          content:
+            application/json:
+              schema:
+                '$ref': '#/components/schemas/ServerErrorResponse'
+
+  /user/{userId}/unblock:
+    put:
+      security:
+        - Authorization: []
+      summary: Unblock a given user based on request ID
+      tags:
+        - User
+      parameters:
+        - in: path
+          name: userId
+          required: true
+          description: Unique id
+          schema:
+            type: string
+            minimum: 1
+            example: 639593f33994948bfb0756d0
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                    description:
+                  error:
+                    type: boolean
+                    example: false
+                  status:
+                    type: integer
+                    example: 200
+                  message:
+                    type: string
+                    example: User has been unblocked successfully
+                  data:
+                    type: object
+                    properties:
+                      user:
+                        type: object
+                        '$ref': '#/components/schemas/AuthResponse'
+
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                '$ref': '#/components/schemas/BadRequestResponse'
+
+        '500':
+          description: 500 Internal Server Error
+          content:
+            application/json:
+              schema:
+                '$ref': '#/components/schemas/ServerErrorResponse'
+
   # Post
 
   /feed/posts:
     get:
       summary: Returns a list of posts (can search, sort by each filed, filter by each filed)
       tags:
-      - Post
+        - Post
       description:
       parameters:
-      - in: query
-        name: limit
-        schema:
-          type: integer
-          minimum: 1
-          example: 10
-        description: The numbers of items to return (the default value is 20)
-      - in: query
-        name: page
-        schema:
-          type: integer
-          # minimum: 1
-          # example: 1
-        description: Pagination page number (the default value is 1)
-      - in: query
-        name: sort
-        schema:
-          type: string
-          example:
-        description: Sort query
-      - in: query
-        name: category
-        schema:
-          type: string
-          example:
-        description: Filter by Category name (Example - coding,sports,social,blockchain,devapp,nodejs)
-      - in: query
-        name: search
-        schema:
-          type: string
-          example:
-        description: search term (Example - nodejs)
+        - in: query
+          name: limit
+          schema:
+            type: integer
+            minimum: 1
+            example: 10
+          description: The numbers of items to return (the default value is 20)
+        - in: query
+          name: page
+          schema:
+            type: integer
+            # minimum: 1
+            # example: 1
+          description: Pagination page number (the default value is 1)
+        - in: query
+          name: sort
+          schema:
+            type: string
+            example:
+          description: Sort query
+        - in: query
+          name: category
+          schema:
+            type: string
+            example:
+          description: Filter by Category name (Example - coding,sports,social,blockchain,devapp,nodejs)
+        - in: query
+          name: search
+          schema:
+            type: string
+            example:
+          description: search term (Example - nodejs)
       responses:
         '200':
           # status code
@@ -822,10 +1056,10 @@ paths:
 
     post:
       security:
-      - Authorization: []
+        - Authorization: []
       summary: Add a new post
       tags:
-      - Post
+        - Post
       requestBody:
         required: true
         content:
@@ -882,9 +1116,9 @@ paths:
     get:
       summary: Returns a list of timeline posts for auth user
       tags:
-      - Post
+        - Post
       security:
-      - Authorization: []
+        - Authorization: []
       responses:
         '200':
           description: OK
@@ -932,16 +1166,16 @@ paths:
     get:
       summary: Get post based on request id
       tags:
-      - Post
+        - Post
       parameters:
-      - in: path
-        name: postId
-        required: true
-        description: Unique id
-        schema:
-          type: string
-          minimum: 1
-          example: 63baa65d8d3ae49ad7361509
+        - in: path
+          name: postId
+          required: true
+          description: Unique id
+          schema:
+            type: string
+            minimum: 1
+            example: 63baa65d8d3ae49ad7361509
       responses:
         '200':
           description: OK
@@ -985,19 +1219,19 @@ paths:
 
     patch:
       security:
-      - Authorization: []
+        - Authorization: []
       summary: Update post based on request id
       tags:
-      - Post
+        - Post
       parameters:
-      - in: path
-        name: postId
-        required: true
-        description: Unique id
-        schema:
-          type: string
-          minimum: 1
-          example: 63bae1dbc7c5b2f65f3cbd97
+        - in: path
+          name: postId
+          required: true
+          description: Unique id
+          schema:
+            type: string
+            minimum: 1
+            example: 63bae1dbc7c5b2f65f3cbd97
       requestBody:
         required: true
         content:
@@ -1048,19 +1282,19 @@ paths:
 
     delete:
       security:
-      - Authorization: []
+        - Authorization: []
       summary: Delete post based on request id
       tags:
-      - Post
+        - Post
       parameters:
-      - in: path
-        name: postId
-        required: true
-        description: Unique id
-        schema:
-          type: string
-          minimum: 1
-          example: 63bae1dbc7c5b2f65f3cbd97
+        - in: path
+          name: postId
+          required: true
+          description: Unique id
+          schema:
+            type: string
+            minimum: 1
+            example: 63bae1dbc7c5b2f65f3cbd97
       responses:
         '200':
           description: OK
@@ -1103,19 +1337,19 @@ paths:
   /feed/posts/{postId}/like:
     put:
       security:
-      - Authorization: []
+        - Authorization: []
       summary: Like or unlike post based on request id
       tags:
-      - Post
+        - Post
       parameters:
-      - in: path
-        name: postId
-        required: true
-        description: Unique id
-        schema:
-          type: string
-          minimum: 1
-          example: 63bae1dbc7c5b2f65f3cbd97
+        - in: path
+          name: postId
+          required: true
+          description: Unique id
+          schema:
+            type: string
+            minimum: 1
+            example: 63bae1dbc7c5b2f65f3cbd97
       responses:
         '200':
           description: OK
@@ -1162,9 +1396,9 @@ paths:
     get:
       summary: Returns a list of posts for given user
       tags:
-      - Post
+        - Post
       security:
-      - Authorization: []
+        - Authorization: []
       responses:
         '200':
           description: OK
@@ -1210,10 +1444,10 @@ paths:
 
     delete:
       security:
-      - Authorization: []
+        - Authorization: []
       summary: Delete all posts for given user
       tags:
-      - Post
+        - Post
       responses:
         '200':
           description: OK
@@ -1256,10 +1490,10 @@ paths:
   /feed/posts/comment:
     put:
       security:
-      - Authorization: []
+        - Authorization: []
       summary: Add comment to post
       tags:
-      - Post
+        - Post
       requestBody:
         required: true
         content:
@@ -1297,10 +1531,10 @@ paths:
 
     patch:
       security:
-      - Authorization: []
+        - Authorization: []
       summary: Update comment
       tags:
-      - Post
+        - Post
       requestBody:
         required: true
         content:
@@ -1352,10 +1586,10 @@ paths:
 
     delete:
       security:
-      - Authorization: []
+        - Authorization: []
       summary: Delete one comment based on request id
       tags:
-      - Post
+        - Post
       requestBody:
         required: true
         content:
@@ -1408,19 +1642,19 @@ paths:
     get:
       summary: Get all comments in the given post
       tags:
-      - Post
+        - Post
       security:
-      - Authorization: []
+        - Authorization: []
       description:
       parameters:
-      - in: path
-        name: postId
-        required: true
-        description: Unique id
-        schema:
-          type: string
-          minimum: 1
-          example: 6394b75d22f4732bfa7ca6ef
+        - in: path
+          name: postId
+          required: true
+          description: Unique id
+          schema:
+            type: string
+            minimum: 1
+            example: 6394b75d22f4732bfa7ca6ef
       responses:
         '200':
           description: OK
@@ -1453,19 +1687,19 @@ paths:
 
     delete:
       security:
-      - Authorization: []
+        - Authorization: []
       summary: Delete all comments in the given post
       tags:
-      - Post
+        - Post
       parameters:
-      - in: path
-        name: postId
-        required: true
-        description: Unique id
-        schema:
-          type: string
-          minimum: 1
-          example: 63bae1dbc7c5b2f65f3cbd97
+        - in: path
+          name: postId
+          required: true
+          description: Unique id
+          schema:
+            type: string
+            minimum: 1
+            example: 63bae1dbc7c5b2f65f3cbd97
       responses:
         '200':
           description: OK
@@ -1512,19 +1746,19 @@ paths:
     get:
       summary: Get all comments for the current login user in the given post
       tags:
-      - Post
+        - Post
       security:
-      - Authorization: []
+        - Authorization: []
       description:
       parameters:
-      - in: path
-        name: postId
-        required: true
-        description: Unique id
-        schema:
-          type: string
-          minimum: 1
-          example: 6394b75d22f4732bfa7ca6ef
+        - in: path
+          name: postId
+          required: true
+          description: Unique id
+          schema:
+            type: string
+            minimum: 1
+            example: 6394b75d22f4732bfa7ca6ef
       responses:
         '200':
           description: OK
@@ -1557,19 +1791,19 @@ paths:
 
     delete:
       security:
-      - Authorization: []
+        - Authorization: []
       summary: Delete all comments for the current login user or the given user in the given post
       tags:
-      - Post
+        - Post
       parameters:
-      - in: path
-        name: postId
-        required: true
-        description: Unique id
-        schema:
-          type: string
-          minimum: 1
-          example: 63bae1dbc7c5b2f65f3cbd97
+        - in: path
+          name: postId
+          required: true
+          description: Unique id
+          schema:
+            type: string
+            minimum: 1
+            example: 63bae1dbc7c5b2f65f3cbd97
       requestBody:
         required: false
         content:
@@ -1626,27 +1860,27 @@ paths:
     get:
       summary: Get one comment based on request id
       tags:
-      - Post
+        - Post
       security:
-      - Authorization: []
+        - Authorization: []
       description:
       parameters:
-      - in: path
-        name: postId
-        required: true
-        description: Unique id
-        schema:
-          type: string
-          minimum: 1
-          example: 6394b75d22f4732bfa7ca6ef
-      - in: path
-        name: commentId
-        required: true
-        description: Unique id
-        schema:
-          type: string
-          minimum: 1
-          example: 6394b75d22f4732bfa7ca6ef
+        - in: path
+          name: postId
+          required: true
+          description: Unique id
+          schema:
+            type: string
+            minimum: 1
+            example: 6394b75d22f4732bfa7ca6ef
+        - in: path
+          name: commentId
+          required: true
+          description: Unique id
+          schema:
+            type: string
+            minimum: 1
+            example: 6394b75d22f4732bfa7ca6ef
       responses:
         '200':
           description: OK
@@ -1675,133 +1909,15 @@ paths:
                         type: object
                         '$ref': '#/components/schemas/PostCommentResponse'
 
-  # User
-
-  /users/{userId}/follow:
-    put:
-      security:
-      - Authorization: []
-      summary: Flow given user based on request id
-      tags:
-      - User
-      parameters:
-      - in: path
-        name: userId
-        required: true
-        description: Unique id
-        schema:
-          type: string
-          minimum: 1
-          example: 639593f33994948bfb0756d0
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  success:
-                    type: boolean
-                    example: true
-                    description:
-                  error:
-                    type: boolean
-                    example: false
-                  status:
-                    type: integer
-                    example: 200
-                  message:
-                    type: string
-                    example: User has been followed successfully
-                  data:
-                    type: object
-                    properties:
-                      user:
-                        type: object
-                        '$ref': '#/components/schemas/AuthResponse'
-
-        '400':
-          description: Bad request
-          content:
-            application/json:
-              schema:
-                '$ref': '#/components/schemas/BadRequestResponse'
-
-        '500':
-          description: 500 Internal Server Error
-          content:
-            application/json:
-              schema:
-                '$ref': '#/components/schemas/ServerErrorResponse'
-
-  /users/{userId}/un-follow:
-    put:
-      security:
-      - Authorization: []
-      summary: Un flow given user based on request id
-      tags:
-      - User
-      parameters:
-      - in: path
-        name: userId
-        required: true
-        description: Unique id
-        schema:
-          type: string
-          minimum: 1
-          example: 639593f33994948bfb0756d0
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  success:
-                    type: boolean
-                    example: true
-                    description:
-                  error:
-                    type: boolean
-                    example: false
-                  status:
-                    type: integer
-                    example: 200
-                  message:
-                    type: string
-                    example: User has been un followed successfully
-                  data:
-                    type: object
-                    properties:
-                      user:
-                        type: object
-                        '$ref': '#/components/schemas/AuthResponse'
-
-        '400':
-          description: Bad request
-          content:
-            application/json:
-              schema:
-                '$ref': '#/components/schemas/BadRequestResponse'
-
-        '500':
-          description: 500 Internal Server Error
-          content:
-            application/json:
-              schema:
-                '$ref': '#/components/schemas/ServerErrorResponse'
-
   # Admin
 
   /admin/users/add:
     post:
       security:
-      - Authorization: []
+        - Authorization: []
       summary: Admin add new user
       tags:
-      - Admin
+        - Admin
       requestBody:
         required: true
         content:
@@ -1849,49 +1965,49 @@ paths:
   /admin/users:
     get:
       security:
-      - Authorization: []
+        - Authorization: []
       summary: Returns a list of users whose role is (user, admin, manger, moderator)
       tags:
-      - Admin
+        - Admin
       description: admin only api
       parameters:
-      - in: header
-        name: authToken
-        description: Admin authorization access token
-        schema:
-          type: string
-      - in: query
-        name: limit
-        schema:
-          type: integer
-          minimum: 1
-          example: 20
-        description: The numbers of items to return (the default value is 20)
-      - in: query
-        name: page
-        schema:
-          type: integer
-          minimum: 1
-          example: 1
-        description: Pagination page number (the default value is 1)
-      - in: query
-        name: filterBy
-        schema:
-          type: string
-          example:
-        description: Filter type (Example - role)
-      - in: query
-        name: role
-        schema:
-          type: string
-          example:
-        description: Role name (Example - user')
-      - in: query
-        name: search
-        schema:
-          type: string
-          example:
-        description: search term (Example - Saddam)
+        - in: header
+          name: authToken
+          description: Admin authorization access token
+          schema:
+            type: string
+        - in: query
+          name: limit
+          schema:
+            type: integer
+            minimum: 1
+            example: 20
+          description: The numbers of items to return (the default value is 20)
+        - in: query
+          name: page
+          schema:
+            type: integer
+            minimum: 1
+            example: 1
+          description: Pagination page number (the default value is 1)
+        - in: query
+          name: filterBy
+          schema:
+            type: string
+            example:
+          description: Filter type (Example - role)
+        - in: query
+          name: role
+          schema:
+            type: string
+            example:
+          description: Role name (Example - user')
+        - in: query
+          name: search
+          schema:
+            type: string
+            example:
+          description: search term (Example - Saddam)
       responses:
         '200':
           description: OK
@@ -1939,19 +2055,19 @@ paths:
   /admin/users/{userId}:
     get:
       security:
-      - Authorization: []
+        - Authorization: []
       summary: Get user info based on request id
       tags:
-      - Admin
+        - Admin
       parameters:
-      - in: path
-        name: userId
-        required: true
-        description: Unique id
-        schema:
-          type: string
-          minimum: 1
-          example: 6358c2odca30b98e0e68d063
+        - in: path
+          name: userId
+          required: true
+          description: Unique id
+          schema:
+            type: string
+            minimum: 1
+            example: 6358c2odca30b98e0e68d063
       responses:
         '200':
           description: OK
@@ -1994,19 +2110,19 @@ paths:
   /admin/users/update/{userId}:
     put:
       security:
-      - Authorization: []
+        - Authorization: []
       summary: Edit user based on request id
       tags:
-      - Admin
+        - Admin
       parameters:
-      - in: path
-        name: userId
-        required: true
-        description: Unique id
-        schema:
-          type: string
-          minimum: 1
-          example: 639593f33994948bfb0756d0
+        - in: path
+          name: userId
+          required: true
+          description: Unique id
+          schema:
+            type: string
+            minimum: 1
+            example: 639593f33994948bfb0756d0
       requestBody:
         required: true
         content:
@@ -2056,19 +2172,19 @@ paths:
   /admin/users/remove/{userId}:
     delete:
       security:
-      - Authorization: []
+        - Authorization: []
       summary: Delete user based on request id
       tags:
-      - Admin
+        - Admin
       parameters:
-      - in: path
-        name: userId
-        required: true
-        description: Unique id
-        schema:
-          type: string
-          minimum: 1
-          example: 6358c2odca30b98e0e68d063
+        - in: path
+          name: userId
+          required: true
+          description: Unique id
+          schema:
+            type: string
+            minimum: 1
+            example: 6358c2odca30b98e0e68d063
       responses:
         '200':
           description: OK
@@ -2112,43 +2228,43 @@ paths:
     get:
       summary: Returns a list of posts with full info of their creator
       tags:
-      - Admin
+        - Admin
       security:
-      - Authorization: []
+        - Authorization: []
       description:
       parameters:
-      - in: query
-        name: limit
-        schema:
-          type: integer
-          minimum: 1
-          example: 10
-        description: The numbers of items to return (the default value is 10)
-      - in: query
-        name: page
-        schema:
-          type: integer
-          minimum: 1
-          example: 1
-        description: Pagination page number (the default value is 1)
-      - in: query
-        name: filterBy
-        schema:
-          type: string
-          example:
-        description: Filter type (Example - category)
-      - in: query
-        name: category
-        schema:
-          type: string
-          example:
-        description: Category name (Example - coding)
-      - in: query
-        name: search
-        schema:
-          type: string
-          example:
-        description: search term (Example - nodejs)
+        - in: query
+          name: limit
+          schema:
+            type: integer
+            minimum: 1
+            example: 10
+          description: The numbers of items to return (the default value is 10)
+        - in: query
+          name: page
+          schema:
+            type: integer
+            minimum: 1
+            example: 1
+          description: Pagination page number (the default value is 1)
+        - in: query
+          name: filterBy
+          schema:
+            type: string
+            example:
+          description: Filter type (Example - category)
+        - in: query
+          name: category
+          schema:
+            type: string
+            example:
+          description: Category name (Example - coding)
+        - in: query
+          name: search
+          schema:
+            type: string
+            example:
+          description: search term (Example - nodejs)
       responses:
         '200':
           description: OK
@@ -2222,10 +2338,10 @@ paths:
 
     post:
       security:
-      - Authorization: []
+        - Authorization: []
       summary: Admin add a new post
       tags:
-      - Admin
+        - Admin
       requestBody:
         required: true
         content:
@@ -2278,18 +2394,18 @@ paths:
     get:
       summary: Return post based on request id
       tags:
-      - Admin
+        - Admin
       security:
-      - Authorization: []
+        - Authorization: []
       parameters:
-      - in: path
-        name: postId
-        required: true
-        description: Unique id
-        schema:
-          type: string
-          minimum: 1
-          example: 63baa65d8d3ae49ad7361509
+        - in: path
+          name: postId
+          required: true
+          description: Unique id
+          schema:
+            type: string
+            minimum: 1
+            example: 63baa65d8d3ae49ad7361509
       responses:
         '200':
           description: OK
@@ -2333,19 +2449,19 @@ paths:
 
     patch:
       security:
-      - Authorization: []
+        - Authorization: []
       summary: Admin update post based on request id
       tags:
-      - Admin
+        - Admin
       parameters:
-      - in: path
-        name: postId
-        required: true
-        description: Unique id
-        schema:
-          type: string
-          minimum: 1
-          example: 63bb7445b2380d639ceed719
+        - in: path
+          name: postId
+          required: true
+          description: Unique id
+          schema:
+            type: string
+            minimum: 1
+            example: 63bb7445b2380d639ceed719
       requestBody:
         required: true
         content:
@@ -2396,19 +2512,19 @@ paths:
 
     delete:
       security:
-      - Authorization: []
+        - Authorization: []
       summary: Admin delete single post based on request id
       tags:
-      - Admin
+        - Admin
       parameters:
-      - in: path
-        name: postId
-        required: true
-        description: Unique id
-        schema:
-          type: string
-          minimum: 1
-          example: 63bae1dbc7c5b2f65f3cbd97
+        - in: path
+          name: postId
+          required: true
+          description: Unique id
+          schema:
+            type: string
+            minimum: 1
+            example: 63bae1dbc7c5b2f65f3cbd97
       responses:
         '200':
           description: OK
@@ -2451,19 +2567,19 @@ paths:
   /admin/feed/posts/user/{userId}:
     delete:
       security:
-      - Authorization: []
+        - Authorization: []
       summary: Admin delete all posts for given user
       tags:
-      - Admin
+        - Admin
       parameters:
-      - in: path
-        name: userId
-        required: true
-        description: Unique id
-        schema:
-          type: string
-          minimum: 1
-          example: 63bae1dbc7c5b2f65f3cbd97
+        - in: path
+          name: userId
+          required: true
+          description: Unique id
+          schema:
+            type: string
+            minimum: 1
+            example: 63bae1dbc7c5b2f65f3cbd97
       responses:
         '200':
           description: OK
@@ -2507,9 +2623,9 @@ paths:
     delete:
       summary: Admin delete all the posts in db
       security:
-      - Authorization: []
+        - Authorization: []
       tags:
-      - Admin
+        - Admin
       responses:
         '200':
           description: OK
@@ -2553,19 +2669,19 @@ paths:
   /admin/feed/posts/comment/{postId}:
     delete:
       security:
-      - Authorization: []
+        - Authorization: []
       summary: Admin delete all comments in the given post
       tags:
-      - Admin
+        - Admin
       parameters:
-      - in: path
-        name: postId
-        required: true
-        description: Unique id
-        schema:
-          type: string
-          minimum: 1
-          example: 63bae1dbc7c5b2f65f3cbd97
+        - in: path
+          name: postId
+          required: true
+          description: Unique id
+          schema:
+            type: string
+            minimum: 1
+            example: 63bae1dbc7c5b2f65f3cbd97
       responses:
         '200':
           description: OK
@@ -2611,10 +2727,10 @@ paths:
   /admin/feed/posts/comment:
     delete:
       security:
-      - Authorization: []
+        - Authorization: []
       summary: Admin delete one comment based on request id
       tags:
-      - Admin
+        - Admin
       requestBody:
         required: true
         content:
@@ -2668,17 +2784,17 @@ paths:
   /manager/users:
     get:
       security:
-      - Authorization: []
+        - Authorization: []
       summary: Returns a list of users whose role is user
       tags:
-      - Manager
+        - Manager
       description: admin only api
       parameters:
-      - in: header
-        name: authToken
-        description: Authorization access token
-        schema:
-          type: string
+        - in: header
+          name: authToken
+          description: Authorization access token
+          schema:
+            type: string
       responses:
         '200':
           description: OK
@@ -2727,9 +2843,9 @@ paths:
     get:
       summary: Returns a list of orders for customer whose role is user
       security:
-      - Authorization: []
+        - Authorization: []
       tags:
-      - Manager
+        - Manager
       description:
       responses:
         '200':
@@ -2777,43 +2893,43 @@ paths:
     get:
       summary: Returns a list of posts which created by customer whose role is a user
       tags:
-      - Manager
+        - Manager
       security:
-      - Authorization: []
+        - Authorization: []
       description:
       parameters:
-      - in: query
-        name: limit
-        schema:
-          type: integer
-          minimum: 1
-          example: 10
-        description: The numbers of items to return (the default value is 10)
-      - in: query
-        name: page
-        schema:
-          type: integer
-          minimum: 1
-          example: 1
-        description: Pagination page number (the default value is 1)
-      - in: query
-        name: filterBy
-        schema:
-          type: string
-          example:
-        description: Filter type (Example - category)
-      - in: query
-        name: category
-        schema:
-          type: string
-          example:
-        description: Category name (Example - coding)
-      - in: query
-        name: search
-        schema:
-          type: string
-          example:
-        description: search term (Example - nodejs)
+        - in: query
+          name: limit
+          schema:
+            type: integer
+            minimum: 1
+            example: 10
+          description: The numbers of items to return (the default value is 10)
+        - in: query
+          name: page
+          schema:
+            type: integer
+            minimum: 1
+            example: 1
+          description: Pagination page number (the default value is 1)
+        - in: query
+          name: filterBy
+          schema:
+            type: string
+            example:
+          description: Filter type (Example - category)
+        - in: query
+          name: category
+          schema:
+            type: string
+            example:
+          description: Category name (Example - coding)
+        - in: query
+          name: search
+          schema:
+            type: string
+            example:
+          description: search term (Example - nodejs)
       responses:
         '200':
           description: OK
@@ -2890,10 +3006,10 @@ paths:
   /moderator/users:
     get:
       security:
-      - Authorization: []
+        - Authorization: []
       summary: Returns a list of users whose role is user or client
       tags:
-      - Moderator
+        - Moderator
       description: moderator only api
       responses:
         '200':
@@ -2944,17 +3060,17 @@ paths:
   /supervisor:
     get:
       security:
-      - Authorization: []
+        - Authorization: []
       summary: supervisor role api
       tags:
-      - Supervisor api - (todo)
+        - Supervisor api - (todo)
       description: supervisor only api
       parameters:
-      - in: header
-        name: authToken
-        description: Authorization access token
-        schema:
-          type: string
+        - in: header
+          name: authToken
+          description: Authorization access token
+          schema:
+            type: string
       responses:
         '200':
           description: OK
@@ -3000,7 +3116,7 @@ paths:
     get:
       summary: Api for testing pdf document serve (Returns PDF file)
       tags:
-      - PDF - filestream
+        - PDF - filestream
       responses:
         '200':
           description: OK
@@ -3030,7 +3146,7 @@ paths:
       deprecated: true
       summary: This endpoint is been deprecated
       tags:
-      - Deprecated APIs
+        - Deprecated APIs
       responses:
         '410':
           description: Deprecated
@@ -3045,7 +3161,7 @@ paths:
       deprecated: true
       summary: This endpoint is been deprecated
       tags:
-      - Deprecated APIs
+        - Deprecated APIs
       responses:
         '410':
           description: Deprecated
@@ -3060,7 +3176,7 @@ paths:
       deprecated: true
       summary: This endpoint is been deprecated
       tags:
-      - Deprecated APIs
+        - Deprecated APIs
       responses:
         '410':
           description: Deprecated
@@ -3075,7 +3191,7 @@ paths:
       deprecated: true
       summary: This endpoint is been deprecated
       tags:
-      - Deprecated APIs
+        - Deprecated APIs
       responses:
         '410':
           description: Deprecated
@@ -3087,10 +3203,10 @@ paths:
 
     patch:
       security:
-      - Authorization: []
+        - Authorization: []
       summary: This endpoint is been deprecated
       tags:
-      - Deprecated APIs
+        - Deprecated APIs
       deprecated: true
       responses:
         '410':
@@ -3103,10 +3219,10 @@ paths:
 
     delete:
       security:
-      - Authorization: []
+        - Authorization: []
       summary: Delete post based on request id
       tags:
-      - Deprecated APIs
+        - Deprecated APIs
       deprecated: true
       responses:
         '410':
@@ -3122,7 +3238,7 @@ paths:
       deprecated: true
       summary: This endpoint is been deprecated
       tags:
-      - Deprecated APIs
+        - Deprecated APIs
       responses:
         '410':
           description: Deprecated
@@ -3239,15 +3355,15 @@ components:
         email:
           type: string
           description: 'The email address of the user'
-          example: "testverstion@gmail.com"
+          example: 'testverstion@gmail.com'
         password:
           type: string
           description: 'The password for the user'
-          example: "12345test"
+          example: '12345test'
         confirmPassword:
           type: string
           description: 'Confirm the password entered by the user'
-          example: "12345test"
+          example: '12345test'
         bio:
           type: string
           description: 'A short bio of the user'
@@ -3257,7 +3373,7 @@ components:
           items:
             type: string
           description: 'List of skills the user has'
-          example: [ 'JavaScript', 'React', 'Node.js' ]
+          example: ['JavaScript', 'React', 'Node.js']
         # profileUrl:
         #   type: string
         #   format: uri
@@ -3275,25 +3391,25 @@ components:
           type: string
           description: 'The gender of the user'
           enum:
-          - 'male'
-          - 'female'
-          - 'other'
+            - 'male'
+            - 'female'
+            - 'other'
           example: 'male'
         userAward:
           type: string
           description: 'Award the user has received'
           enum:
-          - 'Gold'
-          - 'Silver'
-          - 'Bronze'
+            - 'Gold'
+            - 'Silver'
+            - 'Bronze'
           example: 'Gold'
         plan:
           type: string
           description: 'The user plan selection'
           enum:
-          - 'Free'
-          - 'Premium'
-          - 'Enterprise'
+            - 'Free'
+            - 'Premium'
+            - 'Enterprise'
           example: 'Free'
         dateOfBirth:
           type: string
@@ -3302,12 +3418,12 @@ components:
           example: '1990-01-01'
 
       required:
-      - firstName
-      - lastName
-      - email
-      - password
-      - confirmPassword
-      - acceptTerms
+        - firstName
+        - lastName
+        - email
+        - password
+        - confirmPassword
+        - acceptTerms
 
     AuthResponse:
       type: object
@@ -3346,6 +3462,11 @@ components:
           items:
             type: object
             '$ref': '#/components/schemas/FollowUserScheme'
+        blocked:
+          type: array
+          items:
+            type: object
+            '$ref': '#/components/schemas/FollowUserScheme'
 
     UpdateProfileRequest:
       type: object
@@ -3361,7 +3482,7 @@ components:
         email:
           type: string
           description: 'The email address of the user'
-          example: "testverstion@gmail.com"
+          example: 'testverstion@gmail.com'
         bio:
           type: string
           description: 'A short bio of the user'
@@ -3371,7 +3492,7 @@ components:
           items:
             type: string
           description: 'List of skills the user has'
-          example: [ 'JavaScript', 'React', 'Node.js' ]
+          example: ['JavaScript', 'React', 'Node.js']
         profileUrl:
           type: string
           format: uri
@@ -3385,25 +3506,25 @@ components:
           type: string
           description: 'The gender of the user'
           enum:
-          - 'male'
-          - 'female'
-          - 'other'
+            - 'male'
+            - 'female'
+            - 'other'
           example: 'male'
         userAward:
           type: string
           description: 'Award the user has received'
           enum:
-          - 'Gold'
-          - 'Silver'
-          - 'Bronze'
+            - 'Gold'
+            - 'Silver'
+            - 'Bronze'
           example: 'Gold'
         plan:
           type: string
           description: 'The user plan selection'
           enum:
-          - 'Free'
-          - 'Premium'
-          - 'Enterprise'
+            - 'Free'
+            - 'Premium'
+            - 'Enterprise'
           example: 'Free'
         dateOfBirth:
           type: string
@@ -3421,19 +3542,19 @@ components:
         role:
           type: string
           enum:
-          - 'user'
-          - 'admin'
-          - 'manger'
-          - 'supervisor'
-          - 'moderator'
-          - 'guide'
-          - 'client'
+            - 'user'
+            - 'admin'
+            - 'manger'
+            - 'supervisor'
+            - 'moderator'
+            - 'guide'
+            - 'client'
           default: 'user'
         status:
           type: string
           enum:
-          - 'pending'
-          - 'active'
+            - 'pending'
+            - 'active'
           default: 'active'
         name:
           type: string
@@ -3482,19 +3603,19 @@ components:
         role:
           type: string
           enum:
-          - 'user'
-          - 'admin'
-          - 'manger'
-          - 'supervisor'
-          - 'moderator'
-          - 'guide'
-          - 'client'
+            - 'user'
+            - 'admin'
+            - 'manger'
+            - 'supervisor'
+            - 'moderator'
+            - 'guide'
+            - 'client'
           default: 'user'
         status:
           type: string
           enum:
-          - 'pending'
-          - 'active'
+            - 'pending'
+            - 'active'
           default: 'active'
         name:
           type: string
@@ -3697,15 +3818,15 @@ components:
         category:
           type: string
           enum:
-          - 'coding'
-          - 'sports'
-          - 'reactjs'
-          - 'nextjs'
-          - 'nodejs'
-          - 'typescript'
-          - 'devapp'
-          - 'blockchain'
-          - 'social'
+            - 'coding'
+            - 'sports'
+            - 'reactjs'
+            - 'nextjs'
+            - 'nodejs'
+            - 'typescript'
+            - 'devapp'
+            - 'blockchain'
+            - 'social'
           default: 'social'
         title:
           type: string
@@ -3870,4 +3991,4 @@ components:
       bearerFormat: 'JWT'
       value: 'Bearer <JWT token here>'
   security:
-  - cookieAuth: []
+    - cookieAuth: []
