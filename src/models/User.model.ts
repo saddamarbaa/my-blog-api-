@@ -260,6 +260,36 @@ UserSchema.methods.createJWT = function () {
   });
 };
 
+// Get fullname
+UserSchema.virtual('fullname').get(function () {
+  return `${this.firstName} ${this.lastName}`;
+});
+
+// get posts count
+UserSchema.virtual('postCounts').get(function () {
+  return this.posts.length;
+});
+
+// get followers count
+UserSchema.virtual('followersCount').get(function () {
+  return this.followers.length;
+});
+
+// get followers count
+UserSchema.virtual('followingCount').get(function () {
+  return this.following.length;
+});
+
+// get viewers count
+UserSchema.virtual('viewersCount').get(function () {
+  return this.viewers.length;
+});
+
+// get blocked count
+UserSchema.virtual('blockedCount').get(function () {
+  return this.blocked.length;
+});
+
 export default mongoose.model<IUserDocument>('User', UserSchema);
 
 // export default models.User || mongoose.model<IUserDocument>('User', UserSchema);
