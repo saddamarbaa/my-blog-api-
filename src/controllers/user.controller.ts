@@ -3,6 +3,7 @@ import { Response, NextFunction } from 'express';
 import {
   blockUserService,
   followUserService,
+  getUserService,
   getUsersService,
   unBlockUserService,
   unFollowUserService
@@ -23,3 +24,6 @@ export const unBlockUserController = (req: AuthenticatedRequestBody<IUser>, res:
 
 export const getUsersController = (req: AuthenticatedRequestBody<IUser>, res: Response, next: NextFunction) =>
   getUsersService(req, res, next);
+
+export const getUserController = (req: AuthenticatedRequestBody<IUser>, res: Response, next: NextFunction) =>
+  getUserService(req, res, next);
