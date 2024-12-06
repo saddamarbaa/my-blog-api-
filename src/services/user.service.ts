@@ -139,8 +139,9 @@ export const blockUserService = async (req: AuthenticatedRequestBody<IUser>, res
     }
 
     // Check if the user is already blocked
-    const isAlreadyBlocked = currentUser.blocked.some((blockedUser) => {
-      return blockedUser.toString() === toBeBlockedUser._id.toString();
+    const isAlreadyBlocked = currentUser.blocked.some(function (user) {
+      if (user._id.toString() === toBeBlockedUser._id.toString()) return true;
+      return false;
     });
 
     if (isAlreadyBlocked) {

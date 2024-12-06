@@ -34,9 +34,16 @@ afterAll(async () => {
 
 // Clear mocks and data before each test
 beforeEach(async () => {
+  // console.time('Clearing Tokens');
   await Token.deleteMany({});
+  // console.timeEnd('Clearing Tokens');
+
+  // console.time('Clearing Users');
   await User.deleteMany({});
+  // console.timeEnd('Clearing Users');
   jest.clearAllMocks();
+
+  jest.setTimeout(15 * 1000);
 });
 
 // Clean up after each test
@@ -46,235 +53,6 @@ afterEach(async () => {
 });
 
 describe('User', () => {
-  describe('PUT /api/v1/user/:userId/block', () => {
-    describe('given the user is not logged in', () => {
-      it('should return a 401 status with a JSON message - Auth Failed', async () => {
-        await request(app)
-          .put('/api/v1/user/63d7d3ce0ba02465093d3d36/block')
-          .expect(401)
-          .then((response) =>
-            expect(response.body).toMatchObject({
-              data: null,
-              success: false,
-              error: true,
-              message: expect.any(String),
-              status: 401,
-              stack: expect.any(String)
-            })
-          );
-      });
-    });
-
-    describe('given invalid user id', () => {
-      it('should return a 422 status with validation message', async () => {
-        const newUser = new User({
-          ...userPayload,
-          email: adminEmails?.[0] || userPayload.email,
-          role: AUTHORIZATION_ROLES.ADMIN
-        });
-        await newUser.save();
-
-        const authResponse = await request(app)
-          .post('/api/v1/auth/login')
-          .send({
-            email: adminEmails?.[0] || userPayload.email,
-            password: userPayload.password
-          });
-
-        const token = authResponse?.body?.data?.accessToken || '';
-
-        if (token) {
-          await request(app)
-            .put('/api/v1/user/invalidId/block')
-            .set('Authorization', `Bearer ${token}`)
-            .then((response) => {
-              expect(response.body).toMatchObject({
-                data: null,
-                error: true,
-                status: 422,
-                message: expect.any(String),
-                stack: expect.any(String)
-              });
-              expect(response.body.message).toMatch(/fails to match the valid mongo id pattern/);
-            });
-        }
-      });
-    });
-
-    describe('given the user does not exist', () => {
-      it('should return a 400 status with a JSON message - Bad request', async () => {
-        const newUser = new User({
-          ...userPayload,
-          email: adminEmails?.[0] || userPayload.email,
-          role: AUTHORIZATION_ROLES.ADMIN
-        });
-        await newUser.save();
-
-        const authResponse = await request(app)
-          .post('/api/v1/auth/login')
-          .send({
-            email: adminEmails?.[0] || userPayload.email,
-            password: userPayload.password
-          });
-
-        const token = authResponse?.body?.data?.accessToken || '';
-
-        if (token) {
-          await request(app)
-            .put(`/api/v1/user/${validMongooseObjectId}/block`)
-            .set('Authorization', `Bearer ${token}`)
-            .then((response) => {
-              expect(response.body).toMatchObject({
-                data: null,
-                success: false,
-                error: true,
-                message: expect.any(String),
-                status: 400,
-                stack: expect.any(String)
-              });
-            });
-        }
-      });
-    });
-
-    describe('given the user is trying to block themselves', () => {
-      it('should return a 403 status with a JSON message - You can’t block yourself', async () => {
-        const newUser = new User({
-          ...userPayload,
-          email: adminEmails?.[0] || userPayload.email,
-          role: AUTHORIZATION_ROLES.ADMIN
-        });
-        await newUser.save();
-
-        const authResponse = await request(app)
-          .post('/api/v1/auth/login')
-          .send({
-            email: adminEmails?.[0] || userPayload.email,
-            password: userPayload.password
-          });
-
-        const token = authResponse?.body?.data?.accessToken || '';
-        const userId = authResponse?.body?.data?.user?._id || '';
-
-        if (userId && token) {
-          await request(app)
-            .put(`/api/v1/user/${userId}/block`)
-            .set('Authorization', `Bearer ${token}`)
-            .expect('Content-Type', /json/)
-            .then((response) => {
-              expect(response.body).toMatchObject({
-                data: null,
-                error: true,
-                status: 403,
-                message: expect.any(String),
-                stack: expect.any(String)
-              });
-              expect(response.body.message).toMatch('cannot block yourself');
-            });
-        }
-      });
-    });
-
-    describe('given the user is already blocked', () => {
-      it('should return a 403 status with a JSON message - User already blocked', async () => {
-        // Create the user doing the blocking
-        const currentUser = new User({
-          ...userPayload,
-          email: (adminEmails && adminEmails[0]) || userPayload.email,
-          role: AUTHORIZATION_ROLES.ADMIN
-        });
-
-        await currentUser.save();
-
-        const toBeBlockUser = new User({
-          ...userPayload,
-          blocked: [currentUser._id]
-        });
-
-        await toBeBlockUser.save();
-
-        const authResponse = await request(app)
-          .post('/api/v1/auth/login')
-          .send({
-            email: (adminEmails && adminEmails[0]) || userPayload.email,
-            password: userPayload.password
-          });
-
-        const token = authResponse?.body?.data?.accessToken || '';
-
-        // Ensure token is retrieved correctly
-        console.log('Auth Response:', authResponse.body);
-
-        // Ensure the user is blocked already
-        if (toBeBlockUser._id && token) {
-          await request(app)
-            .put(`/api/v1/user/${toBeBlockUser._id}/block`)
-            .set('Authorization', `Bearer ${token}`)
-            .expect('Content-Type', /json/)
-            .then((response) => {
-              console.log('Response:', response.body); // Log response to inspect
-
-              // Check if the response body matches the expected error
-              expect(response.body).toMatchObject({
-                data: null,
-                error: true,
-                status: 403,
-                message: expect.any(String),
-                stack: expect.any(String)
-              });
-              expect(response.body.message).toMatch('You already blocked this user');
-            })
-            .catch((error) => {
-              console.log('Error:', error); // Log any errors for debugging
-            });
-        }
-      });
-    });
-
-    describe('given the user is logged in and authorized and the userId to block exists in the DB', () => {
-      it('should return a 200 status with the blocked user', async () => {
-        const currentUser = new User({
-          ...userPayload,
-          email: adminEmails?.[0] || userPayload.email,
-          role: AUTHORIZATION_ROLES.ADMIN
-        });
-
-        await currentUser.save();
-
-        const toBeBlockedUser = new User({
-          ...userPayload
-        });
-
-        await toBeBlockedUser.save();
-
-        const authResponse = await request(app)
-          .post('/api/v1/auth/login')
-          .send({
-            email: adminEmails?.[0] || userPayload.email,
-            password: userPayload.password
-          });
-
-        const token = authResponse?.body?.data?.accessToken || '';
-
-        if (toBeBlockedUser._id && token) {
-          await request(app)
-            .put(`/api/v1/user/${toBeBlockedUser._id}/block`)
-            .set('Authorization', `Bearer ${token}`)
-            .expect('Content-Type', /json/)
-            .then((response) => {
-              expect(response.body).toMatchObject({
-                success: true,
-                error: false,
-                message: expect.any(String),
-                status: 200
-              });
-              expect(response.body.message).toMatch('User has been blocked successfully');
-            });
-        }
-      });
-    });
-  });
-
   /**
    * Testing follow user endpoint
    */
@@ -740,6 +518,215 @@ describe('User', () => {
             })
             .catch((error) => {
               console.log(error);
+            });
+        }
+      });
+    });
+  });
+
+  /**
+   * Testing block user endpoint
+   */
+  describe('PUT /api/v1/user/:userId/block', () => {
+    describe('given the user is not logged in', () => {
+      it('should return a 401 status with a JSON message - Auth Failed', async () => {
+        await request(app)
+          .put('/api/v1/user/63d7d3ce0ba02465093d3d36/block')
+          .expect(401)
+          .then((response) =>
+            expect(response.body).toMatchObject({
+              data: null,
+              success: false,
+              error: true,
+              message: expect.any(String),
+              status: 401,
+              stack: expect.any(String)
+            })
+          );
+      });
+    });
+
+    describe('given invalid user id', () => {
+      it('should return a 422 status with validation message', async () => {
+        const newUser = new User({
+          ...userPayload,
+          email: adminEmails?.[0] || userPayload.email,
+          role: AUTHORIZATION_ROLES.ADMIN
+        });
+        await newUser.save();
+
+        const authResponse = await request(app)
+          .post('/api/v1/auth/login')
+          .send({
+            email: adminEmails?.[0] || userPayload.email,
+            password: userPayload.password
+          });
+
+        const token = authResponse?.body?.data?.accessToken || '';
+
+        if (token) {
+          await request(app)
+            .put('/api/v1/user/invalidId/block')
+            .set('Authorization', `Bearer ${token}`)
+            .then((response) => {
+              expect(response.body).toMatchObject({
+                data: null,
+                error: true,
+                status: 422,
+                message: expect.any(String),
+                stack: expect.any(String)
+              });
+              expect(response.body.message).toMatch(/fails to match the valid mongo id pattern/);
+            });
+        }
+      });
+    });
+
+    describe('given the user does not exist', () => {
+      it('should return a 400 status with a JSON message - Bad request', async () => {
+        const newUser = new User({
+          ...userPayload,
+          email: adminEmails?.[0] || userPayload.email,
+          role: AUTHORIZATION_ROLES.ADMIN
+        });
+        await newUser.save();
+
+        const authResponse = await request(app)
+          .post('/api/v1/auth/login')
+          .send({
+            email: adminEmails?.[0] || userPayload.email,
+            password: userPayload.password
+          });
+
+        const token = authResponse?.body?.data?.accessToken || '';
+
+        if (token) {
+          await request(app)
+            .put(`/api/v1/user/${validMongooseObjectId}/block`)
+            .set('Authorization', `Bearer ${token}`)
+            .then((response) => {
+              expect(response.body).toMatchObject({
+                data: null,
+                success: false,
+                error: true,
+                message: expect.any(String),
+                status: 400,
+                stack: expect.any(String)
+              });
+            });
+        }
+      });
+    });
+
+    describe('given the user is trying to block themselves', () => {
+      it('should return a 403 status with a JSON message - You can’t block yourself', async () => {
+        const newUser = new User({
+          ...userPayload,
+          email: adminEmails?.[0] || userPayload.email,
+          role: AUTHORIZATION_ROLES.ADMIN
+        });
+        await newUser.save();
+
+        const authResponse = await request(app)
+          .post('/api/v1/auth/login')
+          .send({
+            email: adminEmails?.[0] || userPayload.email,
+            password: userPayload.password
+          });
+
+        const token = authResponse?.body?.data?.accessToken || '';
+        const userId = authResponse?.body?.data?.user?._id || '';
+
+        if (userId && token) {
+          await request(app)
+            .put(`/api/v1/user/${userId}/block`)
+            .set('Authorization', `Bearer ${token}`)
+            .expect('Content-Type', /json/)
+            .then((response) => {
+              expect(response.body).toMatchObject({
+                data: null,
+                error: true,
+                status: 403,
+                message: expect.any(String),
+                stack: expect.any(String)
+              });
+              expect(response.body.message).toMatch('cannot block yourself');
+            });
+        }
+      });
+    });
+
+    describe('given the user is already blocked', () => {
+      it('should return 403 when trying to block an already blocked user', async () => {
+        const toBeBlockedUser = new User({
+          ...userPayload,
+          email: 'admin@example.com',
+          role: AUTHORIZATION_ROLES.ADMIN
+        });
+        await toBeBlockedUser.save();
+
+        const currentUser = new User({
+          ...userPayload,
+          blocked: [toBeBlockedUser._id]
+        });
+        await currentUser.save();
+
+        const authResponse = await request(app).post('/api/v1/auth/login').send({
+          email: currentUser.email,
+          password: userPayload.password
+        });
+
+        const token = authResponse?.body?.data?.accessToken || '';
+
+        const response = await request(app)
+          .put(`/api/v1/user/${toBeBlockedUser._id.toString()}/block`)
+          .set('Authorization', `Bearer ${token}`)
+          .expect('Content-Type', /json/);
+
+        // Expect a 403 status and message
+        expect(response.status).toBe(403);
+        expect(response.body.message).toBe('You already blocked this user');
+      });
+    });
+
+    describe('given the user is logged in and authorized and the userId to block exists in the DB', () => {
+      it('should return a 200 status with the blocked user', async () => {
+        const currentUser = new User({
+          ...userPayload,
+          email: adminEmails?.[0] || userPayload.email,
+          role: AUTHORIZATION_ROLES.ADMIN
+        });
+
+        await currentUser.save();
+
+        const toBeBlockedUser = new User({
+          ...userPayload
+        });
+
+        await toBeBlockedUser.save();
+
+        const authResponse = await request(app)
+          .post('/api/v1/auth/login')
+          .send({
+            email: adminEmails?.[0] || userPayload.email,
+            password: userPayload.password
+          });
+
+        const token = authResponse?.body?.data?.accessToken || '';
+
+        if (toBeBlockedUser._id && token) {
+          await request(app)
+            .put(`/api/v1/user/${toBeBlockedUser._id}/block`)
+            .set('Authorization', `Bearer ${token}`)
+            .expect('Content-Type', /json/)
+            .then((response) => {
+              expect(response.body).toMatchObject({
+                success: true,
+                error: false,
+                message: expect.any(String),
+                status: 200
+              });
+              expect(response.body.message).toMatch('User has been blocked successfully');
             });
         }
       });
