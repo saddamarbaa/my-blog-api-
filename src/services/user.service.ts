@@ -32,7 +32,9 @@ export const getUserService = async (req: AuthenticatedRequestBody<IUser>, res: 
   try {
     const { userId } = req.params;
 
-    const user = await User.findById(userId)
+    const user = await User.findOne({
+      id: userId
+    })
       .select('-password -confirmPassword -status -isDeleted -acceptTerms -isVerified')
       .populate('followers', 'firstName lastName profileUrl bio')
       .populate('following', 'firstName lastName profileUrl bio')
@@ -109,6 +111,7 @@ export const followUserService = async (req: AuthenticatedRequestBody<IUser>, re
 
     return next(createHttpError(403, `You already followed this user`));
   } catch (error) {
+    console.log(error);
     return next(InternalServerError);
   }
 };

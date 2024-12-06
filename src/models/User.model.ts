@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-use-before-define */
 import bcrypt from 'bcrypt';
 import mongoose, { Schema } from 'mongoose';
 import jwt from 'jsonwebtoken';
@@ -10,6 +11,7 @@ import {
   USER_PLAN_OPTIONS
 } from '@src/constants';
 import { IUser } from '@src/interfaces';
+import Post from './Post.model';
 
 export interface IUserDocument extends IUser {
   // document level operations
@@ -215,7 +217,8 @@ const UserSchema = new mongoose.Schema<IUserDocument>(
     }
   },
   {
-    timestamps: true
+    timestamps: true,
+    toJSON: { virtuals: true } // to get virtuals in json response from server to client
   }
 );
 
@@ -260,6 +263,70 @@ UserSchema.methods.createJWT = function () {
   });
 };
 
+// Pre Hook: Populate posts and check inactivity
+UserSchema.pre('findOne', async function (next) {
+  // Populate the posts field when a user is retrieved
+  this.populate({
+    path: 'posts'
+  });
+
+  // Retrieve the user ID from the query using `this.getQuery()`
+  const userId = this.getQuery()._id;
+
+  // Fetch all posts created by the user
+  const posts = await Post.find({ user: userId });
+
+  // Get the last post created by the user
+  const lastPost = posts[posts.length - 1];
+
+  const lastPostDate = lastPost ? new Date(lastPost.createdAt) : null;
+  const lastPostDateStr = lastPostDate ? lastPostDate.toDateString() : 'No posts yet';
+
+  UserSchema.virtual('lastPostDate').get(function () {
+    return lastPostDateStr;
+  });
+
+  if (lastPostDate) {
+    const currentDate = new Date();
+
+    const diffInMilliseconds: number = currentDate.getTime() - lastPostDate.getTime();
+    const diffInDays: number = diffInMilliseconds / (1000 * 3600 * 24);
+
+    UserSchema.virtual('isInactive').get(function () {
+      return diffInDays > 30;
+    });
+
+    if (diffInDays > 30) {
+      await User.findByIdAndUpdate(userId, { isBlocked: true }, { new: true });
+    } else {
+      await User.findByIdAndUpdate(userId, { isBlocked: false }, { new: true });
+    }
+
+    const daysAgo = Math.floor(diffInDays);
+    UserSchema.virtual('lastActive').get(function () {
+      if (daysAgo <= 0) return 'Today';
+      if (daysAgo === 1) return 'Yesterday';
+      return `${daysAgo} days ago`;
+    });
+  } else {
+    UserSchema.virtual('isInactive').get(function () {
+      return true;
+    });
+  }
+
+  const numberOfPosts = posts.length;
+
+  if (numberOfPosts <= 0) {
+    await User.findByIdAndUpdate(userId, { userAward: 'Bronze' }, { new: true });
+  } else if (numberOfPosts > 10 && numberOfPosts <= 20) {
+    await User.findByIdAndUpdate(userId, { userAward: 'Silver' }, { new: true });
+  } else if (numberOfPosts > 20) {
+    await User.findByIdAndUpdate(userId, { userAward: 'Gold' }, { new: true });
+  }
+
+  next();
+});
+
 // Get fullname
 UserSchema.virtual('fullname').get(function () {
   return `${this.firstName} ${this.lastName}`;
@@ -267,29 +334,32 @@ UserSchema.virtual('fullname').get(function () {
 
 // get posts count
 UserSchema.virtual('postCounts').get(function () {
-  return this.posts.length;
+  return this.posts?.length;
 });
 
 // get followers count
 UserSchema.virtual('followersCount').get(function () {
-  return this.followers.length;
+  return this.followers?.length;
 });
 
 // get followers count
 UserSchema.virtual('followingCount').get(function () {
-  return this.following.length;
+  return this.following?.length;
 });
 
 // get viewers count
 UserSchema.virtual('viewersCount').get(function () {
-  return this.viewers.length;
+  return this.viewers?.length;
 });
 
 // get blocked count
 UserSchema.virtual('blockedCount').get(function () {
-  return this.blocked.length;
+  return this.blocked?.length;
 });
 
-export default mongoose.model<IUserDocument>('User', UserSchema);
+// Compile the user model
+const User = mongoose.model<IUserDocument>('User', UserSchema);
+
+export default User;
 
 // export default models.User || mongoose.model<IUserDocument>('User', UserSchema);
