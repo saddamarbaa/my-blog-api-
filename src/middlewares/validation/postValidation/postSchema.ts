@@ -7,21 +7,8 @@ const vaildObjectId = JoiObjectId(Joi);
 
 export const postSchema = {
   addPost: Joi.object({
-    // Ensure that either filename or photoUrl is provided (not both empty)
-    filename: Joi.string().when('photoUrl', {
-      is: Joi.string().empty(),
-      then: Joi.required().label('Invalid request (Please upload Image)'),
-      otherwise: Joi.optional()
-    }),
-    // photoUrl: Joi.string()
-    //   .uri()
-    //   .when('filename', {
-    //     is: Joi.string().empty(),
-    //     then: Joi.required().messages({
-    //       'string.uri': 'Please provide a valid URL for the post image'
-    //     }),
-    //     otherwise: Joi.optional()
-    //   }),
+    filename: Joi.string().optional().label('Invalid request (Please upload an image)'),
+    photoUrl: Joi.string().optional().uri().label('Invalid request (Please provide a valid image URL)'),
     title: Joi.string().min(3).max(100).required(),
     description: Joi.string().min(5).max(5000).required(),
     category: Joi.string().valid(

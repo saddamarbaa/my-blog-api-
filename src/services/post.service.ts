@@ -10,7 +10,12 @@ import { cloudinary } from '@src/middlewares';
 import { AUTHORIZATION_ROLES } from '@src/constants';
 
 export const createPostService = async (req: AuthenticatedRequestBody<IPost>, res: Response, next: NextFunction) => {
-  const { title, description, category } = req.body;
+  const { title, description, category, photoUrl } = req.body;
+
+  // Check if either an image file or photoUrl is provided
+  if (!req.file && !photoUrl) {
+    return next(createHttpError(422, `Either an image file must be uploaded or a photo URL must be provided`));
+  }
 
   // console.log(req.body, req.file);
 
@@ -26,11 +31,14 @@ export const createPostService = async (req: AuthenticatedRequestBody<IPost>, re
       deleteFile(localFilePath);
     }
 
+    // If no image file, use the provided photo URL
+    const photo = cloudinaryResult?.secure_url || photoUrl;
+
     const postData = new Post({
       title,
       description,
       category: category?.toLocaleLowerCase(),
-      photoUrl: cloudinaryResult?.secure_url,
+      photoUrl: photo,
       cloudinary_id: cloudinaryResult?.public_id,
       author: req?.user?._id || ''
     });

@@ -3944,10 +3944,21 @@ components:
         description:
           type: string
           example: Clean Architecture TypeScript Express API Book
+        photoUrl:
+          type: string
+          format: url
+          description: 'Post image URL (if no image file is uploaded)'
         postImage:
           type: string
           format: base64
-          description: Image type /png/jpg/jpeg/webp
+          description: Upload post image (if no URL is provided) Image type /png/jpg/jpeg/webp
+        required:
+          - title
+          - description
+      oneOf:
+        - required: [photoUrl]
+        - required: [postImage]
+    description: 'Either a photoUrl (URL) or imageFile (file) must be provided.'
 
     PostResponse:
       type: object
