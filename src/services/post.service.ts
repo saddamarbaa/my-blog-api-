@@ -4,7 +4,7 @@ import createHttpError, { InternalServerError } from 'http-errors';
 import User from '@src/models/User.model';
 import Post from '@src/models/Post.model';
 import { customResponse, deleteFile } from '@src/utils';
-import { AuthenticatedRequestBody, IPost, IUser } from '@src/interfaces';
+import { AuthenticatedRequestBody, IPost, IUser, TPaginationResponse } from '@src/interfaces';
 import { cloudinary } from '@src/middlewares';
 import { AUTHORIZATION_ROLES } from '@src/constants';
 
@@ -69,6 +69,47 @@ export const createPostService = async (req: AuthenticatedRequestBody<IPost>, re
       deleteFile(localFilePath);
     }
     return next(InternalServerError);
+  }
+};
+
+export const getPostsService = async (_req: Request, res: TPaginationResponse) => {
+  if (res?.paginatedResults) {
+    const { results, next, previous, currentPage, totalDocs, totalPages, lastPage } = res.paginatedResults;
+    const responseObject: any = {
+      totalDocs: totalDocs || 0,
+      totalPages: totalPages || 0,
+      lastPage: lastPage || 0,
+      count: results?.length || 0,
+      currentPage: currentPage || 0
+    };
+
+    if (next) {
+      responseObject.nextPage = next;
+    }
+    if (previous) {
+      responseObject.prevPage = previous;
+    }
+
+    responseObject.posts = (results as Array<{ _doc: IPost }>).map((postDoc) => {
+      return {
+        ...postDoc._doc,
+        request: {
+          type: 'Get',
+          description: 'Get one post with the id',
+          url: `${process.env.API_URL}/api/${process.env.API_VERSION}/posts/${postDoc._doc._id}`
+        }
+      };
+    });
+
+    return res.status(200).send(
+      customResponse<typeof responseObject>({
+        success: true,
+        error: false,
+        message: responseObject.posts.length ? 'Successful Found posts' : 'No post found',
+        status: 200,
+        data: responseObject
+      })
+    );
   }
 };
 
