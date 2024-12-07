@@ -1,6 +1,7 @@
 import { NextFunction, Request, Response } from 'express';
 import createHttpError, { InternalServerError } from 'http-errors';
 
+import { ObjectId } from 'mongoose';
 import User from '@src/models/User.model';
 import Post from '@src/models/Post.model';
 import { customResponse, deleteFile } from '@src/utils';
@@ -153,6 +154,65 @@ export const getPostService = async (req: AuthenticatedRequestBody<IUser>, res: 
     );
   } catch (error) {
     return next(InternalServerError);
+  }
+};
+
+export const getTimelinePostsService = async (
+  req: AuthenticatedRequestBody<IUser>,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    // Get the user and his/her followers and friends
+    const userId = req.user?._id;
+    const user = await User.findById(userId).populate('friends following').exec();
+    const friendsIds = user?.friends.map((friend) => friend._id) as unknown as ObjectId[];
+    const followingIds = user?.following.map((following) => following._id) as unknown as ObjectId[];
+
+    const userIds = [...friendsIds, ...followingIds, userId];
+
+    // Get the posts by all the users
+    const posts = await Post.find({ author: { $in: userIds } })
+      .select('-cloudinary_id')
+      .sort({ createdAt: -1 })
+      .populate('author', 'firstName  lastName  profileUrl bio')
+      .populate('likes.user', 'firstName  lastName  profileUrl bio')
+      .populate('disLikes', 'firstName  lastName  profileUrl bio')
+      .populate('comments.user', 'firstName  lastName  profileUrl bio')
+      .populate('views', 'firstName  lastName  profileUrl bio')
+      .populate('shares', 'firstName  lastName  profileUrl bio')
+      .exec();
+
+    const postsWithRequests = (posts as Array<{ _doc: IPost }>).map((postDoc) => {
+      return {
+        ...postDoc._doc,
+        request: {
+          type: 'Get',
+          description: 'Get one post with the id',
+          url: `${process.env.API_URL}/api/${process.env.API_VERSION}/posts/${postDoc._doc._id}`
+        }
+      };
+    });
+
+    if (!posts) {
+      return next(new createHttpError.BadRequest());
+    }
+
+    const data = {
+      posts: postsWithRequests
+    };
+
+    return res.status(200).send(
+      customResponse<typeof data>({
+        success: true,
+        error: false,
+        message: posts.length ? 'Successful Found posts' : 'No post found',
+        status: 200,
+        data
+      })
+    );
+  } catch (error) {
+    return next(error);
   }
 };
 

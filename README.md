@@ -609,7 +609,7 @@ PUT /api/v1/users/admin-unblock/:id
 | `title`          | `string` | Post title         | yes      |
 | `description`    | `string` | Post description   | yes      |
 | `category`       | `string` | ID of the category | yes      |
-| `photo`          | `string` | Image of the post  | yes      |
+| `photoUrl`       | `string` | Image of the post  | yes      |
 
 Example request body:
 
@@ -618,7 +618,7 @@ Example request body:
   "title":"value",
   "description":"value",
   "category":"value",
-  "photo":"photo",
+  "photoUrl":"photo",
 }
 ```
 
@@ -632,10 +632,57 @@ Example request body:
 | :--------------- | :------- | :---------- | :------- |
 | `authentication` | `string` | Your token  | no       |
 
+## **Get timeline posts for auth user**
+
+```http
+  GET /api/v1/posts/timeline
+```
+
+| Parameter        | Type     | Description | Required |
+| :--------------- | :------- | :---------- | :------- |
+| `authentication` | `string` | Your token  | yes      |
+
 ## **Get Single Post**
 
 ```http
   GET /api/v1/posts/:id
+```
+
+| Parameter        | Type     | Description    | Required |
+| :--------------- | :------- | :------------- | :------- |
+| `authentication` | `string` | Your token     | no       |
+| `id`             | `string` | ID of the post | yes      |
+
+## **Update Post**
+
+```http
+  PATCH /api/v1/posts/:id
+```
+
+| Parameter        | Type     | Description             | Required |
+| :--------------- | :------- | :---------------------- | :------- |
+| `authentication` | `string` | Your token              | yes      |
+| `id`             | `string` | ID of the post          | no       |
+| `title`          | `string` | title of the post       | no       |
+| `description`    | `string` | description of the post | no       |
+| `category`       | `string` | category of the post    | no       |
+| `photoUrl`       | `string` | photo of the post       | no       |
+
+Example request body:
+
+```javascript
+{
+  "title":"value",
+  "description":"value",
+  "category":"value",
+  "photoUrl":"photo",
+}
+```
+
+## **Delete Post**
+
+```http
+  DELETE /api/v1/posts/:id
 ```
 
 | Parameter        | Type     | Description    | Required |
@@ -655,43 +702,6 @@ Example request body:
 | `id`             | `string` | ID of the post | yes      |
 
 ## **Toggle Post dislike**
-
-```http
-  GET /api/v1/posts/dislikes/:id
-```
-
-| Parameter        | Type     | Description    | Required |
-| :--------------- | :------- | :------------- | :------- |
-| `authentication` | `string` | Your token     | yes      |
-| `id`             | `string` | ID of the post | yes      |
-
-## **Update Post**
-
-```http
-  PUT /api/v1/posts/:id
-```
-
-| Parameter        | Type     | Description             | Required |
-| :--------------- | :------- | :---------------------- | :------- |
-| `authentication` | `string` | Your token              | yes      |
-| `id`             | `string` | ID of the post          | yes      |
-| `title`          | `string` | title of the post       | yes      |
-| `description`    | `string` | description of the post | yes      |
-| `category`       | `string` | category of the post    | yes      |
-| `photo`          | `string` | photo of the post       | yes      |
-
-Example request body:
-
-```javascript
-{
-  "title":"value",
-  "description":"value",
-  "category":"value",
-  "photo":"photo",
-}
-```
-
-## **Delete Post**
 
 ```http
   GET /api/v1/posts/dislikes/:id
