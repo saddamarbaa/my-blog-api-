@@ -4,6 +4,7 @@ import { addPostValidation, isLogin, postIdValidation, postPaginationMiddleware,
 import {
   createPostController,
   deletePostController,
+  deleteUserPostsController,
   getPostController,
   getPostsController,
   getTimelinePostsController,
@@ -15,7 +16,7 @@ const router = express.Router();
 router.get('/', postPaginationMiddleware(), getPostsController);
 router.get('/user-posts', isLogin, getUserPostsController);
 router.get('/timeline', isLogin, getTimelinePostsController);
-// router.delete('/posts/user-posts', isAuth, deleteUserPostsController);
+router.delete('/user-posts', isLogin, deleteUserPostsController);
 // router.put('/posts/comment', isAuth, addCommentValidation, addCommentInPostController);
 // router.patch('/posts/comment', isAuth, updateCommentValidation, updateCommentInPostController);
 // router.delete('/posts/comment', isAuth, deleteCommentValidation, deleteCommentInPostController);

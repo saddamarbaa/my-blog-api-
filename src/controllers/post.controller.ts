@@ -4,6 +4,7 @@ import { AuthenticatedRequestBody, IPost, IUser, TPaginationResponse } from '@sr
 import {
   createPostService,
   deletePostService,
+  deleteUserPostsService,
   getPostService,
   getPostsService,
   getTimelinePostsService,
@@ -26,3 +27,6 @@ export const deletePostController = (req: AuthenticatedRequestBody<IUser>, res: 
 
 export const getUserPostsController = (req: AuthenticatedRequestBody<IUser>, res: Response, next: NextFunction) =>
   getUserPostsService(req, res, next);
+
+export const deleteUserPostsController = (req: AuthenticatedRequestBody<IUser>, res: Response, next: NextFunction) =>
+  deleteUserPostsService(req, res, next);

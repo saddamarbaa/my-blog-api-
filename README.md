@@ -690,6 +690,26 @@ Example request body:
 | `authentication` | `string` | Your token     | yes      |
 | `id`             | `string` | ID of the post | yes      |
 
+## **Get auth user posts**
+
+```http
+  GET /api/v1/posts/user-posts
+```
+
+| Parameter        | Type     | Description | Required |
+| :--------------- | :------- | :---------- | :------- |
+| `authentication` | `string` | Your token  | yes      |
+
+## **Delete auth user posts**
+
+```http
+  DELETE /api/v1/posts/user-posts
+```
+
+| Parameter        | Type     | Description | Required |
+| :--------------- | :------- | :---------- | :------- |
+| `authentication` | `string` | Your token  | yes      |
+
 ## **Toggle Post like**
 
 ```http
