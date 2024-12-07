@@ -1053,7 +1053,7 @@ paths:
 
   # Post
 
-  /feed/posts:
+  /posts:
     get:
       summary: Returns a list of posts (can search, sort by each filed, filter by each filed)
       tags:
@@ -3941,7 +3941,7 @@ components:
         title:
           type: string
           example: Clean Architecture Review
-        content:
+        description:
           type: string
           example: Clean Architecture TypeScript Express API Book
         postImage:
@@ -3956,9 +3956,9 @@ components:
           type: string
         title:
           type: string
-        content:
+        description:
           type: string
-        postImage:
+        photoUrl:
           type: string
         createdAt:
           type: string
@@ -3969,7 +3969,21 @@ components:
           items:
             type: object
             '$ref': '#/components/schemas/PostLikeResponse'
+        disLikes:
+          type: array
+          items: object
+          '$ref': '#/components/schemas/PostLikeResponse'
         comments:
+          type: array
+          items:
+            type: object
+            '$ref': '#/components/schemas/PostCommentResponse'
+        views:
+          type: array
+          items:
+            type: object
+            '$ref': '#/components/schemas/PostCommentResponse'
+        shares:
           type: array
           items:
             type: object
@@ -3988,9 +4002,9 @@ components:
           type: string
         title:
           type: string
-        content:
+        description:
           type: string
-        postImage:
+        photoUrl:
           type: string
         createdAt:
           type: string
@@ -4092,6 +4106,16 @@ components:
         lastName:
           type: string
         profileUrl:
+          type: string
+
+    ResponseAdditionalInfo:
+      type: object
+      properties:
+        type:
+          type: string
+        description:
+          type: string
+        url:
           type: string
 
   securitySchemes:

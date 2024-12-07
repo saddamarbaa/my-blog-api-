@@ -1,2 +1,2 @@
-export * from './authValidation';
+export * from './postSchema';
 export * from './postValidation';
