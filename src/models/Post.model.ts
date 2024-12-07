@@ -116,10 +116,10 @@ export const PostSchema: Schema<IPostDocument> = new Schema(
     ]
   },
   {
-    timestamps: true, // Automatically add createdAt and updatedAt fields
-    versionKey: false,
-    toJSON: { virtuals: true },
-    toObject: { virtuals: true }
+    timestamps: true,
+    toJSON: { virtuals: true }
+    // versionKey: false,
+    // toObject: { virtuals: true }
   }
 );
 

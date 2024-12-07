@@ -1222,7 +1222,7 @@ paths:
               schema:
                 '$ref': '#/components/schemas/ServerErrorResponse'
 
-  /feed/posts/timeline:
+  /posts/timeline:
     get:
       summary: Returns a list of timeline posts for auth user
       tags:
@@ -1272,7 +1272,7 @@ paths:
               schema:
                 '$ref': '#/components/schemas/ServerErrorResponse'
 
-  /feed/posts/{postId}:
+  /posts/{postId}:
     get:
       summary: Get post based on request id
       tags:
@@ -1444,7 +1444,7 @@ paths:
               schema:
                 '$ref': '#/components/schemas/ServerErrorResponse'
 
-  /feed/posts/{postId}/like:
+  /posts/{postId}/like:
     put:
       security:
         - Authorization: []
@@ -1502,7 +1502,7 @@ paths:
               schema:
                 '$ref': '#/components/schemas/ServerErrorResponse'
 
-  /feed/posts/user-posts:
+  /posts/user-posts:
     get:
       summary: Returns a list of posts for given user
       tags:
@@ -1597,7 +1597,7 @@ paths:
               schema:
                 '$ref': '#/components/schemas/ServerErrorResponse'
 
-  /feed/posts/comment:
+  /posts/comment:
     put:
       security:
         - Authorization: []
@@ -1748,7 +1748,7 @@ paths:
               schema:
                 '$ref': '#/components/schemas/ServerErrorResponse'
 
-  /feed/posts/comment/{postId}:
+  /posts/comment/{postId}:
     get:
       summary: Get all comments in the given post
       tags:
@@ -1852,7 +1852,7 @@ paths:
               schema:
                 '$ref': '#/components/schemas/ServerErrorResponse'
 
-  /feed/posts/user-comment/{postId}:
+  /posts/user-comment/{postId}:
     get:
       summary: Get all comments for the current login user in the given post
       tags:
@@ -1966,7 +1966,7 @@ paths:
               schema:
                 '$ref': '#/components/schemas/ServerErrorResponse'
 
-  /feed/posts/comment/{postId}/{commentId}:
+  /posts/comment/{postId}/{commentId}:
     get:
       summary: Get one comment based on request id
       tags:
