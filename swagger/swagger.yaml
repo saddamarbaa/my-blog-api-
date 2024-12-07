@@ -1053,7 +1053,7 @@ paths:
 
   # Post
 
-  /feed/posts:
+  /posts:
     get:
       summary: Returns a list of posts (can search, sort by each filed, filter by each filed)
       tags:
@@ -1222,7 +1222,7 @@ paths:
               schema:
                 '$ref': '#/components/schemas/ServerErrorResponse'
 
-  /feed/posts/timeline:
+  /posts/timeline:
     get:
       summary: Returns a list of timeline posts for auth user
       tags:
@@ -1272,7 +1272,7 @@ paths:
               schema:
                 '$ref': '#/components/schemas/ServerErrorResponse'
 
-  /feed/posts/{postId}:
+  /posts/{postId}:
     get:
       summary: Get post based on request id
       tags:
@@ -1444,7 +1444,7 @@ paths:
               schema:
                 '$ref': '#/components/schemas/ServerErrorResponse'
 
-  /feed/posts/{postId}/like:
+  /posts/{postId}/like:
     put:
       security:
         - Authorization: []
@@ -1502,9 +1502,9 @@ paths:
               schema:
                 '$ref': '#/components/schemas/ServerErrorResponse'
 
-  /feed/posts/user-posts:
+  /posts/user-posts:
     get:
-      summary: Returns a list of posts for given user
+      summary: Returns a list of auth user posts
       tags:
         - Post
       security:
@@ -1597,7 +1597,7 @@ paths:
               schema:
                 '$ref': '#/components/schemas/ServerErrorResponse'
 
-  /feed/posts/comment:
+  /posts/comment:
     put:
       security:
         - Authorization: []
@@ -1748,7 +1748,7 @@ paths:
               schema:
                 '$ref': '#/components/schemas/ServerErrorResponse'
 
-  /feed/posts/comment/{postId}:
+  /posts/comment/{postId}:
     get:
       summary: Get all comments in the given post
       tags:
@@ -1852,7 +1852,7 @@ paths:
               schema:
                 '$ref': '#/components/schemas/ServerErrorResponse'
 
-  /feed/posts/user-comment/{postId}:
+  /posts/user-comment/{postId}:
     get:
       summary: Get all comments for the current login user in the given post
       tags:
@@ -1966,7 +1966,7 @@ paths:
               schema:
                 '$ref': '#/components/schemas/ServerErrorResponse'
 
-  /feed/posts/comment/{postId}/{commentId}:
+  /posts/comment/{postId}/{commentId}:
     get:
       summary: Get one comment based on request id
       tags:
@@ -3941,7 +3941,7 @@ components:
         title:
           type: string
           example: Clean Architecture Review
-        content:
+        description:
           type: string
           example: Clean Architecture TypeScript Express API Book
         postImage:
@@ -3956,9 +3956,9 @@ components:
           type: string
         title:
           type: string
-        content:
+        description:
           type: string
-        postImage:
+        photoUrl:
           type: string
         createdAt:
           type: string
@@ -3969,7 +3969,21 @@ components:
           items:
             type: object
             '$ref': '#/components/schemas/PostLikeResponse'
+        disLikes:
+          type: array
+          items: object
+          '$ref': '#/components/schemas/PostLikeResponse'
         comments:
+          type: array
+          items:
+            type: object
+            '$ref': '#/components/schemas/PostCommentResponse'
+        views:
+          type: array
+          items:
+            type: object
+            '$ref': '#/components/schemas/PostCommentResponse'
+        shares:
           type: array
           items:
             type: object
@@ -3988,9 +4002,9 @@ components:
           type: string
         title:
           type: string
-        content:
+        description:
           type: string
-        postImage:
+        photoUrl:
           type: string
         createdAt:
           type: string
@@ -4092,6 +4106,16 @@ components:
         lastName:
           type: string
         profileUrl:
+          type: string
+
+    ResponseAdditionalInfo:
+      type: object
+      properties:
+        type:
+          type: string
+        description:
+          type: string
+        url:
           type: string
 
   securitySchemes:
