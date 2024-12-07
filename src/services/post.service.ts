@@ -6,6 +6,7 @@ import Post from '@src/models/Post.model';
 import { customResponse, deleteFile } from '@src/utils';
 import { AuthenticatedRequestBody, IPost, IUser } from '@src/interfaces';
 import { cloudinary } from '@src/middlewares';
+import { AUTHORIZATION_ROLES } from '@src/constants';
 
 export const createPostService = async (req: AuthenticatedRequestBody<IPost>, res: Response, next: NextFunction) => {
   const { title, description, category } = req.body;
@@ -107,6 +108,52 @@ export const getPostService = async (req: AuthenticatedRequestBody<IUser>, res: 
         message: `Successfully found post by ID: ${req.params.postId}`,
         status: 200,
         data
+      })
+    );
+  } catch (error) {
+    return next(InternalServerError);
+  }
+};
+
+export const deletePostService = async (req: AuthenticatedRequestBody<IUser>, res: Response, next: NextFunction) => {
+  try {
+    const post = await Post.findById(req.params.postId).populate('author').exec();
+
+    if (!post) {
+      return next(new createHttpError.BadRequest());
+    }
+
+    // Allow user to delete only post which is created by them
+    if (!req.user?._id.equals(post.author._id) && req?.user?.role !== AUTHORIZATION_ROLES.ADMIN) {
+      return next(createHttpError(403, `Auth Failed (Unauthorized)`));
+    }
+
+    const isDeleted = await Post.findByIdAndDelete({
+      _id: req.params.postId
+    });
+
+    if (!isDeleted) {
+      return next(createHttpError(400, `Failed to delete post by given ID ${req.params.postId}`));
+    }
+
+    // const fullImage = post.postImage || '';
+    // const imagePath = fullImage.split('/').pop() || '';
+    // const folderFullPath = `${process.env.PWD}/public/uploads/posts/${imagePath}`;
+
+    // deleteFile(folderFullPath);
+
+    // Delete image from cloudinary
+    if (post.cloudinary_id) {
+      await cloudinary.uploader.destroy(post.cloudinary_id);
+    }
+
+    return res.status(200).json(
+      customResponse({
+        data: null,
+        success: true,
+        error: false,
+        message: `Successfully deleted post by ID ${req.params.postId}`,
+        status: 200
       })
     );
   } catch (error) {
