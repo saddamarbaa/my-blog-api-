@@ -261,3 +261,48 @@ export const deletePostService = async (req: AuthenticatedRequestBody<IUser>, re
     return next(InternalServerError);
   }
 };
+
+export const getUserPostsService = async (req: AuthenticatedRequestBody<IUser>, res: Response, next: NextFunction) => {
+  try {
+    const posts = await Post.find({
+      author: req?.user?._id
+    })
+      .select('-cloudinary_id')
+      .populate('author', 'firstName  lastName  profileUrl bio')
+      .populate('likes.user', 'firstName  lastName  profileUrl bio')
+      .populate('disLikes', 'firstName  lastName  profileUrl bio')
+      .populate('comments.user', 'firstName  lastName  profileUrl bio')
+      .populate('views', 'firstName  lastName  profileUrl bio')
+      .populate('shares', 'firstName  lastName  profileUrl bio')
+      .exec();
+
+    const postsWithRequests = (posts as Array<{ _doc: IPost }>).map((postDoc) => {
+      return {
+        ...postDoc._doc,
+        request: {
+          type: 'Get',
+          description: 'Get one post with the id',
+          url: `${process.env.API_URL}/api/${process.env.API_VERSION}/posts/${postDoc._doc._id}`
+        }
+      };
+    });
+
+    const data = {
+      posts: postsWithRequests
+    };
+
+    return res.status(200).send(
+      customResponse<typeof data>({
+        success: true,
+        error: false,
+        message: posts.length
+          ? `Successfully found all posts for user by ID ${req?.user?._id}`
+          : `No post found for user by ID ${req?.user?._id}`,
+        status: 200,
+        data
+      })
+    );
+  } catch (error) {
+    return next(error);
+  }
+};

@@ -1504,7 +1504,7 @@ paths:
 
   /posts/user-posts:
     get:
-      summary: Returns a list of posts for given user
+      summary: Returns a list of auth user posts
       tags:
         - Post
       security:

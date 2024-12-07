@@ -6,7 +6,8 @@ import {
   deletePostService,
   getPostService,
   getPostsService,
-  getTimelinePostsService
+  getTimelinePostsService,
+  getUserPostsService
 } from '@src/services';
 
 export const createPostController = (req: AuthenticatedRequestBody<IPost>, res: Response, next: NextFunction) =>
@@ -22,3 +23,6 @@ export const getTimelinePostsController = (req: AuthenticatedRequestBody<IUser>,
 
 export const deletePostController = (req: AuthenticatedRequestBody<IUser>, res: Response, next: NextFunction) =>
   deletePostService(req, res, next);
+
+export const getUserPostsController = (req: AuthenticatedRequestBody<IUser>, res: Response, next: NextFunction) =>
+  getUserPostsService(req, res, next);
