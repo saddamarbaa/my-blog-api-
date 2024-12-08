@@ -8,6 +8,7 @@ import { customResponse, deleteFile } from '@src/utils';
 import {
   AddCommentT,
   AuthenticatedRequestBody,
+  CommentI,
   IPost,
   IUser,
   LikeT,
@@ -693,6 +694,67 @@ export const getCommentInPostService = async (
         success: true,
         error: false,
         message: `Successfully found comment by ID : ${commentId} `,
+        status: 200,
+        data
+      })
+    );
+  } catch (error) {
+    return next(InternalServerError);
+  }
+};
+
+export const getUserCommentInPostService = async (
+  req: AuthenticatedRequestBody<IUser>,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const post = await Post.findById(req.params.postId)
+      .select('-cloudinary_id')
+      .populate('author', 'firstName  lastName  profileUrl bio')
+      .populate('likes.user', 'firstName  lastName  profileUrl bio')
+      .populate('disLikes', 'firstName  lastName  profileUrl bio')
+      .populate('comments.user', 'firstName  lastName  profileUrl bio')
+      .populate('views', 'firstName  lastName  profileUrl bio')
+      .populate('shares', 'firstName  lastName  profileUrl bio')
+      .exec();
+
+    if (!post || !post.comments.length) {
+      return next(new createHttpError.BadRequest());
+    }
+
+    const isAlreadyComment = post.comments.find(
+      (com: { user: IUser }) => com.user?._id.toString() === req.user?._id.toString()
+    );
+
+    if (!isAlreadyComment) {
+      return next(createHttpError(403, `Auth Failed (Unauthorized)`));
+    }
+
+    post.comments = post.comments.filter(
+      (com: { user: IUser }) => com.user?._id.toString() === req.user?._id.toString()
+    );
+
+    const comments = post.comments.map((commentDoc: { _doc: CommentI }) => {
+      return {
+        ...commentDoc._doc,
+        request: {
+          type: 'Get',
+          description: 'Get one comment with the id',
+          url: `${process.env.API_URL}/api/${process.env.API_VERSION}/posts/comment/${req.params.postId}/${commentDoc._doc._id}`
+        }
+      };
+    });
+
+    const data = {
+      comments
+    };
+
+    return res.status(200).send(
+      customResponse<typeof data>({
+        success: true,
+        error: false,
+        message: `Successfully found all your comment in post by ID : ${req.params.postId} `,
         status: 200,
         data
       })

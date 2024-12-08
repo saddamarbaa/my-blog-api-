@@ -20,6 +20,7 @@ import {
   getPostController,
   getPostsController,
   getTimelinePostsController,
+  getUserCommentInPostController,
   getUserPostsController,
   likePostController,
   updateCommentInPostController,
@@ -39,7 +40,7 @@ router.patch('/comment', isLogin, updateCommentValidation, updateCommentInPostCo
 // router.delete('/posts/user-comment/:postId', isAuth, postIdValidation, deleteUserCommentInPostController);
 router.get('/comment/:postId/:commentId', isLogin, postIdValidation, commentIdValidation, getCommentInPostController);
 //  router.get('/posts/comment/:postId', isAuth, postIdValidation, getAllCommentInPostController);
-// router.get('/posts/user-comment/:postId', isAuth, updatePostValidation, getUserCommentInPostController);
+router.get('/user-comment/:postId', isLogin, updatePostValidation, getUserCommentInPostController);
 router.get('/:postId', postIdValidation, getPostController);
 router.delete('/:postId', isLogin, postIdValidation, deletePostController);
 router.patch('/:postId', uploadImage.single('postImage'), isLogin, updatePostValidation, updatePostController);

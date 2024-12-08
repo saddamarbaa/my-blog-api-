@@ -17,6 +17,7 @@ import {
   getPostService,
   getPostsService,
   getTimelinePostsService,
+  getUserCommentInPostService,
   getUserPostsService,
   likePostService,
   updateCommentInPostService,
@@ -63,3 +64,9 @@ export const updateCommentInPostController = (
 
 export const getCommentInPostController = (req: AuthenticatedRequestBody<IUser>, res: Response, next: NextFunction) =>
   getCommentInPostService(req, res, next);
+
+export const getUserCommentInPostController = (
+  req: AuthenticatedRequestBody<IUser>,
+  res: Response,
+  next: NextFunction
+) => getUserCommentInPostService(req, res, next);
