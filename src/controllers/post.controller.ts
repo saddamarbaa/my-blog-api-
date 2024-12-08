@@ -11,8 +11,10 @@ import {
 import {
   addCommentInPostService,
   createPostService,
+  deleteAllCommentInPostService,
   deleteCommentInPostService,
   deletePostService,
+  deleteUserCommentInPostService,
   deleteUserPostsService,
   getAllCommentInPostService,
   getCommentInPostService,
@@ -84,3 +86,15 @@ export const deleteCommentInPostController = (
   res: Response,
   next: NextFunction
 ) => deleteCommentInPostService(req, res, next);
+
+export const deleteUserCommentInPostController = (
+  req: AuthenticatedRequestBody<IUser>,
+  res: Response,
+  next: NextFunction
+) => deleteUserCommentInPostService(req, res, next);
+
+export const deleteAllCommentInPostController = (
+  req: AuthenticatedRequestBody<IUser>,
+  res: Response,
+  next: NextFunction
+) => deleteAllCommentInPostService(req, res, next);

@@ -875,3 +875,124 @@ export const deleteCommentInPostService = async (
     return next(InternalServerError);
   }
 };
+
+export const deleteAllCommentInPostService = async (
+  req: AuthenticatedRequestBody<IUser>,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const post = await Post.findById(req.params.postId)
+      .select('-cloudinary_id')
+      .populate('author', 'firstName  lastName  profileUrl bio')
+      .populate('likes.user', 'firstName  lastName  profileUrl bio')
+      .populate('disLikes', 'firstName  lastName  profileUrl bio')
+      .populate('comments.user', 'firstName  lastName  profileUrl bio')
+      .populate('views', 'firstName  lastName  profileUrl bio')
+      .populate('shares', 'firstName  lastName  profileUrl bio')
+      .exec();
+
+    if (!post || !post?.comments?.length) {
+      return next(new createHttpError.BadRequest());
+    }
+
+    // Allow only user who created the post or admin to delete the comment
+    if (!req.user?._id.equals(post.author._id) && req?.user?.role !== 'admin') {
+      return next(createHttpError(403, `Auth Failed (Unauthorized)`));
+    }
+
+    post.comments = [];
+    await post.save();
+
+    const data = {
+      post: {
+        ...post._doc,
+        request: {
+          type: 'Get',
+          description: 'Get all posts',
+          url: `${process.env.API_URL}/api/${process.env.API_VERSION}/posts`
+        }
+      }
+    };
+
+    return res.status(200).send(
+      customResponse<typeof data>({
+        success: true,
+        error: false,
+        message: `Successfully deleted all comments in post by ID : ${req.params.postId} `,
+        status: 200,
+        data
+      })
+    );
+  } catch (error) {
+    return next(InternalServerError);
+  }
+};
+
+export const deleteUserCommentInPostService = async (
+  req: AuthenticatedRequestBody<IUser>,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const post = await Post.findById(req.params.postId)
+      .select('-cloudinary_id')
+      .populate('author', 'firstName  lastName  profileUrl bio')
+      .populate('likes.user', 'firstName  lastName  profileUrl bio')
+      .populate('disLikes', 'firstName  lastName  profileUrl bio')
+      .populate('comments.user', 'firstName  lastName  profileUrl bio')
+      .populate('views', 'firstName  lastName  profileUrl bio')
+      .populate('shares', 'firstName  lastName  profileUrl bio')
+      .exec();
+
+    if (!post) {
+      return next(new createHttpError.BadRequest());
+    }
+
+    if (req?.body?.userId) {
+      const user = await User.findById(req.body.userId);
+      if (!user) {
+        return next(createHttpError(403));
+      }
+    }
+
+    const isAlreadyComment = post.comments.find((item: { user: IUser }) =>
+      item.user?._id.toString() === req?.body?.userId ? req?.body?.userId?.toString() : req.user?._id.toString()
+    );
+
+    // Allow only user who created the post or admin or user who add comment to delete the comments
+    if (!isAlreadyComment && !req.user?._id.equals(post.author._id) && req?.user?.role !== 'admin') {
+      return next(createHttpError(403, `Auth Failed (Unauthorized)`));
+    }
+
+    post.comments = post.comments.filter(
+      (item: { user: IUser }) =>
+        item.user?._id.toString() !== (req?.body?.userId ? req?.body?.userId?.toString() : req.user?._id.toString())
+    );
+
+    await post.save();
+
+    const data = {
+      post: {
+        ...post._doc,
+        request: {
+          type: 'Get',
+          description: 'Get all comments',
+          url: `${process.env.API_URL}/api/${process.env.API_VERSION}/posts/comment/${req.params.postId}`
+        }
+      }
+    };
+
+    return res.status(200).send(
+      customResponse<typeof data>({
+        success: true,
+        error: false,
+        message: `Successfully deleted all user comments in post by ID : ${req.params.postId} `,
+        status: 200,
+        data
+      })
+    );
+  } catch (error) {
+    return next(InternalServerError);
+  }
+};

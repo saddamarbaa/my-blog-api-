@@ -15,8 +15,10 @@ import {
 import {
   addCommentInPostController,
   createPostController,
+  deleteAllCommentInPostController,
   deleteCommentInPostController,
   deletePostController,
+  deleteUserCommentInPostController,
   deleteUserPostsController,
   getAllCommentInPostController,
   getCommentInPostController,
@@ -39,8 +41,8 @@ router.delete('/user-posts', isLogin, deleteUserPostsController);
 router.put('/comment', isLogin, addCommentValidation, addCommentInPostController);
 router.patch('/comment', isLogin, updateCommentValidation, updateCommentInPostController);
 router.delete('/comment', isLogin, deleteCommentValidation, deleteCommentInPostController);
-// router.delete('/posts/comment/:postId', isAuth, updatePostValidation, deleteAllCommentInPostController);
-// router.delete('/posts/user-comment/:postId', isAuth, postIdValidation, deleteUserCommentInPostController);
+router.delete('/comment/:postId', isLogin, updatePostValidation, deleteAllCommentInPostController);
+router.delete('/user-comment/:postId', isLogin, postIdValidation, deleteUserCommentInPostController);
 router.get('/comment/:postId/:commentId', isLogin, postIdValidation, commentIdValidation, getCommentInPostController);
 router.get('/comment/:postId', isLogin, postIdValidation, getAllCommentInPostController);
 router.get('/user-comment/:postId', isLogin, updatePostValidation, getUserCommentInPostController);
