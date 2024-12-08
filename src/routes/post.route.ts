@@ -4,6 +4,7 @@ import {
   addCommentValidation,
   addPostValidation,
   commentIdValidation,
+  deleteCommentValidation,
   isLogin,
   postIdValidation,
   postPaginationMiddleware,
@@ -14,6 +15,7 @@ import {
 import {
   addCommentInPostController,
   createPostController,
+  deleteCommentInPostController,
   deletePostController,
   deleteUserPostsController,
   getAllCommentInPostController,
@@ -36,7 +38,7 @@ router.get('/timeline', isLogin, getTimelinePostsController);
 router.delete('/user-posts', isLogin, deleteUserPostsController);
 router.put('/comment', isLogin, addCommentValidation, addCommentInPostController);
 router.patch('/comment', isLogin, updateCommentValidation, updateCommentInPostController);
-// router.delete('/posts/comment', isAuth, deleteCommentValidation, deleteCommentInPostController);
+router.delete('/comment', isLogin, deleteCommentValidation, deleteCommentInPostController);
 // router.delete('/posts/comment/:postId', isAuth, updatePostValidation, deleteAllCommentInPostController);
 // router.delete('/posts/user-comment/:postId', isAuth, postIdValidation, deleteUserCommentInPostController);
 router.get('/comment/:postId/:commentId', isLogin, postIdValidation, commentIdValidation, getCommentInPostController);

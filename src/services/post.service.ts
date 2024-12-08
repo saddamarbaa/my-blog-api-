@@ -812,3 +812,66 @@ export const getAllCommentInPostService = async (
     return next(InternalServerError);
   }
 };
+
+export const deleteCommentInPostService = async (
+  req: AuthenticatedRequestBody<UpdateCommentT>,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { postId, commentId } = req.body;
+
+    const post = await Post.findById(postId)
+      .select('-cloudinary_id')
+      .populate('author', 'firstName  lastName  profileUrl bio')
+      .populate('likes.user', 'firstName  lastName  profileUrl bio')
+      .populate('disLikes', 'firstName  lastName  profileUrl bio')
+      .populate('comments.user', 'firstName  lastName  profileUrl bio')
+      .populate('views', 'firstName  lastName  profileUrl bio')
+      .populate('shares', 'firstName  lastName  profileUrl bio')
+      .exec();
+
+    if (!post || !post?.comments?.length) {
+      return next(new createHttpError.BadRequest());
+    }
+
+    const isAuthorized = post.comments.find(
+      (item: { user: IUser; _id: string }) =>
+        (req.user?._id.equals(post.author._id) || item.user?._id.toString() === req.user?._id.toString()) &&
+        item?._id.toString() === commentId.toString()
+    );
+
+    if (!isAuthorized) {
+      return next(createHttpError(403, `Auth Failed (Unauthorized)`));
+    }
+
+    post.comments = post.comments.filter(
+      (item: { user: IUser; _id: string }) => item?._id.toString() !== commentId?.toString()
+    );
+
+    await post.save();
+
+    const data = {
+      post: {
+        ...post._doc,
+        request: {
+          type: 'Get',
+          description: 'Get all posts',
+          url: `${process.env.API_URL}/api/${process.env.API_VERSION}/posts`
+        }
+      }
+    };
+
+    return res.status(200).send(
+      customResponse<typeof data>({
+        success: true,
+        error: false,
+        message: `Successfully delete comment by ID : ${commentId} `,
+        status: 200,
+        data
+      })
+    );
+  } catch (error) {
+    return next(InternalServerError);
+  }
+};
