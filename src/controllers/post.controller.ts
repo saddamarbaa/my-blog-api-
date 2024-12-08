@@ -1,6 +1,13 @@
 import { NextFunction, Request, Response } from 'express';
 
-import { AddCommentT, AuthenticatedRequestBody, IPost, IUser, TPaginationResponse } from '@src/interfaces';
+import {
+  AddCommentT,
+  AuthenticatedRequestBody,
+  IPost,
+  IUser,
+  TPaginationResponse,
+  UpdateCommentT
+} from '@src/interfaces';
 import {
   addCommentInPostService,
   createPostService,
@@ -11,6 +18,7 @@ import {
   getTimelinePostsService,
   getUserPostsService,
   likePostService,
+  updateCommentInPostService,
   updatePostService
 } from '@src/services';
 
@@ -45,3 +53,9 @@ export const addCommentInPostController = (
   res: Response,
   next: NextFunction
 ) => addCommentInPostService(req, res, next);
+
+export const updateCommentInPostController = (
+  req: AuthenticatedRequestBody<UpdateCommentT>,
+  res: Response,
+  next: NextFunction
+) => updateCommentInPostService(req, res, next);

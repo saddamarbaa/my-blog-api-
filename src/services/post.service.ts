@@ -5,7 +5,15 @@ import { ObjectId } from 'mongoose';
 import User from '@src/models/User.model';
 import Post from '@src/models/Post.model';
 import { customResponse, deleteFile } from '@src/utils';
-import { AddCommentT, AuthenticatedRequestBody, IPost, IUser, LikeT, TPaginationResponse } from '@src/interfaces';
+import {
+  AddCommentT,
+  AuthenticatedRequestBody,
+  IPost,
+  IUser,
+  LikeT,
+  TPaginationResponse,
+  UpdateCommentT
+} from '@src/interfaces';
 import { cloudinary } from '@src/middlewares';
 import { AUTHORIZATION_ROLES } from '@src/constants';
 
@@ -555,6 +563,76 @@ export const addCommentInPostService = async (
         success: true,
         error: false,
         message: `Successfully add comment to post by ID : ${postId} `,
+        status: 200,
+        data
+      })
+    );
+  } catch (error) {
+    return next(InternalServerError);
+  }
+};
+
+export const updateCommentInPostService = async (
+  req: AuthenticatedRequestBody<UpdateCommentT>,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { postId, commentId, comment } = req.body;
+
+    const post = await Post.findById(postId)
+      .select('-cloudinary_id')
+      .populate('author', 'firstName  lastName  profileUrl bio')
+      .populate('likes.user', 'firstName  lastName  profileUrl bio')
+      .populate('disLikes', 'firstName  lastName  profileUrl bio')
+      .populate('comments.user', 'firstName  lastName  profileUrl bio')
+      .populate('views', 'firstName  lastName  profileUrl bio')
+      .populate('shares', 'firstName  lastName  profileUrl bio')
+      .exec();
+
+    if (!post) {
+      return next(new createHttpError.BadRequest());
+    }
+
+    const isAlreadyComment = post.comments.find(
+      (item: { user: IUser; _id: string }) =>
+        item.user?._id.toString() === req.user?._id.toString() && item?._id.toString() === commentId.toString()
+    );
+
+    if (!isAlreadyComment) {
+      return next(createHttpError(403, `Auth Failed (Unauthorized)`));
+    }
+
+    post.comments.forEach((item: { user: IUser; _id: string }, index: number) => {
+      if (item?._id.toString() === commentId.toString()) {
+        const newComment = {
+          user: item.user,
+          _id: item._id,
+          comment
+        };
+
+        post.comments[index] = newComment;
+      }
+    });
+
+    await post.save();
+
+    const data = {
+      post: {
+        ...post._doc,
+        request: {
+          type: 'Get',
+          description: 'Get all posts',
+          url: `${process.env.API_URL}/api/${process.env.API_VERSION}/posts`
+        }
+      }
+    };
+
+    return res.status(200).send(
+      customResponse<typeof data>({
+        success: true,
+        error: false,
+        message: `Successfully update comment  by ID : ${commentId} `,
         status: 200,
         data
       })
