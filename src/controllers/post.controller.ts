@@ -1,7 +1,8 @@
 import { NextFunction, Request, Response } from 'express';
 
-import { AuthenticatedRequestBody, IPost, IUser, TPaginationResponse } from '@src/interfaces';
+import { AddCommentT, AuthenticatedRequestBody, IPost, IUser, TPaginationResponse } from '@src/interfaces';
 import {
+  addCommentInPostService,
   createPostService,
   deletePostService,
   deleteUserPostsService,
@@ -38,3 +39,9 @@ export const updatePostController = (req: AuthenticatedRequestBody<IPost>, res: 
 
 export const likePostController = (req: AuthenticatedRequestBody<IPost>, res: Response, next: NextFunction) =>
   likePostService(req, res, next);
+
+export const addCommentInPostController = (
+  req: AuthenticatedRequestBody<AddCommentT>,
+  res: Response,
+  next: NextFunction
+) => addCommentInPostService(req, res, next);

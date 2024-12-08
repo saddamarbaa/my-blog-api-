@@ -1,6 +1,7 @@
 import express from 'express';
 
 import {
+  addCommentValidation,
   addPostValidation,
   isLogin,
   postIdValidation,
@@ -9,6 +10,7 @@ import {
   uploadImage
 } from '@src/middlewares';
 import {
+  addCommentInPostController,
   createPostController,
   deletePostController,
   deleteUserPostsController,
@@ -26,7 +28,7 @@ router.get('/', postPaginationMiddleware(), getPostsController);
 router.get('/user-posts', isLogin, getUserPostsController);
 router.get('/timeline', isLogin, getTimelinePostsController);
 router.delete('/user-posts', isLogin, deleteUserPostsController);
-// router.put('/posts/comment', isAuth, addCommentValidation, addCommentInPostController);
+router.put('/comment', isLogin, addCommentValidation, addCommentInPostController);
 // router.patch('/posts/comment', isAuth, updateCommentValidation, updateCommentInPostController);
 // router.delete('/posts/comment', isAuth, deleteCommentValidation, deleteCommentInPostController);
 // router.delete('/posts/comment/:postId', isAuth, updatePostValidation, deleteAllCommentInPostController);
