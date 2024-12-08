@@ -165,3 +165,125 @@ export const adminAddUserService = async (req: Request, res: Response, next: Nex
     return next(InternalServerError);
   }
 };
+
+export const adminUpdateAuthService = async (
+  req: AuthenticatedRequestBody<IUser>,
+  res: Response,
+  next: NextFunction
+) => {
+  const {
+    firstName,
+    lastName,
+    dateOfBirth,
+    email,
+    bio,
+    skills,
+    profileUrl,
+    acceptTerms,
+    phoneNumber,
+    gender,
+    status,
+    role,
+    plan,
+    userAward
+  } = req.body;
+
+  try {
+    const user = await User.findById(req.params.userId);
+
+    if (!user) {
+      return next(new createHttpError.BadRequest());
+    }
+
+    // Admin cant update them roles
+    const reqUser = req.user;
+    if (req.body.role && reqUser && reqUser._id.equals(user._id) && reqUser.role === AUTHORIZATION_ROLES.ADMIN) {
+      return next(
+        createHttpError(403, `Auth Failed (Admin cant update themselves from admin , please ask another admin)`)
+      );
+    }
+
+    if (email) {
+      const existingUser = await User.findOne({ email: new RegExp(`^${email}$`, 'i') });
+      if (existingUser && !existingUser._id.equals(user._id)) {
+        if (req.file?.filename) {
+          const localFilePath = `${process.env.PWD}/public/uploads/users/${req.file.filename}`;
+          deleteFile(localFilePath);
+        }
+        return next(createHttpError(422, `E-Mail address ${email} is already exists, please pick a different one.`));
+      }
+    }
+
+    if (req.file?.filename && user.cloudinary_id) {
+      // Delete the old image from cloudinary
+      await cloudinary.uploader.destroy(user.cloudinary_id);
+    }
+
+    let cloudinaryResult;
+    if (req.file?.filename) {
+      // localFilePath: path of image which was just
+      // uploaded to "public/uploads/users" folder
+      const localFilePath = `${process.env.PWD}/public/uploads/users/${req.file?.filename}`;
+
+      cloudinaryResult = await cloudinary.uploader.upload(localFilePath, {
+        folder: 'users'
+      });
+
+      // Image has been successfully uploaded on
+      // cloudinary So we dont need local image file anymore
+      // Remove file from local uploads folder
+      deleteFile(localFilePath);
+    }
+
+    user.firstName = firstName || user.firstName;
+    user.lastName = lastName || user.lastName;
+    user.email = email || user.email;
+    user.gender = gender || user.gender;
+    user.dateOfBirth = dateOfBirth || user.dateOfBirth;
+    user.phoneNumber = phoneNumber || user.phoneNumber;
+    user.acceptTerms = acceptTerms || user.acceptTerms;
+    user.bio = bio || user.bio;
+    user.profileUrl = profileUrl || user.profileUrl;
+    user.skills = skills || user.skills;
+    user.role = role || user.role;
+    user.status = status || user.status;
+    user.plan = plan || user.plan;
+    user.userAward = userAward || user.userAward;
+    user.cloudinary_id = req.file?.filename ? cloudinaryResult?.public_id : user.cloudinary_id;
+
+    // @ts-ignore
+    const updatedUser = await user.save({ validateBeforeSave: false, new: true });
+
+    if (!updatedUser) {
+      return next(createHttpError(422, `Failed to update user by given ID ${req.params.userId}`));
+    }
+
+    const {
+      password: pass,
+      confirmPassword,
+      isVerified,
+      isDeleted,
+      status: stas,
+      acceptTerms: acceptTerm,
+      role: roles,
+      ...otherUserInfo
+    } = updatedUser._doc;
+
+    return res.status(200).send(
+      customResponse<{ user: IUser }>({
+        success: true,
+        error: false,
+        message: `Successfully updated user by ID: ${req.params.userId}`,
+        status: 200,
+        data: { user: otherUserInfo }
+      })
+    );
+  } catch (error) {
+    // Remove file from local uploads folder
+    if (req.file?.filename) {
+      const localFilePath = `${process.env.PWD}/public/uploads/users/${req.file?.filename}`;
+      deleteFile(localFilePath);
+    }
+    return next(InternalServerError);
+  }
+};
