@@ -1,6 +1,13 @@
 import express from 'express';
 
-import { addPostValidation, isLogin, postIdValidation, postPaginationMiddleware, uploadImage } from '@src/middlewares';
+import {
+  addPostValidation,
+  isLogin,
+  postIdValidation,
+  postPaginationMiddleware,
+  updatePostValidation,
+  uploadImage
+} from '@src/middlewares';
 import {
   createPostController,
   deletePostController,
@@ -8,7 +15,8 @@ import {
   getPostController,
   getPostsController,
   getTimelinePostsController,
-  getUserPostsController
+  getUserPostsController,
+  updatePostController
 } from '@src/controllers';
 
 const router = express.Router();
@@ -33,7 +41,7 @@ router.delete('/user-posts', isLogin, deleteUserPostsController);
 // router.get('/posts/user-comment/:postId', isAuth, updatePostValidation, getUserCommentInPostController);
 router.get('/:postId', postIdValidation, getPostController);
 router.delete('/:postId', isLogin, postIdValidation, deletePostController);
-// router.patch('/posts/:postId', uploadImage.single('postImage'), isAuth, updatePostValidation, updatePostController);
+router.patch('/:postId', uploadImage.single('postImage'), isLogin, updatePostValidation, updatePostController);
 router.post('/', uploadImage.single('postImage'), isLogin, addPostValidation, createPostController);
 // router.put('/posts/:postId/like', isAuth, postIdValidation, likePostController);
 

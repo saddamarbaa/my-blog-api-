@@ -38,7 +38,8 @@ export const postSchema = {
       POST_CATEGORY.TYPESCRIPT,
       POST_CATEGORY.SOCIAL
     ),
-    filename: Joi.string().label('Invalid request (Please upload Image)')
+    filename: Joi.string().optional().label('Invalid request (Please upload an image)'),
+    photoUrl: Joi.string().optional().uri().label('Invalid request (Please provide a valid image URL)')
   }),
   addComment: Joi.object({
     comment: Joi.string().min(3).max(300).required(),
