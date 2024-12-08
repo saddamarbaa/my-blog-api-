@@ -635,6 +635,54 @@ export const adminClearAllPostsService = async (
   }
 };
 
+
+
+
+
+export const adminDeleteAllCommentInPostService = async (
+  req: AuthenticatedRequestBody<IUser>,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const post = await Post.findById(req.params.postId);
+
+    if (!post || !post.comments.length) {
+      return next(new createHttpError.BadRequest());
+    }
+
+    post.comments = [];
+    await post.save();
+
+    const { author, ...otherPostInfo } = post._doc;
+
+    const data = {
+      post: {
+        ...otherPostInfo,
+        author: undefined,
+        creator: author,
+        request: {
+          type: 'Get',
+          description: 'Get all posts',
+          url: `${process.env.API_URL}/api/${process.env.API_VERSION}/posts`
+        }
+      }
+    };
+
+    return res.status(200).send(
+      customResponse<typeof data>({
+        success: true,
+        error: false,
+        message: `Successfully deleted all comments in post by ID : ${req.params.postId} `,
+        status: 200,
+        data
+      })
+    );
+  } catch (error) {
+    return next(InternalServerError);
+  }
+};
+
 export const adminDeleteCommentInPostService = async (
   req: AuthenticatedRequestBody<UpdateCommentT>,
   res: Response,
