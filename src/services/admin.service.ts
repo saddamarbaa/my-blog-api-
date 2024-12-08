@@ -329,3 +329,41 @@ export const adminGetUsersService = async (_req: Request, res: TPaginationRespon
   }
 };
 
+export const adminGetUserService = async (req: AuthenticatedRequestBody<IUser>, res: Response, next: NextFunction) => {
+  if (!isValidMongooseObjectId(req.params.userId) || !req.params.userId) {
+    return next(createHttpError(422, `Invalid request`));
+  }
+
+  try {
+    const user = await User.findById(req.params.userId);
+
+    if (!user) {
+      return next(new createHttpError.BadRequest());
+    }
+
+    const { password, confirmPassword, ...otherUserInfo } = user._doc;
+
+    const data = {
+      user: {
+        ...otherUserInfo,
+        request: {
+          type: 'Get',
+          description: 'Get all the user',
+          url: `${process.env.API_URL}/api/${process.env.API_VERSION}/admin/users`
+        }
+      }
+    };
+
+    return res.status(200).send(
+      customResponse<typeof data>({
+        success: true,
+        error: false,
+        message: `Successfully found user by ID: ${req.params.userId} profile 🍀`,
+        status: 200,
+        data
+      })
+    );
+  } catch (error) {
+    return next(InternalServerError);
+  }
+};
