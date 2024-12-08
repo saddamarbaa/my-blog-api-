@@ -9,6 +9,7 @@ import {
   getPostsService,
   getTimelinePostsService,
   getUserPostsService,
+  likePostService,
   updatePostService
 } from '@src/services';
 
@@ -34,3 +35,6 @@ export const deleteUserPostsController = (req: AuthenticatedRequestBody<IUser>, 
 
 export const updatePostController = (req: AuthenticatedRequestBody<IPost>, res: Response, next: NextFunction) =>
   updatePostService(req, res, next);
+
+export const likePostController = (req: AuthenticatedRequestBody<IPost>, res: Response, next: NextFunction) =>
+  likePostService(req, res, next);

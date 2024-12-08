@@ -5,7 +5,7 @@ import { ObjectId } from 'mongoose';
 import User from '@src/models/User.model';
 import Post from '@src/models/Post.model';
 import { customResponse, deleteFile } from '@src/utils';
-import { AuthenticatedRequestBody, IPost, IUser, TPaginationResponse } from '@src/interfaces';
+import { AuthenticatedRequestBody, IPost, IUser, LikeT, TPaginationResponse } from '@src/interfaces';
 import { cloudinary } from '@src/middlewares';
 import { AUTHORIZATION_ROLES } from '@src/constants';
 
@@ -433,5 +433,68 @@ export const deleteUserPostsService = async (
     );
   } catch (error) {
     return next(error);
+  }
+};
+
+export const likePostService = async (req: AuthenticatedRequestBody<IPost>, res: Response, next: NextFunction) => {
+  try {
+    const post = await Post.findById(req.params.postId);
+
+    if (!post) {
+      return next(new createHttpError.BadRequest());
+    }
+
+    const isAlreadyLiked = post.likes.some(function (like: LikeT) {
+      if (like?.user.toString() === req.user?._id.toString()) return true;
+      return false;
+    });
+
+    if (!isAlreadyLiked) {
+      await post.updateOne({
+        $push: {
+          likes: {
+            user: req.user?._id
+          }
+        }
+      });
+    } else {
+      await post.updateOne({ $pull: { likes: { user: req.user?._id } } });
+    }
+
+    const updatedPost = await Post.findById(req.params.postId)
+      .select('-cloudinary_id')
+      .populate('author', 'firstName  lastName  profileUrl bio')
+      .populate('likes.user', 'firstName  lastName  profileUrl bio')
+      .populate('disLikes', 'firstName  lastName  profileUrl bio')
+      .populate('comments.user', 'firstName  lastName  profileUrl bio')
+      .populate('views', 'firstName  lastName  profileUrl bio')
+      .populate('shares', 'firstName  lastName  profileUrl bio')
+      .exec();
+
+    const data = {
+      post: {
+        ...updatedPost._doc,
+        request: {
+          type: 'Get',
+          description: 'Get all posts',
+          url: `${process.env.API_URL}/api/${process.env.API_VERSION}/posts`
+        }
+      }
+    };
+
+    const message = isAlreadyLiked
+      ? `Successfully disliked post by ID: ${req.params.postId}`
+      : `Successfully liked post by ID: ${req.params.postId}`;
+    return res.status(200).send(
+      customResponse<typeof data>({
+        success: true,
+        error: false,
+        message,
+        status: 200,
+        data
+      })
+    );
+  } catch (error) {
+    return next(InternalServerError);
   }
 };
