@@ -3,6 +3,7 @@ import express from 'express';
 import {
   addCommentValidation,
   addPostValidation,
+  commentIdValidation,
   isLogin,
   postIdValidation,
   postPaginationMiddleware,
@@ -15,6 +16,7 @@ import {
   createPostController,
   deletePostController,
   deleteUserPostsController,
+  getCommentInPostController,
   getPostController,
   getPostsController,
   getTimelinePostsController,
@@ -35,14 +37,8 @@ router.patch('/comment', isLogin, updateCommentValidation, updateCommentInPostCo
 // router.delete('/posts/comment', isAuth, deleteCommentValidation, deleteCommentInPostController);
 // router.delete('/posts/comment/:postId', isAuth, updatePostValidation, deleteAllCommentInPostController);
 // router.delete('/posts/user-comment/:postId', isAuth, postIdValidation, deleteUserCommentInPostController);
-// router.get(
-//   '/posts/comment/:postId/:commentId',
-//   isAuth,
-//   postIdValidation,
-//   commentIdValidation,
-//   getCommentInPostController
-// );
-// router.get('/posts/comment/:postId', isAuth, postIdValidation, getAllCommentInPostController);
+router.get('/comment/:postId/:commentId', isLogin, postIdValidation, commentIdValidation, getCommentInPostController);
+//  router.get('/posts/comment/:postId', isAuth, postIdValidation, getAllCommentInPostController);
 // router.get('/posts/user-comment/:postId', isAuth, updatePostValidation, getUserCommentInPostController);
 router.get('/:postId', postIdValidation, getPostController);
 router.delete('/:postId', isLogin, postIdValidation, deletePostController);

@@ -13,6 +13,7 @@ import {
   createPostService,
   deletePostService,
   deleteUserPostsService,
+  getCommentInPostService,
   getPostService,
   getPostsService,
   getTimelinePostsService,
@@ -59,3 +60,6 @@ export const updateCommentInPostController = (
   res: Response,
   next: NextFunction
 ) => updateCommentInPostService(req, res, next);
+
+export const getCommentInPostController = (req: AuthenticatedRequestBody<IUser>, res: Response, next: NextFunction) =>
+  getCommentInPostService(req, res, next);
