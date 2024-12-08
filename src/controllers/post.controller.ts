@@ -13,6 +13,7 @@ import {
   createPostService,
   deletePostService,
   deleteUserPostsService,
+  getAllCommentInPostService,
   getCommentInPostService,
   getPostService,
   getPostsService,
@@ -70,3 +71,9 @@ export const getUserCommentInPostController = (
   res: Response,
   next: NextFunction
 ) => getUserCommentInPostService(req, res, next);
+
+export const getAllCommentInPostController = (
+  req: AuthenticatedRequestBody<IUser>,
+  res: Response,
+  next: NextFunction
+) => getAllCommentInPostService(req, res, next);
