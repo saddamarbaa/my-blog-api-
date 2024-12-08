@@ -17,6 +17,7 @@ import {
 import Token from '@src/models/Token.model';
 import User from '@src/models/User.model';
 import { verifyRefreshToken } from '@src/middlewares';
+import { AUTHORIZATION_ROLES } from '@src/constants';
 
 export const signupService = async (req: Request, res: Response<ResponseT<null>>, next: NextFunction) => {
   try {
@@ -145,7 +146,6 @@ export const signupService = async (req: Request, res: Response<ResponseT<null>>
       })
     );
   } catch (error: any) {
-    console.log('Error in signup Service', error.message);
     return next(InternalServerError);
   }
 };
@@ -486,7 +486,15 @@ export const deleteAccountService = async (req: AuthenticatedRequestBody<IUser>,
 
     const reqUser = req.user;
 
-    if (reqUser && !reqUser?._id.equals(user._id) && reqUser?.role !== 'admin') {
+    // Admin cant update them roles
+    if (reqUser && reqUser._id.equals(user._id) && reqUser.role === AUTHORIZATION_ROLES.ADMIN) {
+      return next(
+        createHttpError(403, `Auth Failed (Admin can't remove themselves from admin, please ask another admin)`)
+      );
+    }
+
+    // User can remove only their own profile
+    if (reqUser && !reqUser?._id.equals(user._id) && reqUser?.role !== AUTHORIZATION_ROLES.ADMIN) {
       return next(createHttpError(403, `Auth Failed (Unauthorized)`));
     }
 

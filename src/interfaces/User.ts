@@ -44,6 +44,7 @@ export interface IUser extends Document {
   userId?: string;
   timestamps?: boolean;
   _id: Types.ObjectId;
+  cloudinary_id?: string;
 }
 
 export interface IRequestUser extends Request {

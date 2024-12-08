@@ -3666,10 +3666,10 @@ components:
             - 'pending'
             - 'active'
           default: 'active'
-        name:
+        firstName:
           type: string
           example: test
-        surname:
+        lastName:
           type: string
           example: test
         email:
@@ -3681,30 +3681,56 @@ components:
         dateOfBirth:
           type: string
           example: '09/10/1984'
-        gender:
-          type: string
-          example: male
+
         mobileNumber:
           type: string
           example: '+62213147666'
-        companyName:
-          type: string
-          example: Test company
-        nationality:
-          type: string
-          example: Sudan
-        favoriteAnimal:
-          type: string
-          example: cat
-        address:
-          type: string
-          example: 12345test home Batam Indonesia
         bio:
           type: string
           example: 'Software Engineer experienced in developing full-stack JavaScript/Typescript application primarily with React/Next/Redux and Node/Express server design'
-        jobTitle:
+
+        skills:
+          type: array
+          items:
+            type: string
+          description: 'List of skills the user has'
+          example: ['JavaScript', 'React', 'Node.js']
+        profileUrl:
           type: string
-          example: Software Engineering
+          format: uri
+          description: 'URL to the user profile image'
+          example: 'https://tse3.mm.bing.net/th?id=OIP.W4S-DdCjOjUS4LqYNUieYwHaHa&pid=Api&P=0&h=220'
+        phoneNumber:
+          type: string
+          description: 'The user phone number'
+          example: '+1234567890'
+        gender:
+          type: string
+          description: 'The gender of the user'
+          enum:
+            - 'male'
+            - 'female'
+            - 'other'
+          example: 'male'
+        userAward:
+          type: string
+          description: 'Award the user has received'
+          enum:
+            - 'Gold'
+            - 'Silver'
+            - 'Bronze'
+          example: 'Gold'
+        plan:
+          type: string
+          description: 'The user plan selection'
+          enum:
+            - 'Free'
+            - 'Premium'
+            - 'Enterprise'
+          example: 'Free'
+        profileImage:
+          type: string
+          format: binary
 
     AdminAddUserRequest:
       type: object
@@ -3727,10 +3753,10 @@ components:
             - 'pending'
             - 'active'
           default: 'active'
-        name:
+        firstName:
           type: string
           example: test
-        surname:
+        lastName:
           type: string
           example: test
         email:
@@ -3754,34 +3780,19 @@ components:
         mobileNumber:
           type: string
           example: '+62213147666'
-        companyName:
-          type: string
-          example: Test company
-        nationality:
-          type: string
-          example: Sudan
-        favoriteAnimal:
-          type: string
-          example: cat
-        address:
-          type: string
-          example: 12345test home Batam Indonesia
         bio:
           type: string
           example: 'Software Engineer experienced in developing full-stack JavaScript/Typescript application primarily with React/Next/Redux and Node/Express server design'
-        jobTitle:
-          type: string
-          example: Software Engineering
 
     AdminAuthResponse:
       type: object
       properties:
         _id:
           type: string
-        name:
+        firstName:
           type: string
           required: true
-        surname:
+        lastName:
           type: string
         email:
           type: string
@@ -3794,29 +3805,11 @@ components:
           type: string
         updatedAt:
           type: string
-        isVerified:
-          type: string
         profileUrl:
           type: string
         mobileNumber:
           type: string
-        status:
-          type: string
-        role:
-          type: string
-        companyName:
-          type: string
-        acceptTerms:
-          type: string
-        nationality:
-          type: string
-        favoriteAnimal:
-          type: string
-        address:
-          type: string
         bio:
-          type: string
-        jobTitle:
           type: string
         followings:
           type: array
@@ -3828,6 +3821,19 @@ components:
           items:
             type: object
             '$ref': '#/components/schemas/FollowUserScheme'
+        blocked:
+          type: array
+          items:
+            type: object
+            '$ref': '#/components/schemas/FollowUserScheme'
+        isVerified:
+          type: string
+        status:
+          type: string
+        role:
+          type: string
+        acceptTerms:
+          type: string
 
     ServerErrorResponse:
       type: object
