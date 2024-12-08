@@ -635,9 +635,78 @@ export const adminClearAllPostsService = async (
   }
 };
 
+export const adminUpdatePostService = async (
+  req: AuthenticatedRequestBody<IPost>,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { title, description, category, photoUrl } = req.body;
 
+    const post = await Post.findById(req.params.postId)
+      .select('-cloudinary_id')
+      .populate('author', 'firstName  lastName  profileUrl bio')
+      .populate('likes.user', 'firstName  lastName  profileUrl bio')
+      .populate('disLikes', 'firstName  lastName  profileUrl bio')
+      .populate('comments.user', 'firstName  lastName  profileUrl bio')
+      .populate('views', 'firstName  lastName  profileUrl bio')
+      .populate('shares', 'firstName  lastName  profileUrl bio')
+      .exec();
 
+    if (!post) {
+      return next(new createHttpError.BadRequest());
+    }
 
+    if (post.cloudinary_id && req.file?.filename) {
+      // Delete the old image from cloudinary
+      await cloudinary.uploader.destroy(post.cloudinary_id);
+    }
+
+    let cloudinaryResult;
+    if (req.file?.filename) {
+      const localFilePath = `${process.env.PWD}/public/uploads/posts/${req.file?.filename}`;
+
+      cloudinaryResult = await cloudinary.uploader.upload(localFilePath, {
+        folder: 'posts'
+      });
+
+      deleteFile(localFilePath);
+    }
+
+    post.title = title || post.title;
+    post.description = description || post.description;
+    post.category = category || post.category;
+    post.cloudinary_id = req.file?.filename ? cloudinaryResult?.public_id : post.cloudinary_id;
+    post.photoUrl = cloudinaryResult?.secure_url || photoUrl || post.photoUrl;
+
+    const updatedPost = await post.save({ new: true });
+
+    const data = {
+      post: {
+        ...updatedPost._doc,
+        author: undefined,
+        creator: updatedPost._doc.author,
+        request: {
+          type: 'Get',
+          description: 'Get all posts',
+          url: `${process.env.API_URL}/api/${process.env.API_VERSION}/admin/posts`
+        }
+      }
+    };
+
+    return res.status(200).json(
+      customResponse<typeof data>({
+        success: true,
+        error: false,
+        message: `Successfully update post by ID ${req.params.postId}`,
+        status: 200,
+        data
+      })
+    );
+  } catch (error) {
+    return next(InternalServerError);
+  }
+};
 
 export const adminDeleteAllCommentInPostService = async (
   req: AuthenticatedRequestBody<IUser>,
