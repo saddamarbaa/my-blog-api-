@@ -522,3 +522,36 @@ export const adminCreatePostService = async (
     return next(InternalServerError);
   }
 };
+
+export const adminDeletePostService = async (
+  req: AuthenticatedRequestBody<IUser>,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const post = await Post.findByIdAndDelete({
+      _id: req.params.postId
+    });
+
+    if (!post) {
+      return next(createHttpError(400, `Failed to delete post by given ID ${req.params.postId}`));
+    }
+
+    // Delete image from cloudinary
+    if (post.cloudinary_id) {
+      await cloudinary.uploader.destroy(post.cloudinary_id);
+    }
+
+    return res.status(200).json(
+      customResponse({
+        data: null,
+        success: true,
+        error: false,
+        message: `Successfully deleted post by ID ${req.params.postId}`,
+        status: 200
+      })
+    );
+  } catch (error) {
+    return next(InternalServerError);
+  }
+};
