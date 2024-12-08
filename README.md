@@ -165,7 +165,15 @@ An open-source RESTful API built with Node.js, Express, MongoDB, and TypeScript,
   - [Admin Block a User](#admin-blocking-a-user)
   - [Admin Unblock a User](#admin-unblocking-a-user)
   - [Admin Delete User Account](#admin-delete-user-account)
-  -
+  - [Admin Create Post](#admin-create-post)
+  - [Admin Update Post](#admin-update-post)
+  - [Admin Delete Post](#admin-delete-post)
+  - [Admin Get Post](#admin-get-post)
+  - [Admin Get Posts](#admin-get-posts)
+  - [Admin Delete All Posts for User](#admin-delete-all-posts-for-user)
+  - [Admin Clear All Posts](#admin-clear-all-posts)
+  - [Admin Delete Comment for Post](#admin-delete-comment-for-post)
+  - [Admin Delete Single Comment](#admin-delete-single-comment)
 
 - [Posts](#Posts-API-Refeference)
 
@@ -573,7 +581,254 @@ PUT /api/v1/user/:userId/unblock
 
 # **Admin API Reference**
 
-## **Admin blocking a user**
+## **Admin Create User**
+
+```http
+  POST /api/v1/admin/users/add
+```
+
+| Parameter         | Type      | Description                                     | Required |
+| :---------------- | :-------- | :---------------------------------------------- | :------- |
+| `authentication`  | `string`  | Admin token                                     | yes      |
+| `firstName`       | `string`  | User's first name                               | yes      |
+| `lastName`        | `string`  | User's last name                                | yes      |
+| `dateOfBirth`     | `string`  | User's date of birth (YYYY-MM-DD)               | no       |
+| `email`           | `string`  | User's email address                            | yes      |
+| `bio`             | `string`  | User's biography                                | no       |
+| `skills`          | `array`   | User's skills (e.g., `["JavaScript", "React"]`) | no       |
+| `profileUrl`      | `string`  | User's profile image URL                        | no       |
+| `acceptTerms`     | `boolean` | Whether the user accepts terms and conditions   | no       |
+| `phoneNumber`     | `string`  | User's phone number                             | no       |
+| `gender`          | `string`  | User's gender                                   | no       |
+| `role`            | `string`  | User's role (e.g., 'user', 'admin')             | yes      |
+| `password`        | `string`  | User's password                                 | yes      |
+| `confirmPassword` | `string`  | User's password confirmation                    | yes      |
+
+Example request body:
+
+```json
+{
+  "firstName": "John",
+  "lastName": "Doe",
+  "dateOfBirth": "1990-01-01",
+  "email": "john.doe@example.com",
+  "bio": "Full-stack developer",
+  "skills": ["JavaScript", "Node.js", "React"],
+  "profileUrl": "https://example.com/johndoe.jpg",
+  "acceptTerms": true,
+  "phoneNumber": "+123456789",
+  "gender": "male",
+  "role": "user",
+  "password": "password123",
+  "confirmPassword": "password123"
+}
+```
+
+## **Admin Update User**
+
+```http
+   PUT /api/v1/admin/users/update/:userId
+```
+
+| Parameter         | Type      | Description                                     | Required |
+| :---------------- | :-------- | :---------------------------------------------- | :------- |
+| `authentication`  | `string`  | Admin token                                     | yes      |
+| `userId`          | `string`  | ID of the user to be updated                    | yes      |
+| `firstName`       | `string`  | User's first name                               | no       |
+| `lastName`        | `string`  | User's last name                                | no       |
+| `dateOfBirth`     | `string`  | User's date of birth (YYYY-MM-DD)               | no       |
+| `email`           | `string`  | User's email address                            | no       |
+| `bio`             | `string`  | User's biography                                | no       |
+| `skills`          | `array`   | User's skills (e.g., `["JavaScript", "React"]`) | no       |
+| `profileUrl`      | `string`  | User's profile image URL                        | no       |
+| `profileImage`    | `file`    | User's profile image file (multipart/form-data) | no       |
+| `acceptTerms`     | `boolean` | Whether the user accepts terms and conditions   | no       |
+| `phoneNumber`     | `string`  | User's phone number                             | no       |
+| `gender`          | `string`  | User's gender                                   | no       |
+| `status`          | `string`  | User's status (active, inactive)                | no       |
+| `role`            | `string`  | User's role (e.g., 'user', 'admin')             | no       |
+| `plan`            | `string`  | User's subscription plan                        | no       |
+| `userAward`       | `string`  | Award or recognition for the user               | no       |
+| `password`        | `string`  | New password (if updating)                      | no       |
+| `confirmPassword` | `string`  | New password confirmation (if updating)         | no       |
+
+Example request body:
+
+```json
+{
+  "firstName": "John",
+  "lastName": "Doe",
+  "dateOfBirth": "1990-01-01",
+  "email": "john.doe@example.com",
+  "bio": "Senior full-stack developer",
+  "skills": ["JavaScript", "Node.js", "React", "TypeScript"],
+  "profileUrl": "https://example.com/johndoe_updated.jpg",
+  "acceptTerms": true,
+  "phoneNumber": "+123456789",
+  "gender": "male",
+  "status": "active",
+  "role": "admin",
+  "plan": "premium",
+  "userAward": "Best Developer 2024",
+  "password": "newPassword123",
+  "confirmPassword": "newPassword123"
+}
+```
+
+Example request body (Multipart/form-data):
+To upload a profile image instead of passing profileUrl:
+
+```bash
+curl -X PUT "https://api.example.com/api/v1/admin/users/updat/{userId}" \
+-H "Authorization: Bearer {adminToken}" \
+-F "firstName=John" \
+-F "lastName=Doe" \
+-F "email=john.doe@example.com" \
+-F "bio=Senior full-stack developer" \
+-F "skills[]=JavaScript" \
+-F "skills[]=Node.js" \
+-F "profileImage=@/path/to/profile-image.jpg" \
+-F "phoneNumber=+123456789" \
+-F "gender=male" \
+-F "status=active" \
+-F "role=admin" \
+-F "password=newPassword123" \
+-F "confirmPassword=newPassword123"
+```
+
+---
+
+## **Admin Delete User**
+
+```http
+   DELETE /api/v1/admin/users/remove/:userId
+```
+
+| Parameter        | Type     | Description                  | Required |
+| :--------------- | :------- | :--------------------------- | :------- |
+| `authentication` | `string` | Admin token                  | yes      |
+| `userId`         | `string` | ID of the user to be deleted | yes      |
+
+### Example request:
+
+```bash
+curl -X DELETE "https://api.example.com/api/v1/admin/users/remove/{userId}" \
+-H "Authorization: Bearer {adminToken}"
+```
+
+---
+
+## **Admin Get User**
+
+```http
+   GET /api/v1/admin/users/:userId
+```
+
+| Parameter        | Type     | Description                    | Required |
+| :--------------- | :------- | :----------------------------- | :------- |
+| `authentication` | `string` | Admin token                    | yes      |
+| `userId`         | `string` | ID of the user to be retrieved | yes      |
+
+### Example request:
+
+```bash
+curl -X GET "https://api.example.com/api/v1/admin/users/{userId}" \
+-H "Authorization: Bearer {adminToken}"
+```
+
+### Example response (JSON):
+
+```json
+{
+  "userId": "12345",
+  "firstName": "John",
+  "lastName": "Doe",
+  "dateOfBirth": "1990-01-01",
+  "email": "john.doe@example.com",
+  "bio": "Full-stack developer",
+  "skills": ["JavaScript", "Node.js", "React"],
+  "profileUrl": "https://example.com/johndoe.jpg",
+  "acceptTerms": true,
+  "phoneNumber": "+123456789",
+  "gender": "male",
+  "status": "active",
+  "role": "user",
+  "plan": "premium",
+  "userAward": "Best Developer 2024"
+}
+```
+
+---
+
+## **Admin Get Users**
+
+```http
+   GET /api/v1/admin/users?limit=20&page=1&filterBy=role&role=admin&search=jhon
+```
+
+| Parameter        | Type      | Description                             | Required |
+| :--------------- | :-------- | :-------------------------------------- | :------- |
+| `authentication` | `string`  | Admin token                             | yes      |
+| `limit`          | `integer` | Number of users to retrieve per page    | no       |
+| `page`           | `integer` | Page number for pagination              | no       |
+| `filterBy`       | `string`  | Field by which to filter (e.g., `role`) | no       |
+| `role`           | `string`  | Role to filter users by                 | no       |
+| `search`         | `string`  | Search term to filter users             | no       |
+
+### Example request:
+
+```bash
+curl -X GET "https://api.example.com/api/v1/admin/users?limit=20&page=1&filterBy=role&role=admin&search=jhon" \
+-H "Authorization: Bearer {adminToken}"
+```
+
+### Example response (JSON):
+
+```json
+{
+  "page": 1,
+  "limit": 20,
+  "totalUsers": 100,
+  "users": [
+    {
+      "userId": "12345",
+      "firstName": "John",
+      "lastName": "Doe",
+      "dateOfBirth": "1990-01-01",
+      "email": "john.doe@example.com",
+      "bio": "Full-stack developer",
+      "skills": ["JavaScript", "Node.js", "React"],
+      "profileUrl": "https://example.com/johndoe.jpg",
+      "acceptTerms": true,
+      "phoneNumber": "+123456789",
+      "gender": "male",
+      "status": "active",
+      "role": "admin",
+      "plan": "premium",
+      "userAward": "Best Developer 2024"
+    },
+    {
+      "userId": "67890",
+      "firstName": "Jane",
+      "lastName": "Smith",
+      "dateOfBirth": "1992-03-12",
+      "email": "jane.smith@example.com",
+      "bio": "Backend developer",
+      "skills": ["Java", "Spring", "MySQL"],
+      "profileUrl": "https://example.com/janesmith.jpg",
+      "acceptTerms": true,
+      "phoneNumber": "+987654321",
+      "gender": "female",
+      "status": "active",
+      "role": "admin",
+      "plan": "premium",
+      "userAward": "Top Contributor 2024"
+    }
+  ]
+}
+```
+
+## **Admin Block a User**
 
 ```http
 PUT /api/v1/users/admin-block/:id
@@ -584,7 +839,7 @@ PUT /api/v1/users/admin-block/:id
 | `authentication` | `string` | Your token                       | yes      |
 | `id`             | `string` | Id of the user you want to block | yes      |
 
-## **Admin unblocking a user**
+## **Admin Unblock a User**
 
 ```http
 PUT /api/v1/users/admin-unblock/:id
@@ -595,6 +850,198 @@ PUT /api/v1/users/admin-unblock/:id
 | `authentication` | `string` | Your token                         | yes      |
 | `id`             | `string` | Id of the user you want to unblock | yes      |
 
+## **Admin Create Post**
+
+```http
+  POST /api/v1/admin/posts
+```
+
+| Parameter        | Type     | Description             | Required               |
+| :--------------- | :------- | :---------------------- | :--------------------- |
+| `authentication` | `string` | Your token              | yes                    |
+| `title`          | `string` | Post title              | yes                    |
+| `description`    | `string` | Post description        | yes                    |
+| `category`       | `string` | ID of the category      | yes                    |
+| `photoUrl`       | `string` | Image URL for the post  | yes                    |
+| `file`           | `file`   | Image file for the post | yes (if no `photoUrl`) |
+
+Example request body:
+
+```json
+{
+  "title": "My First Post",
+  "description": "This is a detailed description of the post.",
+  "category": "coding",
+  "photoUrl": "https://example.com/image.jpg"
+}
+```
+
+## **Admin Update Post**
+
+```http
+  PATCH /api/v1/admin/posts/{postId}
+```
+
+| Parameter        | Type     | Description             | Required                           |
+| :--------------- | :------- | :---------------------- | :--------------------------------- |
+| `authentication` | `string` | Your token              | yes                                |
+| `title`          | `string` | Post title              | no                                 |
+| `description`    | `string` | Post description        | no                                 |
+| `category`       | `string` | ID of the category      | no                                 |
+| `photoUrl`       | `string` | Image URL for the post  | no                                 |
+| `file`           | `file`   | Image file for the post | no (if `photoUrl` is not provided) |
+
+Example request body:
+
+```json
+{
+  "title": "Updated Post Title",
+  "description": "Updated description of the post.",
+  "category": "coding",
+  "photoUrl": "https://example.com/updated-image.jpg"
+}
+```
+
+Or, if you're uploading a file (in this case, `photoUrl` is omitted and the image will be uploaded instead):
+
+```json
+{
+  "title": "Updated Post Title",
+  "description": "Updated description of the post.",
+  "category": "coding"
+}
+```
+
+## **Admin Delete Post**
+
+```http
+ DELETE /api/v1/admin/posts/{postId}
+
+```
+
+| Parameter        | Type     | Description              | Required |
+| :--------------- | :------- | :----------------------- | :------- |
+| `authentication` | `string` | Your token               | yes      |
+| `postId`         | `string` | ID of the post to delete | yes      |
+
+## **Admin Get Post**
+
+```http
+GET /api/v1/admin/posts/{postId}
+
+```
+
+| Parameter        | Type     | Description                | Required |
+| :--------------- | :------- | :------------------------- | :------- |
+| `authentication` | `string` | Your token                 | yes      |
+| `postId`         | `string` | ID of the post to retrieve | yes      |
+
+## **Admin Get Posts**
+
+```http
+GET /api/v1/admin/posts
+
+```
+
+| Parameter        | Type     | Description                        | Required |
+| :--------------- | :------- | :--------------------------------- | :------- |
+| `authentication` | `string` | Your token                         | yes      |
+| `limit`          | `number` | Number of posts to return          | no       |
+| `page`           | `number` | Page number for pagination         | no       |
+| `filterBy`       | `string` | Field to filter by (e.g. category) | no       |
+| `search`         | `string` | Search keyword for posts           | no       |
+
+Example request:
+
+```json
+{
+  "authentication": "your_token",
+  "limit": 20,
+  "page": 1,
+  "filterBy": "category",
+  "search": "coding"
+}
+```
+
+## **Admin Delete All Posts for User**
+
+```http
+  DELETE /api/v1/admin/posts/user/{userId}
+```
+
+| Parameter        | Type     | Description    | Required |
+| :--------------- | :------- | :------------- | :------- |
+| `authentication` | `string` | Your token     | yes      |
+| `userId`         | `string` | ID of the user | yes      |
+
+Example request:
+
+```json
+{
+  "authentication": "your_token",
+  "userId": "user123"
+}
+```
+
+## **Admin Clear All Posts**
+
+```http
+  DELETE /api/v1/admin/posts/clear-all-posts
+```
+
+| Parameter        | Type     | Description | Required |
+| :--------------- | :------- | :---------- | :------- |
+| `authentication` | `string` | Your token  | yes      |
+
+Example request:
+
+```json
+{
+  "authentication": "your_token"
+}
+```
+
+## **Admin Delete Comment for Post**
+
+```http
+  DELETE /api/v1/admin/posts/comment/{postId}
+```
+
+| Parameter        | Type     | Description    | Required |
+| :--------------- | :------- | :------------- | :------- |
+| `authentication` | `string` | Your token     | yes      |
+| `postId`         | `string` | ID of the post | yes      |
+
+Example request:
+
+```json
+{
+  "authentication": "your_token",
+  "postId": "post123"
+}
+```
+
+## **Admin Delete Single Comment**
+
+```http
+    DELETE /api/v1/admin/posts/comment
+```
+
+| Parameter        | Type     | Description                 | Required |
+| :--------------- | :------- | :-------------------------- | :------- |
+| `authentication` | `string` | Your token                  | yes      |
+| `postId`         | `string` | ID of the post              | yes      |
+| `commentId`      | `string` | ID of the comment to delete | yes      |
+
+Example request:
+
+```json
+{
+  "postId": "6755f41ddec28835fdf268d7",
+  "commentId": "6755f445dec28835fdf268e5"
+}
+```
+
 # **Posts API Reference**
 
 ## **Create Post**
@@ -603,22 +1050,59 @@ PUT /api/v1/users/admin-unblock/:id
   POST /api/v1/posts
 ```
 
-| Parameter        | Type     | Description        | Required |
-| :--------------- | :------- | :----------------- | :------- |
-| `authentication` | `string` | Your token         | yes      |
-| `title`          | `string` | Post title         | yes      |
-| `description`    | `string` | Post description   | yes      |
-| `category`       | `string` | ID of the category | yes      |
-| `photoUrl`       | `string` | Image of the post  | yes      |
+| Parameter        | Type     | Description             | Required               |
+| :--------------- | :------- | :---------------------- | :--------------------- |
+| `authentication` | `string` | Your token              | yes                    |
+| `title`          | `string` | Post title              | yes                    |
+| `description`    | `string` | Post description        | yes                    |
+| `category`       | `string` | ID of the category      | yes                    |
+| `photoUrl`       | `string` | Image URL for the post  | yes                    |
+| `file`           | `file`   | Image file for the post | yes (if no `photoUrl`) |
 
 Example request body:
 
-```javascript
+```json
 {
-  "title":"value",
-  "description":"value",
-  "category":"value",
-  "photoUrl":"photo",
+  "title": "My First Post",
+  "description": "This is a detailed description of the post.",
+  "category": "coding",
+  "photoUrl": "https://example.com/image.jpg"
+}
+```
+
+## **Update Post**
+
+```http
+  PATCH /api/v1/posts/{postId}
+```
+
+| Parameter        | Type     | Description             | Required                           |
+| :--------------- | :------- | :---------------------- | :--------------------------------- |
+| `authentication` | `string` | Your token              | yes                                |
+| `title`          | `string` | Post title              | no                                 |
+| `description`    | `string` | Post description        | no                                 |
+| `category`       | `string` | ID of the category      | no                                 |
+| `photoUrl`       | `string` | Image URL for the post  | no                                 |
+| `file`           | `file`   | Image file for the post | no (if `photoUrl` is not provided) |
+
+Example request body:
+
+```json
+{
+  "title": "Updated Post Title",
+  "description": "Updated description of the post.",
+  "category": "coding",
+  "photoUrl": "https://example.com/updated-image.jpg"
+}
+```
+
+Or, if you're uploading a file (in this case, `photoUrl` is omitted and the image will be uploaded instead):
+
+```json
+{
+  "title": "Updated Post Title",
+  "description": "Updated description of the post.",
+  "category": "coding"
 }
 ```
 
