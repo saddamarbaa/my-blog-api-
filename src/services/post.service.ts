@@ -5,14 +5,26 @@ import { ObjectId } from 'mongoose';
 import User from '@src/models/User.model';
 import Post from '@src/models/Post.model';
 import { customResponse, deleteFile } from '@src/utils';
-import { AuthenticatedRequestBody, IPost, IUser, TPaginationResponse } from '@src/interfaces';
+import {
+  AddCommentT,
+  AuthenticatedRequestBody,
+  CommentI,
+  IPost,
+  IUser,
+  LikeT,
+  TPaginationResponse,
+  UpdateCommentT
+} from '@src/interfaces';
 import { cloudinary } from '@src/middlewares';
 import { AUTHORIZATION_ROLES } from '@src/constants';
 
 export const createPostService = async (req: AuthenticatedRequestBody<IPost>, res: Response, next: NextFunction) => {
-  const { title, description, category } = req.body;
+  const { title, description, category, photoUrl } = req.body;
 
-  // console.log(req.body, req.file);
+  // Check if either an image file or photoUrl is provided
+  if (!req.file && !photoUrl) {
+    return next(createHttpError(422, `Either an image file must be uploaded or a photo URL must be provided`));
+  }
 
   try {
     let cloudinaryResult;
@@ -26,11 +38,14 @@ export const createPostService = async (req: AuthenticatedRequestBody<IPost>, re
       deleteFile(localFilePath);
     }
 
+    // If no image file, use the provided photo URL
+    const photo = cloudinaryResult?.secure_url || photoUrl;
+
     const postData = new Post({
       title,
       description,
       category: category?.toLocaleLowerCase(),
-      photoUrl: cloudinaryResult?.secure_url,
+      photoUrl: photo,
       cloudinary_id: cloudinaryResult?.public_id,
       author: req?.user?._id || ''
     });
@@ -69,6 +84,84 @@ export const createPostService = async (req: AuthenticatedRequestBody<IPost>, re
       const localFilePath = `${process.env.PWD}/public/uploads/posts/${req.file?.filename}`;
       deleteFile(localFilePath);
     }
+    return next(InternalServerError);
+  }
+};
+
+export const updatePostService = async (req: AuthenticatedRequestBody<IPost>, res: Response, next: NextFunction) => {
+  const { title, description, category, photoUrl } = req.body;
+
+  try {
+    const post = await Post.findById(req.params.postId)
+      .select('-cloudinary_id')
+      .populate('author', 'firstName  lastName  profileUrl bio')
+      .populate('likes.user', 'firstName  lastName  profileUrl bio')
+      .populate('disLikes', 'firstName  lastName  profileUrl bio')
+      .populate('comments.user', 'firstName  lastName  profileUrl bio')
+      .populate('views', 'firstName  lastName  profileUrl bio')
+      .populate('shares', 'firstName  lastName  profileUrl bio')
+      .exec();
+
+    if (!post) {
+      return next(new createHttpError.BadRequest());
+    }
+
+    // Allow user to update only post which is created by them
+    if (!req.user?._id.equals(post.author._id) && req?.user?.role !== 'admin') {
+      return next(createHttpError(403, `Auth Failed (Unauthorized)`));
+    }
+
+    if (post.cloudinary_id && req.file?.filename) {
+      // Delete the old image from cloudinary
+      await cloudinary.uploader.destroy(post.cloudinary_id);
+    }
+
+    let cloudinaryResult;
+    if (req.file?.filename) {
+      const localFilePath = `${process.env.PWD}/public/uploads/posts/${req.file?.filename}`;
+
+      cloudinaryResult = await cloudinary.uploader.upload(localFilePath, {
+        folder: 'posts'
+      });
+
+      deleteFile(localFilePath);
+    }
+
+    post.title = title || post.title;
+    post.description = description || post.description;
+    post.category = category || post.category;
+    post.cloudinary_id = req.file?.filename ? cloudinaryResult?.public_id : post.cloudinary_id;
+    post.photoUrl = cloudinaryResult?.secure_url || photoUrl || post.photoUrl;
+
+    const updatedPost = await post.save({ new: true });
+
+    const data = {
+      post: {
+        ...updatedPost._doc,
+        author: {
+          _id: req?.user?._id || '',
+          firstName: req?.user?.firstName || '',
+          lastName: req?.user?.lastName || '',
+          profileUrl: req?.user?.profileUrl || ''
+        },
+        request: {
+          type: 'Get',
+          description: 'Get all posts',
+          url: `${process.env.API_URL}/api/${process.env.API_VERSION}/posts`
+        }
+      }
+    };
+
+    return res.status(200).json(
+      customResponse<typeof data>({
+        success: true,
+        error: false,
+        message: `Successfully update post by ID ${req.params.postId}`,
+        status: 200,
+        data
+      })
+    );
+  } catch (error) {
     return next(InternalServerError);
   }
 };
@@ -117,7 +210,7 @@ export const getPostsService = async (_req: Request, res: TPaginationResponse) =
 export const getPostService = async (req: AuthenticatedRequestBody<IUser>, res: Response, next: NextFunction) => {
   try {
     const post = await Post.findOne({
-      id: req.params.postId
+      _id: req.params.postId
     })
       .select('-cloudinary_id')
       .populate('author', 'firstName  lastName  profileUrl bio')
@@ -349,5 +442,557 @@ export const deleteUserPostsService = async (
     );
   } catch (error) {
     return next(error);
+  }
+};
+
+export const likePostService = async (req: AuthenticatedRequestBody<IPost>, res: Response, next: NextFunction) => {
+  try {
+    const post = await Post.findById(req.params.postId);
+
+    if (!post) {
+      return next(new createHttpError.BadRequest());
+    }
+
+    const isAlreadyLiked = post.likes.some(function (like: LikeT) {
+      if (like?.user.toString() === req.user?._id.toString()) return true;
+      return false;
+    });
+
+    if (!isAlreadyLiked) {
+      await post.updateOne({
+        $push: {
+          likes: {
+            user: req.user?._id
+          }
+        }
+      });
+    } else {
+      await post.updateOne({ $pull: { likes: { user: req.user?._id } } });
+    }
+
+    const updatedPost = await Post.findById(req.params.postId)
+      .select('-cloudinary_id')
+      .populate('author', 'firstName  lastName  profileUrl bio')
+      .populate('likes.user', 'firstName  lastName  profileUrl bio')
+      .populate('disLikes', 'firstName  lastName  profileUrl bio')
+      .populate('comments.user', 'firstName  lastName  profileUrl bio')
+      .populate('views', 'firstName  lastName  profileUrl bio')
+      .populate('shares', 'firstName  lastName  profileUrl bio')
+      .exec();
+
+    const data = {
+      post: {
+        ...updatedPost._doc,
+        request: {
+          type: 'Get',
+          description: 'Get all posts',
+          url: `${process.env.API_URL}/api/${process.env.API_VERSION}/posts`
+        }
+      }
+    };
+
+    const message = isAlreadyLiked
+      ? `Successfully disliked post by ID: ${req.params.postId}`
+      : `Successfully liked post by ID: ${req.params.postId}`;
+    return res.status(200).send(
+      customResponse<typeof data>({
+        success: true,
+        error: false,
+        message,
+        status: 200,
+        data
+      })
+    );
+  } catch (error) {
+    return next(InternalServerError);
+  }
+};
+
+export const addCommentInPostService = async (
+  req: AuthenticatedRequestBody<AddCommentT>,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { postId, comment } = req.body;
+
+    const newComment = {
+      comment,
+      user: req.user?._id
+    };
+
+    const post = await Post.findByIdAndUpdate(
+      postId,
+      {
+        $push: {
+          comments: {
+            $each: [newComment],
+            $position: 0
+          }
+        }
+      },
+      {
+        new: true
+      }
+    )
+      .select('-cloudinary_id')
+      .populate('author', 'firstName  lastName  profileUrl bio')
+      .populate('likes.user', 'firstName  lastName  profileUrl bio')
+      .populate('disLikes', 'firstName  lastName  profileUrl bio')
+      .populate('comments.user', 'firstName  lastName  profileUrl bio')
+      .populate('views', 'firstName  lastName  profileUrl bio')
+      .populate('shares', 'firstName  lastName  profileUrl bio')
+      .exec();
+
+    if (!post) {
+      return next(new createHttpError.BadRequest());
+    }
+
+    const data = {
+      post: {
+        ...post._doc,
+        request: {
+          type: 'Get',
+          description: 'Get all posts',
+          url: `${process.env.API_URL}/api/${process.env.API_VERSION}/posts`
+        }
+      }
+    };
+
+    return res.status(200).send(
+      customResponse<typeof data>({
+        success: true,
+        error: false,
+        message: `Successfully add comment to post by ID : ${postId} `,
+        status: 200,
+        data
+      })
+    );
+  } catch (error) {
+    return next(InternalServerError);
+  }
+};
+
+export const updateCommentInPostService = async (
+  req: AuthenticatedRequestBody<UpdateCommentT>,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { postId, commentId, comment } = req.body;
+
+    const post = await Post.findById(postId)
+      .select('-cloudinary_id')
+      .populate('author', 'firstName  lastName  profileUrl bio')
+      .populate('likes.user', 'firstName  lastName  profileUrl bio')
+      .populate('disLikes', 'firstName  lastName  profileUrl bio')
+      .populate('comments.user', 'firstName  lastName  profileUrl bio')
+      .populate('views', 'firstName  lastName  profileUrl bio')
+      .populate('shares', 'firstName  lastName  profileUrl bio')
+      .exec();
+
+    if (!post) {
+      return next(new createHttpError.BadRequest());
+    }
+
+    const isAlreadyComment = post.comments.find(
+      (item: { user: IUser; _id: string }) =>
+        item.user?._id.toString() === req.user?._id.toString() && item?._id.toString() === commentId.toString()
+    );
+
+    if (!isAlreadyComment) {
+      return next(createHttpError(403, `Auth Failed (Unauthorized)`));
+    }
+
+    post.comments.forEach((item: { user: IUser; _id: string }, index: number) => {
+      if (item?._id.toString() === commentId.toString()) {
+        const newComment = {
+          user: item.user,
+          _id: item._id,
+          comment
+        };
+
+        post.comments[index] = newComment;
+      }
+    });
+
+    await post.save();
+
+    const data = {
+      post: {
+        ...post._doc,
+        request: {
+          type: 'Get',
+          description: 'Get all posts',
+          url: `${process.env.API_URL}/api/${process.env.API_VERSION}/posts`
+        }
+      }
+    };
+
+    return res.status(200).send(
+      customResponse<typeof data>({
+        success: true,
+        error: false,
+        message: `Successfully update comment  by ID : ${commentId} `,
+        status: 200,
+        data
+      })
+    );
+  } catch (error) {
+    return next(InternalServerError);
+  }
+};
+
+export const getCommentInPostService = async (
+  req: AuthenticatedRequestBody<IUser>,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { postId, commentId } = req.params;
+
+    const post = await Post.findById(postId)
+      .select('-cloudinary_id')
+      .populate('author', 'firstName  lastName  profileUrl bio')
+      .populate('likes.user', 'firstName  lastName  profileUrl bio')
+      .populate('disLikes', 'firstName  lastName  profileUrl bio')
+      .populate('comments.user', 'firstName  lastName  profileUrl bio')
+      .populate('views', 'firstName  lastName  profileUrl bio')
+      .populate('shares', 'firstName  lastName  profileUrl bio')
+      .exec();
+
+    if (!post) {
+      return next(new createHttpError.BadRequest());
+    }
+
+    const isCommentExists = post.comments.find(
+      (item: { user: IUser; _id: string }) => item?._id.toString() === commentId.toString()
+    );
+
+    if (!isCommentExists) {
+      return next(new createHttpError.BadRequest());
+    }
+
+    post.comments = post.comments.filter(
+      (item: { user: IUser; _id: string }) =>
+        item.user?._id.toString() === req.user?._id.toString() && item?._id.toString() === commentId.toString()
+    );
+
+    const { comments } = post._doc;
+
+    const data = {
+      comment: comments,
+      request: {
+        type: 'Get',
+        description: 'Get all posts',
+        url: `${process.env.API_URL}/api/${process.env.API_VERSION}/posts`
+      }
+    };
+
+    return res.status(200).send(
+      customResponse<typeof data>({
+        success: true,
+        error: false,
+        message: `Successfully found comment by ID : ${commentId} `,
+        status: 200,
+        data
+      })
+    );
+  } catch (error) {
+    return next(InternalServerError);
+  }
+};
+
+export const getUserCommentInPostService = async (
+  req: AuthenticatedRequestBody<IUser>,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const post = await Post.findById(req.params.postId)
+      .select('-cloudinary_id')
+      .populate('author', 'firstName  lastName  profileUrl bio')
+      .populate('likes.user', 'firstName  lastName  profileUrl bio')
+      .populate('disLikes', 'firstName  lastName  profileUrl bio')
+      .populate('comments.user', 'firstName  lastName  profileUrl bio')
+      .populate('views', 'firstName  lastName  profileUrl bio')
+      .populate('shares', 'firstName  lastName  profileUrl bio')
+      .exec();
+
+    if (!post || !post.comments.length) {
+      return next(new createHttpError.BadRequest());
+    }
+
+    const isAlreadyComment = post.comments.find(
+      (com: { user: IUser }) => com.user?._id.toString() === req.user?._id.toString()
+    );
+
+    if (!isAlreadyComment) {
+      return next(createHttpError(403, `Auth Failed (Unauthorized)`));
+    }
+
+    post.comments = post.comments.filter(
+      (com: { user: IUser }) => com.user?._id.toString() === req.user?._id.toString()
+    );
+
+    const comments = post.comments.map((commentDoc: { _doc: CommentI }) => {
+      return {
+        ...commentDoc._doc,
+        request: {
+          type: 'Get',
+          description: 'Get one comment with the id',
+          url: `${process.env.API_URL}/api/${process.env.API_VERSION}/posts/comment/${req.params.postId}/${commentDoc._doc._id}`
+        }
+      };
+    });
+
+    const data = {
+      comments
+    };
+
+    return res.status(200).send(
+      customResponse<typeof data>({
+        success: true,
+        error: false,
+        message: `Successfully found all your comment in post by ID : ${req.params.postId} `,
+        status: 200,
+        data
+      })
+    );
+  } catch (error) {
+    return next(InternalServerError);
+  }
+};
+
+export const getAllCommentInPostService = async (
+  req: AuthenticatedRequestBody<IUser>,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const post = await Post.findById(req.params.postId)
+      .select('-cloudinary_id')
+      .populate('author', 'firstName  lastName  profileUrl bio')
+      .populate('likes.user', 'firstName  lastName  profileUrl bio')
+      .populate('disLikes', 'firstName  lastName  profileUrl bio')
+      .populate('comments.user', 'firstName  lastName  profileUrl bio')
+      .populate('views', 'firstName  lastName  profileUrl bio')
+      .populate('shares', 'firstName  lastName  profileUrl bio')
+      .exec();
+
+    if (!post || !post.comments.length) {
+      return next(new createHttpError.BadRequest());
+    }
+
+    const comments = post.comments.map((commentDoc: { _doc: CommentI }) => {
+      return {
+        ...commentDoc._doc,
+        request: {
+          type: 'Get',
+          description: 'Get one comment with the id',
+          url: `${process.env.API_URL}/api/${process.env.API_VERSION}/posts/comment/${req.params.postId}/${commentDoc._doc._id}`
+        }
+      };
+    });
+
+    const data = {
+      comments
+    };
+
+    return res.status(200).send(
+      customResponse<typeof data>({
+        success: true,
+        error: false,
+        message: `Successfully found all comments for post by ID : ${req.params.postId} `,
+        status: 200,
+        data
+      })
+    );
+  } catch (error) {
+    return next(InternalServerError);
+  }
+};
+
+export const deleteCommentInPostService = async (
+  req: AuthenticatedRequestBody<UpdateCommentT>,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { postId, commentId } = req.body;
+
+    const post = await Post.findById(postId)
+      .select('-cloudinary_id')
+      .populate('author', 'firstName  lastName  profileUrl bio')
+      .populate('likes.user', 'firstName  lastName  profileUrl bio')
+      .populate('disLikes', 'firstName  lastName  profileUrl bio')
+      .populate('comments.user', 'firstName  lastName  profileUrl bio')
+      .populate('views', 'firstName  lastName  profileUrl bio')
+      .populate('shares', 'firstName  lastName  profileUrl bio')
+      .exec();
+
+    if (!post || !post?.comments?.length) {
+      return next(new createHttpError.BadRequest());
+    }
+
+    const isAuthorized = post.comments.find(
+      (item: { user: IUser; _id: string }) =>
+        (req.user?._id.equals(post.author._id) || item.user?._id.toString() === req.user?._id.toString()) &&
+        item?._id.toString() === commentId.toString()
+    );
+
+    if (!isAuthorized) {
+      return next(createHttpError(403, `Auth Failed (Unauthorized)`));
+    }
+
+    post.comments = post.comments.filter(
+      (item: { user: IUser; _id: string }) => item?._id.toString() !== commentId?.toString()
+    );
+
+    await post.save();
+
+    const data = {
+      post: {
+        ...post._doc,
+        request: {
+          type: 'Get',
+          description: 'Get all posts',
+          url: `${process.env.API_URL}/api/${process.env.API_VERSION}/posts`
+        }
+      }
+    };
+
+    return res.status(200).send(
+      customResponse<typeof data>({
+        success: true,
+        error: false,
+        message: `Successfully delete comment by ID : ${commentId} `,
+        status: 200,
+        data
+      })
+    );
+  } catch (error) {
+    return next(InternalServerError);
+  }
+};
+
+export const deleteAllCommentInPostService = async (
+  req: AuthenticatedRequestBody<IUser>,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const post = await Post.findById(req.params.postId)
+      .select('-cloudinary_id')
+      .populate('author', 'firstName  lastName  profileUrl bio')
+      .populate('likes.user', 'firstName  lastName  profileUrl bio')
+      .populate('disLikes', 'firstName  lastName  profileUrl bio')
+      .populate('comments.user', 'firstName  lastName  profileUrl bio')
+      .populate('views', 'firstName  lastName  profileUrl bio')
+      .populate('shares', 'firstName  lastName  profileUrl bio')
+      .exec();
+
+    if (!post || !post?.comments?.length) {
+      return next(new createHttpError.BadRequest());
+    }
+
+    // Allow only user who created the post or admin to delete the comment
+    if (!req.user?._id.equals(post.author._id) && req?.user?.role !== 'admin') {
+      return next(createHttpError(403, `Auth Failed (Unauthorized)`));
+    }
+
+    post.comments = [];
+    await post.save();
+
+    const data = {
+      post: {
+        ...post._doc,
+        request: {
+          type: 'Get',
+          description: 'Get all posts',
+          url: `${process.env.API_URL}/api/${process.env.API_VERSION}/posts`
+        }
+      }
+    };
+
+    return res.status(200).send(
+      customResponse<typeof data>({
+        success: true,
+        error: false,
+        message: `Successfully deleted all comments in post by ID : ${req.params.postId} `,
+        status: 200,
+        data
+      })
+    );
+  } catch (error) {
+    return next(InternalServerError);
+  }
+};
+
+export const deleteUserCommentInPostService = async (
+  req: AuthenticatedRequestBody<IUser>,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const post = await Post.findById(req.params.postId)
+      .select('-cloudinary_id')
+      .populate('author', 'firstName  lastName  profileUrl bio')
+      .populate('likes.user', 'firstName  lastName  profileUrl bio')
+      .populate('disLikes', 'firstName  lastName  profileUrl bio')
+      .populate('comments.user', 'firstName  lastName  profileUrl bio')
+      .populate('views', 'firstName  lastName  profileUrl bio')
+      .populate('shares', 'firstName  lastName  profileUrl bio')
+      .exec();
+
+    if (!post) {
+      return next(new createHttpError.BadRequest());
+    }
+
+    if (req?.body?.userId) {
+      const user = await User.findById(req.body.userId);
+      if (!user) {
+        return next(createHttpError(403));
+      }
+    }
+
+    const isAlreadyComment = post.comments.find((item: { user: IUser }) =>
+      item.user?._id.toString() === req?.body?.userId ? req?.body?.userId?.toString() : req.user?._id.toString()
+    );
+
+    // Allow only user who created the post or admin or user who add comment to delete the comments
+    if (!isAlreadyComment && !req.user?._id.equals(post.author._id) && req?.user?.role !== 'admin') {
+      return next(createHttpError(403, `Auth Failed (Unauthorized)`));
+    }
+
+    post.comments = post.comments.filter(
+      (item: { user: IUser }) =>
+        item.user?._id.toString() !== (req?.body?.userId ? req?.body?.userId?.toString() : req.user?._id.toString())
+    );
+
+    await post.save();
+
+    const data = {
+      post: {
+        ...post._doc,
+        request: {
+          type: 'Get',
+          description: 'Get all comments',
+          url: `${process.env.API_URL}/api/${process.env.API_VERSION}/posts/comment/${req.params.postId}`
+        }
+      }
+    };
+
+    return res.status(200).send(
+      customResponse<typeof data>({
+        success: true,
+        error: false,
+        message: `Successfully deleted all user comments in post by ID : ${req.params.postId} `,
+        status: 200,
+        data
+      })
+    );
+  } catch (error) {
+    return next(InternalServerError);
   }
 };

@@ -1,14 +1,35 @@
 import express from 'express';
 
-import { addPostValidation, isLogin, postIdValidation, postPaginationMiddleware, uploadImage } from '@src/middlewares';
 import {
+  addCommentValidation,
+  addPostValidation,
+  commentIdValidation,
+  deleteCommentValidation,
+  isLogin,
+  postIdValidation,
+  postPaginationMiddleware,
+  updateCommentValidation,
+  updatePostValidation,
+  uploadImage
+} from '@src/middlewares';
+import {
+  addCommentInPostController,
   createPostController,
+  deleteAllCommentInPostController,
+  deleteCommentInPostController,
   deletePostController,
+  deleteUserCommentInPostController,
   deleteUserPostsController,
+  getAllCommentInPostController,
+  getCommentInPostController,
   getPostController,
   getPostsController,
   getTimelinePostsController,
-  getUserPostsController
+  getUserCommentInPostController,
+  getUserPostsController,
+  likePostController,
+  updateCommentInPostController,
+  updatePostController
 } from '@src/controllers';
 
 const router = express.Router();
@@ -17,24 +38,18 @@ router.get('/', postPaginationMiddleware(), getPostsController);
 router.get('/user-posts', isLogin, getUserPostsController);
 router.get('/timeline', isLogin, getTimelinePostsController);
 router.delete('/user-posts', isLogin, deleteUserPostsController);
-// router.put('/posts/comment', isAuth, addCommentValidation, addCommentInPostController);
-// router.patch('/posts/comment', isAuth, updateCommentValidation, updateCommentInPostController);
-// router.delete('/posts/comment', isAuth, deleteCommentValidation, deleteCommentInPostController);
-// router.delete('/posts/comment/:postId', isAuth, updatePostValidation, deleteAllCommentInPostController);
-// router.delete('/posts/user-comment/:postId', isAuth, postIdValidation, deleteUserCommentInPostController);
-// router.get(
-//   '/posts/comment/:postId/:commentId',
-//   isAuth,
-//   postIdValidation,
-//   commentIdValidation,
-//   getCommentInPostController
-// );
-// router.get('/posts/comment/:postId', isAuth, postIdValidation, getAllCommentInPostController);
-// router.get('/posts/user-comment/:postId', isAuth, updatePostValidation, getUserCommentInPostController);
+router.put('/comment', isLogin, addCommentValidation, addCommentInPostController);
+router.patch('/comment', isLogin, updateCommentValidation, updateCommentInPostController);
+router.delete('/comment', isLogin, deleteCommentValidation, deleteCommentInPostController);
+router.delete('/comment/:postId', isLogin, updatePostValidation, deleteAllCommentInPostController);
+router.delete('/user-comment/:postId', isLogin, postIdValidation, deleteUserCommentInPostController);
+router.get('/comment/:postId/:commentId', isLogin, postIdValidation, commentIdValidation, getCommentInPostController);
+router.get('/comment/:postId', isLogin, postIdValidation, getAllCommentInPostController);
+router.get('/user-comment/:postId', isLogin, updatePostValidation, getUserCommentInPostController);
 router.get('/:postId', postIdValidation, getPostController);
 router.delete('/:postId', isLogin, postIdValidation, deletePostController);
-// router.patch('/posts/:postId', uploadImage.single('postImage'), isAuth, updatePostValidation, updatePostController);
+router.patch('/:postId', uploadImage.single('postImage'), isLogin, updatePostValidation, updatePostController);
 router.post('/', uploadImage.single('postImage'), isLogin, addPostValidation, createPostController);
-// router.put('/posts/:postId/like', isAuth, postIdValidation, likePostController);
+router.put('/:postId/like', isLogin, postIdValidation, likePostController);
 
 export = router;

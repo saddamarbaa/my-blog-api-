@@ -1,14 +1,31 @@
 import { NextFunction, Request, Response } from 'express';
 
-import { AuthenticatedRequestBody, IPost, IUser, TPaginationResponse } from '@src/interfaces';
 import {
+  AddCommentT,
+  AuthenticatedRequestBody,
+  IPost,
+  IUser,
+  TPaginationResponse,
+  UpdateCommentT
+} from '@src/interfaces';
+import {
+  addCommentInPostService,
   createPostService,
+  deleteAllCommentInPostService,
+  deleteCommentInPostService,
   deletePostService,
+  deleteUserCommentInPostService,
   deleteUserPostsService,
+  getAllCommentInPostService,
+  getCommentInPostService,
   getPostService,
   getPostsService,
   getTimelinePostsService,
-  getUserPostsService
+  getUserCommentInPostService,
+  getUserPostsService,
+  likePostService,
+  updateCommentInPostService,
+  updatePostService
 } from '@src/services';
 
 export const createPostController = (req: AuthenticatedRequestBody<IPost>, res: Response, next: NextFunction) =>
@@ -30,3 +47,54 @@ export const getUserPostsController = (req: AuthenticatedRequestBody<IUser>, res
 
 export const deleteUserPostsController = (req: AuthenticatedRequestBody<IUser>, res: Response, next: NextFunction) =>
   deleteUserPostsService(req, res, next);
+
+export const updatePostController = (req: AuthenticatedRequestBody<IPost>, res: Response, next: NextFunction) =>
+  updatePostService(req, res, next);
+
+export const likePostController = (req: AuthenticatedRequestBody<IPost>, res: Response, next: NextFunction) =>
+  likePostService(req, res, next);
+
+export const addCommentInPostController = (
+  req: AuthenticatedRequestBody<AddCommentT>,
+  res: Response,
+  next: NextFunction
+) => addCommentInPostService(req, res, next);
+
+export const updateCommentInPostController = (
+  req: AuthenticatedRequestBody<UpdateCommentT>,
+  res: Response,
+  next: NextFunction
+) => updateCommentInPostService(req, res, next);
+
+export const getCommentInPostController = (req: AuthenticatedRequestBody<IUser>, res: Response, next: NextFunction) =>
+  getCommentInPostService(req, res, next);
+
+export const getUserCommentInPostController = (
+  req: AuthenticatedRequestBody<IUser>,
+  res: Response,
+  next: NextFunction
+) => getUserCommentInPostService(req, res, next);
+
+export const getAllCommentInPostController = (
+  req: AuthenticatedRequestBody<IUser>,
+  res: Response,
+  next: NextFunction
+) => getAllCommentInPostService(req, res, next);
+
+export const deleteCommentInPostController = (
+  req: AuthenticatedRequestBody<UpdateCommentT>,
+  res: Response,
+  next: NextFunction
+) => deleteCommentInPostService(req, res, next);
+
+export const deleteUserCommentInPostController = (
+  req: AuthenticatedRequestBody<IUser>,
+  res: Response,
+  next: NextFunction
+) => deleteUserCommentInPostService(req, res, next);
+
+export const deleteAllCommentInPostController = (
+  req: AuthenticatedRequestBody<IUser>,
+  res: Response,
+  next: NextFunction
+) => deleteAllCommentInPostService(req, res, next);
