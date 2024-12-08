@@ -555,3 +555,47 @@ export const adminDeletePostService = async (
     return next(InternalServerError);
   }
 };
+
+export const adminDeleteAllPostForGivenUserService = async (
+  req: AuthenticatedRequestBody<IUser>,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { userId } = req.params;
+    const posts = await Post.find({
+      author: userId
+    });
+
+    if (!posts || !posts.length) {
+      return next(new createHttpError.BadRequest());
+    }
+
+    const droppedUserPost = await Post.deleteMany({
+      author: userId
+    });
+
+    if (droppedUserPost.deletedCount === 0) {
+      return next(createHttpError(400, `Failed to delete post for given user by ID ${userId}`));
+    }
+
+    // Remove all the images
+    posts.forEach(async (post) => {
+      if (post?.cloudinary_id) {
+        await cloudinary.uploader.destroy(post?.cloudinary_id);
+      }
+    });
+
+    return res.status(200).json(
+      customResponse({
+        data: null,
+        success: true,
+        error: false,
+        message: `Successfully deleted all posts for user by ID ${userId}`,
+        status: 200
+      })
+    );
+  } catch (error) {
+    return next(error);
+  }
+};
