@@ -165,7 +165,15 @@ An open-source RESTful API built with Node.js, Express, MongoDB, and TypeScript,
   - [Admin Block a User](#admin-blocking-a-user)
   - [Admin Unblock a User](#admin-unblocking-a-user)
   - [Admin Delete User Account](#admin-delete-user-account)
-  -
+  - [Admin Create Post](#admin-create-post)
+  - [Admin Update Post](#admin-update-post)
+  - [Admin Delete Post](#admin-delete-post)
+  - [Admin Get Post](#admin-get-post)
+  - [Admin Get Posts](#admin-get-posts)
+  - [Admin Delete All Posts for User](#admin-delete-all-posts-for-user)
+  - [Admin Clear All Posts](#admin-clear-all-posts)
+  - [Admin Delete Comment for Post](#admin-delete-comment-for-post)
+  - [Admin Delete Single Comment](#admin-delete-single-comment)
 
 - [Posts](#Posts-API-Refeference)
 
@@ -820,7 +828,7 @@ curl -X GET "https://api.example.com/api/v1/admin/users?limit=20&page=1&filterBy
 }
 ```
 
-## **Admin blocking a user**
+## **Admin Block a User**
 
 ```http
 PUT /api/v1/users/admin-block/:id
@@ -831,7 +839,7 @@ PUT /api/v1/users/admin-block/:id
 | `authentication` | `string` | Your token                       | yes      |
 | `id`             | `string` | Id of the user you want to block | yes      |
 
-## **Admin unblocking a user**
+## **Admin Unblock a User**
 
 ```http
 PUT /api/v1/users/admin-unblock/:id
@@ -841,6 +849,198 @@ PUT /api/v1/users/admin-unblock/:id
 | :--------------- | :------- | :--------------------------------- | :------- |
 | `authentication` | `string` | Your token                         | yes      |
 | `id`             | `string` | Id of the user you want to unblock | yes      |
+
+## **Admin Create Post**
+
+```http
+  POST /api/v1/admin/posts
+```
+
+| Parameter        | Type     | Description             | Required               |
+| :--------------- | :------- | :---------------------- | :--------------------- |
+| `authentication` | `string` | Your token              | yes                    |
+| `title`          | `string` | Post title              | yes                    |
+| `description`    | `string` | Post description        | yes                    |
+| `category`       | `string` | ID of the category      | yes                    |
+| `photoUrl`       | `string` | Image URL for the post  | yes                    |
+| `file`           | `file`   | Image file for the post | yes (if no `photoUrl`) |
+
+Example request body:
+
+```json
+{
+  "title": "My First Post",
+  "description": "This is a detailed description of the post.",
+  "category": "coding",
+  "photoUrl": "https://example.com/image.jpg"
+}
+```
+
+## **Admin Update Post**
+
+```http
+  PATCH /api/v1/admin/posts/{postId}
+```
+
+| Parameter        | Type     | Description             | Required                           |
+| :--------------- | :------- | :---------------------- | :--------------------------------- |
+| `authentication` | `string` | Your token              | yes                                |
+| `title`          | `string` | Post title              | no                                 |
+| `description`    | `string` | Post description        | no                                 |
+| `category`       | `string` | ID of the category      | no                                 |
+| `photoUrl`       | `string` | Image URL for the post  | no                                 |
+| `file`           | `file`   | Image file for the post | no (if `photoUrl` is not provided) |
+
+Example request body:
+
+```json
+{
+  "title": "Updated Post Title",
+  "description": "Updated description of the post.",
+  "category": "coding",
+  "photoUrl": "https://example.com/updated-image.jpg"
+}
+```
+
+Or, if you're uploading a file (in this case, `photoUrl` is omitted and the image will be uploaded instead):
+
+```json
+{
+  "title": "Updated Post Title",
+  "description": "Updated description of the post.",
+  "category": "coding"
+}
+```
+
+## **Admin Delete Post**
+
+```http
+ DELETE /api/v1/admin/posts/{postId}
+
+```
+
+| Parameter        | Type     | Description              | Required |
+| :--------------- | :------- | :----------------------- | :------- |
+| `authentication` | `string` | Your token               | yes      |
+| `postId`         | `string` | ID of the post to delete | yes      |
+
+## **Admin Get Post**
+
+```http
+GET /api/v1/admin/posts/{postId}
+
+```
+
+| Parameter        | Type     | Description                | Required |
+| :--------------- | :------- | :------------------------- | :------- |
+| `authentication` | `string` | Your token                 | yes      |
+| `postId`         | `string` | ID of the post to retrieve | yes      |
+
+## **Admin Get Posts**
+
+```http
+GET /api/v1/admin/posts
+
+```
+
+| Parameter        | Type     | Description                        | Required |
+| :--------------- | :------- | :--------------------------------- | :------- |
+| `authentication` | `string` | Your token                         | yes      |
+| `limit`          | `number` | Number of posts to return          | no       |
+| `page`           | `number` | Page number for pagination         | no       |
+| `filterBy`       | `string` | Field to filter by (e.g. category) | no       |
+| `search`         | `string` | Search keyword for posts           | no       |
+
+Example request:
+
+```json
+{
+  "authentication": "your_token",
+  "limit": 20,
+  "page": 1,
+  "filterBy": "category",
+  "search": "coding"
+}
+```
+
+## **Admin Delete All Posts for User**
+
+```http
+  DELETE /api/v1/admin/posts/user/{userId}
+```
+
+| Parameter        | Type     | Description    | Required |
+| :--------------- | :------- | :------------- | :------- |
+| `authentication` | `string` | Your token     | yes      |
+| `userId`         | `string` | ID of the user | yes      |
+
+Example request:
+
+```json
+{
+  "authentication": "your_token",
+  "userId": "user123"
+}
+```
+
+## **Admin Clear All Posts**
+
+```http
+  DELETE /api/v1/admin/posts/clear-all-posts
+```
+
+| Parameter        | Type     | Description | Required |
+| :--------------- | :------- | :---------- | :------- |
+| `authentication` | `string` | Your token  | yes      |
+
+Example request:
+
+```json
+{
+  "authentication": "your_token"
+}
+```
+
+## **Admin Delete Comment for Post**
+
+```http
+  DELETE /api/v1/admin/posts/comment/{postId}
+```
+
+| Parameter        | Type     | Description    | Required |
+| :--------------- | :------- | :------------- | :------- |
+| `authentication` | `string` | Your token     | yes      |
+| `postId`         | `string` | ID of the post | yes      |
+
+Example request:
+
+```json
+{
+  "authentication": "your_token",
+  "postId": "post123"
+}
+```
+
+## **Admin Delete Single Comment**
+
+```http
+    DELETE /api/v1/admin/posts/comment
+```
+
+| Parameter        | Type     | Description                 | Required |
+| :--------------- | :------- | :-------------------------- | :------- |
+| `authentication` | `string` | Your token                  | yes      |
+| `postId`         | `string` | ID of the post              | yes      |
+| `commentId`      | `string` | ID of the comment to delete | yes      |
+
+Example request:
+
+```json
+{
+  "postId": "6755f41ddec28835fdf268d7",
+  "commentId": "6755f445dec28835fdf268e5"
+}
+```
 
 # **Posts API Reference**
 
