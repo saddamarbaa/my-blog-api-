@@ -287,3 +287,45 @@ export const adminUpdateAuthService = async (
     return next(InternalServerError);
   }
 };
+
+export const adminGetUsersService = async (_req: Request, res: TPaginationResponse) => {
+  if (res?.paginatedResults) {
+    const { results, next, previous, currentPage, totalDocs, totalPages, lastPage } = res.paginatedResults;
+    const responseObject: any = {
+      totalDocs: totalDocs || 0,
+      totalPages: totalPages || 0,
+      lastPage: lastPage || 0,
+      count: results?.length || 0,
+      currentPage: currentPage || 0
+    };
+
+    if (next) {
+      responseObject.nextPage = next;
+    }
+    if (previous) {
+      responseObject.prevPage = previous;
+    }
+
+    responseObject.users = results?.map((userDoc: any) => {
+      return {
+        ...userDoc._doc,
+        request: {
+          type: 'Get',
+          description: 'Get user info',
+          url: `${process.env.API_URL}/api/${process.env.API_VERSION}/admin/users/${userDoc._doc._id}`
+        }
+      };
+    });
+
+    return res.status(200).send(
+      customResponse<typeof responseObject>({
+        success: true,
+        error: false,
+        message: 'Successful Found users',
+        status: 200,
+        data: responseObject
+      })
+    );
+  }
+};
+
