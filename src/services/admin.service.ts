@@ -599,3 +599,38 @@ export const adminDeleteAllPostForGivenUserService = async (
     return next(error);
   }
 };
+
+export const adminClearAllPostsService = async (
+  req: AuthenticatedRequestBody<IUser>,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const posts = await Post.find();
+    // Delete complete post collection
+    const dropCompleteCollection = await Post.deleteMany({});
+
+    if (dropCompleteCollection.deletedCount === 0) {
+      return next(createHttpError(400, `Failed to clear posts`));
+    }
+
+    // Remove all the images
+    posts.forEach(async (post) => {
+      if (post?.cloudinary_id) {
+        await cloudinary.uploader.destroy(post?.cloudinary_id);
+      }
+    });
+
+    return res.status(200).send(
+      customResponse({
+        success: true,
+        error: false,
+        message: `Successful Cleared all posts`,
+        status: 200,
+        data: null
+      })
+    );
+  } catch (error) {
+    return next(error);
+  }
+};
