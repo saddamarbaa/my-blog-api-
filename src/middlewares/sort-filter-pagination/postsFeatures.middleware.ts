@@ -34,7 +34,13 @@ export const postPaginationMiddleware = () => {
 
       // Pagination
       const page = Number(req.query.page) || 1;
-      const limit = Number(req.query.limit) || 20;
+      let limit = Number(req.query.limit) || 20;
+
+      // Ensure limit does not exceed 100
+      if (limit > 100) {
+        limit = 100;
+      }
+
       const startIndex = (page - 1) * limit;
       const endIndex = page * limit;
 

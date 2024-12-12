@@ -2897,7 +2897,7 @@ paths:
         - Authorization: []
       summary: Returns a list of users whose role is user
       tags:
-        - Manager
+        - Manager - (todo)
       description: admin only api
       parameters:
         - in: header
@@ -2953,7 +2953,7 @@ paths:
     get:
       summary: Returns a list of posts which created by customer whose role is a user
       tags:
-        - Manager
+        - Manager - (todo)
       security:
         - Authorization: []
       description:
@@ -3069,7 +3069,7 @@ paths:
         - Authorization: []
       summary: Returns a list of users whose role is user or client
       tags:
-        - Moderator
+        - Moderator - (todo)
       description: moderator only api
       responses:
         '200':
@@ -3176,7 +3176,7 @@ paths:
     get:
       summary: Api for testing pdf document serve (Returns PDF file)
       tags:
-        - PDF - filestream
+        - PDF - filestream - (todo)
       responses:
         '200':
           description: OK

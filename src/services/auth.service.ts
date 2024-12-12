@@ -205,12 +205,10 @@ export const loginService = async (req: Request, res: Response, next: NextFuncti
     token.accessToken = generatedAccessToken;
     token = await token.save();
 
-    // todo
     // check user is verified or not
     if (!user.isVerified || user.status !== 'active') {
       const verifyEmailLink = `${environmentConfig.WEBSITE_URL}/verify-email?id=${user._id}&token=${token.refreshToken}`;
 
-      // todo
       // Again send verification email
       const { data: resendEmailData, error } = await sendMail({
         to: user.email,
@@ -541,7 +539,7 @@ export const getProfileService = async (req: AuthenticatedRequestBody<IUser>, re
       isDeleted,
       status,
       acceptTerms,
-      role,
+      // role,
       ...otherUserInfo
     } = user._doc;
 
