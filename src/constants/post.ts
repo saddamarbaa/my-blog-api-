@@ -7,5 +7,6 @@ export const POST_CATEGORY = {
   TYPESCRIPT: 'typescript',
   DEVAPP: 'devapp',
   BLOCKCHAIN: 'blockchain',
-  SOCIAL: 'social'
+  SOCIAL: 'social',
+  ALL: 'all'
 };

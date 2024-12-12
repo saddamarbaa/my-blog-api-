@@ -55,11 +55,12 @@ export const PostSchema: Schema<IPostDocument> = new Schema(
           POST_CATEGORY.REACTJS,
           POST_CATEGORY.SPORTS,
           POST_CATEGORY.TYPESCRIPT,
-          POST_CATEGORY.SOCIAL
+          POST_CATEGORY.SOCIAL,
+          POST_CATEGORY.ALL
         ],
         message: 'Invalid category. Please select from the available options.'
       },
-      default: POST_CATEGORY.SOCIAL,
+      default: POST_CATEGORY.ALL,
       trim: true,
       lowercase: true,
       required: [true, 'Category is required']

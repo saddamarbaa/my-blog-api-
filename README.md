@@ -1,6 +1,45 @@
 # **Blog REST API**
 
-An open-source RESTful API built with Node.js, Express, MongoDB, and TypeScript, offering user authentication, blog management, and advanced features like filtering, pagination, sorting, and search.
+An open-source, scalable, and fully-featured RESTful API built with **Node.js**, **Express**, **MongoDB**, and **TypeScript**. It provides a seamless experience for user authentication, blog post management, and advanced features such as filtering, pagination, sorting, and full-text search.
+
+This API is designed to support a wide range of blog functionalities, including user account management, content creation, commenting, and moderation, with robust admin capabilities for user and post management. It's optimized for performance and easy to extend for custom use cases.
+
+## **Key Features**
+
+- **User Authentication & Authorization**: Signup, login, password reset, JWT token-based authentication.
+- **Blog Management**: Create, read, update, delete posts, and manage user-generated content.
+- **Advanced Features**: Filtering, sorting, and pagination for posts and comments, along with full-text search functionality.
+- **Admin Capabilities**: User and post management, user blocking, and comment moderation.
+
+# Table of Contents
+
+- [Author](#author)
+- [Tech Stack](#tech-stack)
+- [API Features](#api-features)
+- [Endpoints](#endpoints)
+- [API Reference](#api-reference)
+- [Rate Limiting and Throttling](#rate-limiting-and-throttling)
+- [Environment Variables](#environment-variables)
+- [Getting Started](#getting-started)
+- [Deployment](#deployment)
+- [Contributing](#contributing)
+- [Project Status](#project-status)
+- [Related Projects](#related-projects)
+- [Feedback](#feedback)
+- [Support](#support)
+- [Screenshots](#screenshots)
+- [License](#license)
+
+---
+
+# **Author**
+
+This project is developed by:
+
+- [Saddam Arbaa](https://github.com/saddamarbaa)
+<!--- [Team Member Name](https://github.com/team-member)-->
+
+For more information, visit [GitHub Profile](https://github.com/saddamarbaa).
 
 # **Tech Stack**
 
@@ -77,67 +116,111 @@ An open-source RESTful API built with Node.js, Express, MongoDB, and TypeScript,
 
 ### **Authentication & Authorization**
 
-- User can sign up, log in, and log out.
-- Token-based authentication (JWT).
-- Users can refresh their tokens.
-- Password reset functionality.
-- Email verification during signup.
+- Users can sign up, log in, and log out using JWT (JSON Web Token).
+- Token-based authentication with support for JWT tokens for secure access.
+- Users can refresh their tokens to maintain sessions.
+- Password reset functionality with email verification.
+- Email verification during signup to ensure user authenticity.
+- **Account Locking**: Account lockout after multiple failed login attempts to prevent brute force attacks.
 
 ### **Post CRUD Operations**
 
-- Create, read, update, and delete posts.
-- Admin can perform post management actions (create, update, delete, clear all posts, delete posts for a user).
+- Users can create, read, update, and delete posts.
+- Admins can perform comprehensive post management actions:
+  - Create, read, update, delete posts.
+  - Admin can clear all posts for a specific user.
+  - Admin can delete all posts in the system.
+  - Admin can moderate posts based on user reports or content policies.
 
 ### **Comment Functionality**
 
 - Users can comment on posts.
-- Admin can delete comments in posts or clear all comments for a specific post.
+- Users can update or delete their own comments.
+- Admins can delete comments on posts or clear all comments for a specific post.
+- Admins can moderate comments based on specific criteria (e.g., offensive language or spam).
 
 ### **User Management**
 
-- System blocks a user if inactive for 30 days.
-- Admin can block or unblock a user.
-- A user can block other users.
-- A user who blocks another user cannot see their posts.
+- **User Account Locking**: Automatically lock or suspend a user account if it’s inactive for 30 days.
+- Admins can block or unblock users, with actions tracked for accountability.
+- A user can block or unblock another user. When a user blocks someone:
+  - The blocked user cannot view or interact with their posts.
+  - Blocked users cannot follow or message the user who blocked them.
 - Users can follow and unfollow other users.
-- Users can update their password.
-- Users can upload a profile photo.
-- Users can close their account.
+- Users can update their profile information, including changing their password.
+- Users can upload a profile photo or update it.
+- Users can deactivate or permanently close their accounts.
+- Users can manage their privacy settings (who can see their posts, profile, etc.).
 
 ### **Admin Management**
 
 - **Admin User Management**:
-  - Admin can add, get, update, or remove users.
-  - Admin can view all users.
-  - Admin can update user details (like profile and permissions).
+  - Admins can add, retrieve, update, and delete users.
+  - Admins can get a list of all users, including filtering and sorting by various criteria (e.g., role, activity level).
+  - Admins can view and manage user roles and permissions (e.g., admin, user).
+  - Admins can deactivate or permanently delete users.
 - **Admin Post Management**:
-  - Admin can create, read, update, or delete posts.
-  - Admin can delete all posts for a specific user.
-  - Admin can clear all posts in the system.
+  - Admins can create, read, update, or delete posts.
+  - Admins can delete all posts for a specific user.
+  - Admins can clear all posts in the system.
+  - Admins can moderate posts and flag inappropriate content.
 - **Admin Comment Management**:
-  - Admin can delete all comments in a post.
-  - Admin can delete specific comments in a post.
+  - Admins can delete all comments for a specific post.
+  - Admins can delete specific comments based on content or user.
+  - Admins can manage user-generated reports for posts or comments.
 
 ### **Post and User Activity Tracking**
 
-- Track the last date a post was created.
-- Check if a user is active or not.
-- Check the last date a user was active.
-- Change user awards based on the number of posts created by the user.
+- Track the last date a post was created or updated.
+- Track whether a user is active based on their interaction frequency (e.g., post creation, comment activity).
+- Track the last date a user was active.
+- Admins can get activity reports about users and posts (e.g., number of posts, comments, etc.).
+- Award users based on activity (e.g., badges for the most posts or most comments).
+- Track user engagement metrics like likes, comments, and shares on posts.
+- Analytics for admins to see trends in user activity, content creation, and interaction.
 
 ### **User Statistics**
 
-- Get following and followers count.
-- Get total profile viewers count.
-- Get the number of posts created.
-- Get blocked users count.
-- Get all users who view someone's profile.
+- **User Profile Insights**:
+  - Get the number of followers and following for a user.
+  - Get the total profile views count for a user.
+  - Get the total number of posts a user has created.
+  - Get the total number of comments made by a user.
+  - Get the total number of posts liked by a user.
+- **Blocked Users**:
+  - Get a list of users who have blocked the authenticated user.
+  - Get the total number of blocked users by a specific user.
+- **User Engagement**:
+  - Get a list of all users who have viewed someone's profile (if privacy settings allow).
+  - Track post interactions (likes, shares) per user.
+  - Get the number of times a user’s posts have been shared.
 
----
+### **Other Features**
 
-# ENDPOINTS
+- **Search Functionality**:
+  - Users can search for posts, users, comments, and tags.
+  - Admins can search for posts and users using filters like role, activity, and content type.
+- **Notifications**:
+  - Users can receive notifications for post likes, comments, mentions, follows, and other interactions.
+  - Admins can send system-wide notifications (e.g., policy changes, user alerts).
+- **Content Moderation**:
 
-- [API Authentication](#API-Authentication)
+  - Admins can flag posts or comments based on keywords, reports, or other indicators.
+  - Implement content filters (e.g., profanity filters, image moderation) for posts and comments.
+  - Users can report posts and comments as inappropriate.
+
+- **User Privacy**:
+
+  - Users can adjust the visibility of their posts and profile (e.g., public, friends-only, private).
+  - Users can manage their notification preferences and opt-in or opt-out of certain types of notifications.
+
+- **Performance & Rate Limiting**:
+  - Rate limiting on certain API endpoints (e.g., post creation, login attempts) to prevent abuse.
+  - API endpoints are optimized for performance and scalability to handle large volumes of data and users.
+
+# Endpoints
+
+- [API Authentication](#api-authentication)
 
   - [User Signup](#user-signup)
   - [User Login](#user-login)
@@ -145,26 +228,30 @@ An open-source RESTful API built with Node.js, Express, MongoDB, and TypeScript,
   - [Refresh Token](#refresh-token)
   - [Remove Account](#remove-account)
   - [Get Profile](#get-profile)
-  - [Upload Profile Photo](#Upload-Profile-Photo)
+  - [Upload Profile Photo](#upload-profile-photo)
   - [Verify Email](#verify-email)
-  - [Update User Profile](#update-user-profile)
+  - [Update User Profile](#update-account)
   - [Forget Password](#forget-password)
   - [Reset Password](#reset-password)
 
 - [Users](#users-api-reference)
 
-  - [Get all users](#Get-all-users)
+  - [Get all users](#get-all-users)
   - [View a user profile Count](#view-a-user-profile)
-  - [Following a user](#Following-a-user)
-  - [UnFollowing-a-user](#UnFollowing-a-user)
-  - [Block another user](#Block-user)
-  - [Unblock another user](#Unblock-user)
+  - [Following a user](#following-a-user)
+  - [UnFollowing a user](#unfollowing-a-user)
+  - [Block another user](#block-user)
+  - [Unblock another user](#unblock-user)
 
 - [Admin](#admin-api-reference)
 
-  - [Admin Block a User](#admin-blocking-a-user)
-  - [Admin Unblock a User](#admin-unblocking-a-user)
-  - [Admin Delete User Account](#admin-delete-user-account)
+  - [Admin Create User](#admin-create-user)
+  - [Admin Update User](#admin-update-user)
+  - [Admin Block a User](#admin-block-a-user)
+  - [Admin Unblock a User](#admin-unblock-a-user)
+  - [Admin Delete User Account](#admin-delete-user)
+  - [Admin Get User](#admin-get-user)
+  - [Admin Get All Users](#admin-get-users)
   - [Admin Create Post](#admin-create-post)
   - [Admin Update Post](#admin-update-post)
   - [Admin Delete Post](#admin-delete-post)
@@ -175,55 +262,87 @@ An open-source RESTful API built with Node.js, Express, MongoDB, and TypeScript,
   - [Admin Delete Comment for Post](#admin-delete-comment-for-post)
   - [Admin Delete Single Comment](#admin-delete-single-comment)
 
-- [Posts](#Posts-API-Refeference)
+- [Posts](#posts-api-reference)
+  - [Create Post](#create-post)
+  - [Get Posts](#get-all-posts)
+  - [Get Post](#get-single-post)
+  - [Get Timeline Posts](#get-timeline-posts-for-auth-user)
+  - [Delete Post](#delete-post)
+  - [Get User Posts](#get-auth-user-posts)
+  - [Delete User Posts](#delete-auth-user-posts)
+  - [Update Post](#update-post)
+  - [Like Post](#toggle-post-like)
+  - [Add Comment in Post](#add-comment-in-post)
+  - [Update Comment in Post](#update-comment-in-post)
+  - [Get Comment in Post](#get-comment-in-post)
+  - [Get User Comment in Post](#get-user-comment-in-post)
+  - [Get All Comment in Post](#get-all-comment-in-post)
+  - [Delete Comment in Post](#delete-comment-in-post)
+  - [Delete User Comment in Post](#delete-user-comment-in-post)
+  - [Delete All Comment in Post](#delete-all-comments-in-post)
 
-  - [Create Post](#Create-Post)
-  - [Get All Posts](#Get-All-Posts)
-  - [Get Single Post](#Get-Single-Post)
-  - [Toggle Post like](#Toggle-Post-like)
-  - [Toggle Post dislike](#Toggle-Post-dislike)
-  - [Update Post](#Update-Post)
-  - [Delete Post](#Delete-Post)
+# **Getting Started**
 
-- [Comments](#Comment-API-Reference)
-  - [Create comment](#Create-Comment)
-  - [Update post](#Update-Comment)
-  - [Delete post](#Delete-Comment)
-
-## **Getting Started**
+Follow these steps to get the project up and running:
 
 ### **Prerequisites**
 
-- Node.js (v20.1.0.x or higher)
-- MongoDB (Running locally or via MongoDB Atlas)
+Make sure you have the following installed on your machine:
 
-## Run Locally
+- **Node.js** (v20.1.0.x or higher)
+- **MongoDB** (Running locally or via MongoDB Atlas)
 
-Clone the project
+### Run Locally
+
+1. **Clone the project**:
 
 ```bash
   git clone https://github.com/saddamarbaa/node-express-mongodb-typescript-blog-rest-api
 ```
 
-Go to the project directory
+2. **Go to the project directory**:
 
 ```bash
   cd node-express-mongodb-typescript-blog-rest-api
 ```
 
-Install dependencies
+3. **Install dependencies**:
 
 ```bash
   npm install
 ```
 
-Start the server
+4. **Set Up Environment Variables**:
+
+```bash
+  Copy `.env.example` to `.env` and update the necessary values:
+```
+
+5. **Run the Application Locally**:
+   Start the server in development mode:
 
 ```bash
   npm run server
 ```
 
-## Environment Variables
+6.  **Access the API**::
+
+- Once the server is running, you can make API requests to `http://localhost:8000/api/v1`
+- Use tools like Postman or cURL to test the endpoints.
+
+7. **Swagger API Documentation**:
+
+- You can also access the interactive API documentation via Swagger at: ` http://localhost:8000/docs`
+
+8. **Authentication**:
+
+- To authenticate, generate a token via the `/auth/login/` endpoint.
+- Include the token in the `Authorization` header as `Bearer <your-token>`.
+
+9. **Test the API**:
+   Refer to the **API Reference** section for detailed information on the available endpoints and request/response formats.
+
+# Environment Variables
 
 To run this project, you will need to add the necessary environment variables to your .env file by checking .env.example for reference.
 
@@ -252,7 +371,13 @@ If neither token is provided, the request will be denied with an authentication 
 
 The request body needs to be in JSON format.
 
-# **Authentication API Reference**
+# **Rate Limiting and Throttling**
+
+The API allows up to 100 requests per minute per user. If you exceed this limit, you will receive a `429 Too Many Requests` response.
+
+# API Reference
+
+## **Authentication API Reference**
 
 ## **User Signup**
 
@@ -278,7 +403,12 @@ POST /api/v1/auth/signup
 | `plan` | `string` | Plan options based on defined values | no |
 | `dateOfBirth` | `date` | User's date of birth | no |
 
-Example Request Body:
+#### **Description:**
+
+- **Endpoint:** `POST /api/v1/auth/signup`
+- **Functionality:** Registers a new user with the provided information and send verification email.
+
+#### Example Request Body:
 
 ```javascript
 {
@@ -313,11 +443,10 @@ GET /api/v1/auth/verify-email/:userId/:token
 | `userId` | `string` | The ID of the user whose email is being verified | yes |
 | `token` | `string` | The email verification token | yes |
 
-Example request body:
+#### **Description:**
 
-```javascript
-GET /api/v1/auth/verify-email/:userId/:token
-```
+- **Endpoint:** `POST /api/v1/auth/verify-email/:userId/:token`
+- **Functionality:** Verifies the user's email using the provided verification code sent to the user's email address.
 
 ## **User Login**
 
@@ -331,12 +460,17 @@ POST /api/v1/auth/login
 | `email`          | `string` | Your email    | yes      |
 | `password`       | `string` | Your password | yes      |
 
-Example request body:
+#### **Description:**
 
-```javascript
+- **Endpoint:** `POST /api/v1/auth/login`
+- **Functionality:** Authenticates the user and returns a token for further use.
+
+#### **Example request body**
+
+```json
 {
-  "email":"your email"
-  "password":"your password"
+  "email": "user@example.com",
+  "password": "userpassword123"
 }
 ```
 
@@ -351,7 +485,12 @@ POST /api/v1/auth/logout
 | `authentication` | `string` | Your authToken    | no       |
 | `refreshToken`   | `string` | Your refreshToken | yes      |
 
-Example request body:
+#### **Description:**
+
+- **Endpoint:** `POST /api/v1/auth/logout`
+- **Functionality:** Logs out the current user by invalidating the authentication token.
+
+#### Example request body:
 
 ```javascript
 {
@@ -359,7 +498,7 @@ Example request body:
 }
 ```
 
-## **Delete Account**
+## **Remove Account**
 
 ```http
 DELETE /api/v1/auth/remove/:userId
@@ -370,7 +509,12 @@ DELETE /api/v1/auth/remove/:userId
 | `authentication` | `string` | Your authToken                   | yes      |
 | `userId`         | `string` | The ID of the user to be deleted | yes      |
 
-Example request body:'
+#### **Description:**
+
+- **Endpoint:** `DELETE /api/v1/auth/remove/:userId`
+- **Functionality:** Deletes the account of the user associated with the provided authentication token.
+
+#### Example request body:
 
 To delete a user, send a DELETE request with the userId in the URL path:
 
@@ -401,7 +545,12 @@ PATCH  /api/v1/auth/update/:userId
 | `plan` | `string` | Plan options based on defined values | no |
 | `dateOfBirth` | `date` | User's date of birth | no |
 
-Example Request Body:
+#### **Description:**
+
+- **Endpoint:** `PATCH  /api/v1/auth/update/:userId`
+- **Functionality:** Updates the account information for the user associated with the provided authentication token. The user can update their info.
+
+#### Example Request Body:
 
 ```javascript
 {
@@ -427,14 +576,23 @@ Example Request Body:
 
 ```
 
-## **Get new access and refresh token**
+## **Refresh Token**
+
+```http
+POST /api/v1/auth/refresh-token
+```
 
 | Parameter        | Type     | Description       | Required |
 | :--------------- | :------- | :---------------- | :------- |
 | `authentication` | `string` | Your authToken    | no       |
 | `refreshToken`   | `string` | Your refreshToken | yes      |
 
-Example request body:
+#### **Description:**
+
+- **Endpoint:** `POST /api/v1/auth/refresh-token`
+- **Functionality:** Refreshes the access and refresh tokens using a valid refresh token. This helps the user to continue using the API without re-authenticating.
+
+#### Example request body:
 
 ```javascript
 {
@@ -442,7 +600,7 @@ Example request body:
 }
 ```
 
-## **Get my profile**
+## **Get Profile**
 
 ```http
 GET /api/v1/auth/profile
@@ -452,10 +610,15 @@ GET /api/v1/auth/profile
 | :--------------- | :------- | :---------- | :------- |
 | `authentication` | `string` | Your token  | yes      |
 
+#### **Description:**
+
+- **Endpoint:** `GET /api/v1/auth/profile`
+- **Functionality:** Fetches the profile details of the currently authenticated user using the provided authentication token..
+
 ## **Upload Profile Photo**
 
 ```http
-  DELETE /api/v1/users/profile-photo-upload
+ POST  /api/v1/auth/profile-photo-upload
 ```
 
 | Parameter        | Type     | Description     | Required |
@@ -463,7 +626,22 @@ GET /api/v1/auth/profile
 | `authentication` | `string` | Your token      | yes      |
 | `profilePhoto`   | `string` | Image to upload | yes      |
 
-## **Forgot Password**
+#### **Description:**
+
+- **Endpoint:** `POST /api/v1/auth/profile-photo-upload`
+- **Functionality:** Allows the user to upload a new profile photo by sending a file along with the authentication token.
+
+#### Example Request Body:
+
+Form-data should be used to upload the image file.
+
+```javascript
+Content-Type: multipart/form-data
+Authorization: Bearer {authentication_token}
+file: {image_file}
+```
+
+## **Forget Password**
 
 ```http
 POST /api/v1/auth/forget-password
@@ -475,7 +653,12 @@ POST /api/v1/auth/forget-password
 | `refreshToken` | `string` | Your refresh token | yes |
 | `email` | `string` | Valid email address | yes |
 
-Example Request Body:
+#### **Description:**
+
+- **Endpoint:** `POST /api/v1/auth/forget-password`
+- **Functionality:** Sends a password reset link to the provided email address if it's associated with a registered user.
+
+#### Example Request Body:
 
 ```javascript
 {
@@ -485,7 +668,7 @@ Example Request Body:
 
 ```
 
-## **Rest Password**
+## **Reset Password**
 
 ```http
 POST /api/v1/auth/reset-password/:userId/:token
@@ -499,10 +682,15 @@ POST /api/v1/auth/reset-password/:userId/:token
 | `password` | `string` | Minimum 6 characters | yes |
 | `confirmPassword` | `string` | Must match the password | yes |
 
-Example Request Body:
+#### **Description:**
+
+- **Endpoint:** `POST /api/v1/auth/reset-password/:userId/:token`
+- **Functionality:** Resets the password for the user identified by `userId` using the provided `token` and new `password`.
+
+#### Example Request Body:
 
 ```javascript
-POST / api / v1 / auth / reset - password / userId / token;
+POST /api/v1/auth/reset-password/:userId/:token
 ```
 
 ```javascript
@@ -524,6 +712,11 @@ GET /api/v1/user/users
 | :--------------- | :------- | :---------- | :------- |
 | `authentication` | `string` | Your token  | yes      |
 
+**Description:**
+
+- **Endpoint:** `GET /api/v1/user/users`
+- **Functionality:** Retrieves a list of all users in the system. Requires authentication.
+
 ## **View a user profile**
 
 ```http
@@ -534,6 +727,11 @@ GET /api/v1/user/:id
 | :--------------- | :------- | :------------------------------------------ | :------- |
 | `authentication` | `string` | Your token                                  | yes      |
 | `id`             | `string` | ID of the user you want to view his profile | yes      |
+
+**Description:**
+
+- **Endpoint:** `GET /api/v1/user/:id`
+- **Functionality:** Retrieves the profile information of a user by their user ID. Requires authentication.
 
 ## **Following a user**
 
@@ -546,6 +744,11 @@ PUT /api/v1/user/:userId/follow
 | `authentication` | `string` | Your token                        | yes      |
 | `id`             | `string` | ID of the user you want to follow | yes      |
 
+**Description:**
+
+- **Endpoint:** `PUT /api/v1/user/:userId/follow`
+- **Functionality:** Allows the authenticated user to follow another user by their `userId`. Requires authentication.
+
 ## **UnFollowing a user**
 
 ```http
@@ -557,7 +760,12 @@ PUT /api/v1/user/:userId/un-follow
 | `authentication` | `string` | Your token                        | yes      |
 | `id`             | `string` | ID of the user you want to follow | yes      |
 
-## **Block another user**
+**Description:**
+
+- **Endpoint:** `PUT /api/v1/user/:userId/un-follow`
+- **Functionality:** Allows the authenticated user to unfollow another user by their `userId`. Requires authentication.
+
+## **Block user**
 
 ```http
 PUT /api/v1/user/:userId/block
@@ -567,6 +775,11 @@ PUT /api/v1/user/:userId/block
 | :--------------- | :------- | :------------------------------- | :------- |
 | `authentication` | `string` | Your token                       | yes      |
 | `id`             | `string` | Id of the user you want to block | yes      |
+
+#### **Description:**
+
+- **Endpoint:** `PUT /api/v1/user/:userId/block`
+- **Functionality:** Blocks the specified user, preventing further interactions such as following or messaging. Requires authentication.
 
 ## **Unblock user**
 
@@ -578,6 +791,11 @@ PUT /api/v1/user/:userId/unblock
 | :--------------- | :------- | :--------------------------------- | :------- |
 | `authentication` | `string` | Your token                         | yes      |
 | `id`             | `string` | Id of the user you want to unblock | yes      |
+
+#### **Description:**
+
+- **Endpoint:** `PUT /api/v1/user/:userId/unblock`
+- **Functionality:** Unblocks the specified user, restoring the ability to interact with them. Requires authentication.
 
 # **Admin API Reference**
 
@@ -604,7 +822,12 @@ PUT /api/v1/user/:userId/unblock
 | `password`        | `string`  | User's password                                 | yes      |
 | `confirmPassword` | `string`  | User's password confirmation                    | yes      |
 
-Example request body:
+#### **Description:**
+
+- **Endpoint:** `POST /api/v1/admin/users/add`
+- **Functionality:** Allows an admin to create a new user in the system by providing the necessary details like `username`, `email`, `password`, and `role`. Requires admin authentication.
+
+#### Example request body:
 
 ```json
 {
@@ -652,7 +875,12 @@ Example request body:
 | `password`        | `string`  | New password (if updating)                      | no       |
 | `confirmPassword` | `string`  | New password confirmation (if updating)         | no       |
 
-Example request body:
+#### **Description:**
+
+- **Endpoint:** `PUT /api/v1/admin/users/update/:userId`
+- **Functionality:** Allows an admin to update details of an existing user by providing the userId. Admin can update the `username`, `email`, and `role` of the user.
+
+#### Example request body:
 
 ```json
 {
@@ -675,7 +903,8 @@ Example request body:
 }
 ```
 
-Example request body (Multipart/form-data):
+#### Example request body (Multipart/form-data):
+
 To upload a profile image instead of passing profileUrl:
 
 ```bash
@@ -709,7 +938,12 @@ curl -X PUT "https://api.example.com/api/v1/admin/users/updat/{userId}" \
 | `authentication` | `string` | Admin token                  | yes      |
 | `userId`         | `string` | ID of the user to be deleted | yes      |
 
-### Example request:
+#### **Description:**
+
+- **Endpoint:** `DELETE /api/v1/admin/users/remove/:userId`
+- **Functionality:** Allows an admin to delete a user by their `userId`. Once deleted, the user will no longer exist in the system.
+
+#### Example request:
 
 ```bash
 curl -X DELETE "https://api.example.com/api/v1/admin/users/remove/{userId}" \
@@ -729,14 +963,19 @@ curl -X DELETE "https://api.example.com/api/v1/admin/users/remove/{userId}" \
 | `authentication` | `string` | Admin token                    | yes      |
 | `userId`         | `string` | ID of the user to be retrieved | yes      |
 
-### Example request:
+#### **Description:**
+
+- **Endpoint:** `GET /api/v1/admin/users/:userId`
+- **Functionality:** Allows an admin to retrieve details of a specific user by their `userId`.
+
+#### Example request:
 
 ```bash
 curl -X GET "https://api.example.com/api/v1/admin/users/{userId}" \
 -H "Authorization: Bearer {adminToken}"
 ```
 
-### Example response (JSON):
+#### Example response (JSON):
 
 ```json
 {
@@ -775,14 +1014,19 @@ curl -X GET "https://api.example.com/api/v1/admin/users/{userId}" \
 | `role`           | `string`  | Role to filter users by                 | no       |
 | `search`         | `string`  | Search term to filter users             | no       |
 
-### Example request:
+#### **Description:**
+
+- **Endpoint:** `GET /api/v1/admin/users`
+- **Functionality:** Allows an admin to retrieve a paginated list of users based on filters like `role` and a search term. The response can be limited and filtered by specific criteria such as role and user name.
+
+#### Example request:
 
 ```bash
 curl -X GET "https://api.example.com/api/v1/admin/users?limit=20&page=1&filterBy=role&role=admin&search=jhon" \
 -H "Authorization: Bearer {adminToken}"
 ```
 
-### Example response (JSON):
+#### Example response (JSON):
 
 ```json
 {
@@ -831,7 +1075,7 @@ curl -X GET "https://api.example.com/api/v1/admin/users?limit=20&page=1&filterBy
 ## **Admin Block a User**
 
 ```http
-PUT /api/v1/users/admin-block/:id
+PUT /api/v1/admin/users/:userId/block
 ```
 
 | Parameter        | Type     | Description                      | Required |
@@ -839,16 +1083,26 @@ PUT /api/v1/users/admin-block/:id
 | `authentication` | `string` | Your token                       | yes      |
 | `id`             | `string` | Id of the user you want to block | yes      |
 
+#### **Description:**
+
+- **Endpoint:** `PUT /api/v1/admin/users/:userId/block`
+- **Functionality:** Allows an admin to block a user by their user ID. The user will be prevented from accessing certain features.
+
 ## **Admin Unblock a User**
 
 ```http
-PUT /api/v1/users/admin-unblock/:id
+PUT /api/v1/admin/users/:userId/unblock
 ```
 
 | Parameter        | Type     | Description                        | Required |
 | :--------------- | :------- | :--------------------------------- | :------- |
 | `authentication` | `string` | Your token                         | yes      |
 | `id`             | `string` | Id of the user you want to unblock | yes      |
+
+#### **Description:**
+
+- **Endpoint:** `PUT /api/v1/admin/users/:userId/unblock`
+- **Functionality:** Allows an admin to unblock a previously blocked user, granting them access to the platform again.
 
 ## **Admin Create Post**
 
@@ -865,7 +1119,12 @@ PUT /api/v1/users/admin-unblock/:id
 | `photoUrl`       | `string` | Image URL for the post  | yes                    |
 | `file`           | `file`   | Image file for the post | yes (if no `photoUrl`) |
 
-Example request body:
+#### **Description:**
+
+- **Endpoint:** `POST /api/v1/admin/posts`
+- **Functionality:** Allows an admin to create a new post with the provided title, content, and author information.
+
+#### Example request body:
 
 ```json
 {
@@ -891,7 +1150,12 @@ Example request body:
 | `photoUrl`       | `string` | Image URL for the post  | no                                 |
 | `file`           | `file`   | Image file for the post | no (if `photoUrl` is not provided) |
 
-Example request body:
+#### **Description:**
+
+- **Endpoint:** `PATCH /api/v1/admin/posts/{postId}`
+- **Functionality:** Allows an admin to update the title and/or content of a specific post based on its `postId`.
+
+#### Example request body:
 
 ```json
 {
@@ -902,7 +1166,7 @@ Example request body:
 }
 ```
 
-Or, if you're uploading a file (in this case, `photoUrl` is omitted and the image will be uploaded instead):
+#### Or, if you're uploading a file (in this case, `photoUrl` is omitted and the image will be uploaded instead):
 
 ```json
 {
@@ -924,6 +1188,15 @@ Or, if you're uploading a file (in this case, `photoUrl` is omitted and the imag
 | `authentication` | `string` | Your token               | yes      |
 | `postId`         | `string` | ID of the post to delete | yes      |
 
+#### **Description:**
+
+- **Endpoint:** `DELETE /api/v1/admin/posts/{postId}`
+- **Functionality:** Allows an admin to delete a specific post based on its `postId`.
+
+#### **Request Body:**
+
+No request body required for this endpoint.
+
 ## **Admin Get Post**
 
 ```http
@@ -935,6 +1208,11 @@ GET /api/v1/admin/posts/{postId}
 | :--------------- | :------- | :------------------------- | :------- |
 | `authentication` | `string` | Your token                 | yes      |
 | `postId`         | `string` | ID of the post to retrieve | yes      |
+
+#### **Description:**
+
+- **Endpoint:** `GET /api/v1/admin/posts/{postId}`
+- **Functionality:** Allows an admin to retrieve details of a specific post based on its `postId`.
 
 ## **Admin Get Posts**
 
@@ -951,7 +1229,12 @@ GET /api/v1/admin/posts
 | `filterBy`       | `string` | Field to filter by (e.g. category) | no       |
 | `search`         | `string` | Search keyword for posts           | no       |
 
-Example request:
+#### **Description:**
+
+- **Endpoint:** `GET /api/v1/admin/posts`
+- **Functionality:** Allows an admin to retrieve a list of posts, with optional pagination and filtering.
+
+#### Example request:
 
 ```json
 {
@@ -974,7 +1257,12 @@ Example request:
 | `authentication` | `string` | Your token     | yes      |
 | `userId`         | `string` | ID of the user | yes      |
 
-Example request:
+#### **Description:**
+
+- **Endpoint:** `DELETE /api/v1/admin/posts/user/{userId}`
+- **Functionality:** Allows an admin to delete all posts made by a specific user.
+
+#### Example request:
 
 ```json
 {
@@ -993,7 +1281,12 @@ Example request:
 | :--------------- | :------- | :---------- | :------- |
 | `authentication` | `string` | Your token  | yes      |
 
-Example request:
+#### **Description:**
+
+- **Endpoint:** `DELETE /api/v1/admin/posts/clear-all-posts`
+- **Functionality:** Allows an admin to delete all posts from the platform.
+
+#### Example request:
 
 ```json
 {
@@ -1012,13 +1305,15 @@ Example request:
 | `authentication` | `string` | Your token     | yes      |
 | `postId`         | `string` | ID of the post | yes      |
 
-Example request:
+#### **Description:**
 
-```json
-{
-  "authentication": "your_token",
-  "postId": "post123"
-}
+- **Endpoint:** `DELETE /api/v1/admin/posts/comment/{postId}`
+- **Functionality:** Allows an admin to delete a specific comment for a given post.
+
+#### **Example Request:**
+
+```http
+DELETE /api/v1/admin/posts/comment/6755f41ddec28835fdf268d7
 ```
 
 ## **Admin Delete Single Comment**
@@ -1033,7 +1328,12 @@ Example request:
 | `postId`         | `string` | ID of the post              | yes      |
 | `commentId`      | `string` | ID of the comment to delete | yes      |
 
-Example request:
+#### **Description:**
+
+- **Endpoint:** `DELETE /api/v1/admin/posts/comment`
+- **Functionality:** Allows an admin to delete a specific comment from a given post.
+
+#### Example request:
 
 ```json
 {
@@ -1059,7 +1359,12 @@ Example request:
 | `photoUrl`       | `string` | Image URL for the post  | yes                    |
 | `file`           | `file`   | Image file for the post | yes (if no `photoUrl`) |
 
-Example request body:
+#### **Description:**
+
+- **Endpoint:** `POST /api/v1/posts`
+- **Functionality:** Allows a user to create a new post.
+
+#### Example request body:
 
 ```json
 {
@@ -1085,7 +1390,12 @@ Example request body:
 | `photoUrl`       | `string` | Image URL for the post  | no                                 |
 | `file`           | `file`   | Image file for the post | no (if `photoUrl` is not provided) |
 
-Example request body:
+#### **Description:**
+
+- **Endpoint:** `PATCH /api/v1/posts/{postId}`
+- **Functionality:** Allows a user to update an existing post by its `postId`, modifying the title, content, or image.
+
+#### Example request body:
 
 ```json
 {
@@ -1116,6 +1426,11 @@ Or, if you're uploading a file (in this case, `photoUrl` is omitted and the imag
 | :--------------- | :------- | :---------- | :------- |
 | `authentication` | `string` | Your token  | no       |
 
+#### **Description:**
+
+- **Endpoint:** `GET /api/v1/posts`
+- **Functionality:** Retrieves a list of all posts with options for pagination, filtering, and searching.
+
 ## **Get timeline posts for auth user**
 
 ```http
@@ -1125,6 +1440,11 @@ Or, if you're uploading a file (in this case, `photoUrl` is omitted and the imag
 | Parameter        | Type     | Description | Required |
 | :--------------- | :------- | :---------- | :------- |
 | `authentication` | `string` | Your token  | yes      |
+
+#### **Description:**
+
+- **Endpoint:** `GET /api/v1/posts/timeline`
+- **Functionality:** Retrieves the timeline of posts for the authenticated user, including posts from followed users.
 
 ## **Get Single Post**
 
@@ -1136,6 +1456,11 @@ Or, if you're uploading a file (in this case, `photoUrl` is omitted and the imag
 | :--------------- | :------- | :------------- | :------- |
 | `authentication` | `string` | Your token     | no       |
 | `id`             | `string` | ID of the post | yes      |
+
+#### **Description:**
+
+- **Endpoint:** `GET /api/v1/posts/:id`
+- **Functionality:** Retrieves a single post by its ID.
 
 ## **Update Post**
 
@@ -1152,7 +1477,12 @@ Or, if you're uploading a file (in this case, `photoUrl` is omitted and the imag
 | `category`       | `string` | category of the post    | no       |
 | `photoUrl`       | `string` | photo of the post       | no       |
 
-Example request body:
+#### **Description:**
+
+- **Endpoint:** `PATCH /api/v1/posts/:id`
+- **Functionality:** Updates the title and content of a specific post by its ID.
+
+#### Example request body:
 
 ```javascript
 {
@@ -1174,7 +1504,12 @@ Example request body:
 | `authentication` | `string` | Your token     | yes      |
 | `id`             | `string` | ID of the post | yes      |
 
-## **Get auth user posts**
+#### **Description:**
+
+- **Endpoint:** `DELETE /api/v1/posts/:id`
+- **Functionality:** Deletes a specific post by its ID.
+
+## **Get Auth User Posts**
 
 ```http
   GET /api/v1/posts/user-posts
@@ -1183,6 +1518,11 @@ Example request body:
 | Parameter        | Type     | Description | Required |
 | :--------------- | :------- | :---------- | :------- |
 | `authentication` | `string` | Your token  | yes      |
+
+#### **Description:**
+
+- **Endpoint:** `GET /api/v1/posts/user-posts`
+- **Functionality:** Retrieves all posts created by the currently authenticated user.
 
 ## **Delete auth user posts**
 
@@ -1193,6 +1533,11 @@ Example request body:
 | Parameter        | Type     | Description | Required |
 | :--------------- | :------- | :---------- | :------- |
 | `authentication` | `string` | Your token  | yes      |
+
+#### **Description:**
+
+- **Endpoint:** `DELETE /api/v1/posts/user-posts`
+- **Functionality:** Deletes all posts created by the currently authenticated user.
 
 ## **Toggle Post like**
 
@@ -1205,62 +1550,440 @@ Example request body:
 | `authentication` | `string` | Your token     | yes      |
 | `id`             | `string` | ID of the post | yes      |
 
-## **Toggle Post dislike**
+#### **Description:**
+
+- **Endpoint:** `GET /api/v1/postslikes/:id`
+- **Functionality:** Toggles the like status of a specific post. If the user has already liked the post, it unlikes it; if not, it likes the post.
+
+### **Add Comment in Post**
 
 ```http
-  GET /api/v1/posts/dislikes/:id
+PUT /api/v1/posts/comment
 ```
 
-| Parameter        | Type     | Description    | Required |
-| :--------------- | :------- | :------------- | :------- |
-| `authentication` | `string` | Your token     | yes      |
-| `id`             | `string` | ID of the post | yes      |
+| Parameter        | Type     | Description             | Required |
+| :--------------- | :------- | :---------------------- | :------- |
+| `authentication` | `string` | Your token              | yes      |
+| `postId`         | `string` | ID of the post          | yes      |
+| `comment`        | `string` | The comment to be added | yes      |
 
-# **Comment API Reference**
+#### **Description:**
 
-## **Create Comment**
+- **Endpoint:** `PUT /api/v1/posts/comment`
+- **Functionality:** Adds a new comment to a specific post by its `postId`.
+
+#### **Request Body:**
+
+```json
+{
+  "postId": "6755f41ddec28835fdf268d7",
+  "comment": "comment3"
+}
+```
+
+### **Add Comment in Post**
 
 ```http
-  POST /api/v1/comments/:id
+PUT /api/v1/posts/comment
 ```
 
-| Parameter        | Type     | Description    | Required |
-| :--------------- | :------- | :------------- | :------- |
-| `authentication` | `string` | Your token     | yes      |
-| `id`             | `string` | ID of the post | yes      |
+| Parameter        | Type     | Description             | Required |
+| :--------------- | :------- | :---------------------- | :------- |
+| `authentication` | `string` | Your token              | yes      |
+| `postId`         | `string` | ID of the post          | yes      |
+| `comment`        | `string` | The comment to be added | yes      |
 
-## **Delete Comment**
+#### **Description:**
+
+- **Endpoint:** `PUT /api/v1/posts/comment`
+- **Functionality:** Adds a new comment to a specific post by its `postId`.
+
+#### **Request Body:**
+
+```json
+{
+  "postId": "6755f41ddec28835fdf268d7",
+  "comment": "comment3"
+}
+```
+
+### **Update Comment in Post**
 
 ```http
-  DELETE /api/v1/comments/:id
+PATCH /api/v1/posts/comment
 ```
 
-| Parameter        | Type     | Description       | Required |
-| :--------------- | :------- | :---------------- | :------- |
-| `authentication` | `string` | Your token        | yes      |
-| `id`             | `string` | ID of the comment | yes      |
+| Parameter        | Type     | Description                     | Required |
+| :--------------- | :------- | :------------------------------ | :------- |
+| `authentication` | `string` | Your token                      | yes      |
+| `postId`         | `string` | ID of the post                  | yes      |
+| `commentId`      | `string` | ID of the comment to be updated | yes      |
+| `comment`        | `string` | The updated comment text        | yes      |
 
-## **Update Comment**
+#### **Description:**
+
+- **Endpoint:** `PATCH /api/v1/posts/comment`
+- **Functionality:** Updates an existing comment by its commentId in a specific post identified by postId..
+
+#### **Request Body:**
+
+```json
+{
+  "postId": "63db0cb558191bf1d20542d4",
+  "commentId": "63db0cb558191bf1d20542d4",
+  "comment": "Updated comment text"
+}
+```
+
+### **Get Comment in Post**
 
 ```http
-  PUT /api/v1/comments/:id
+GET /api/v1/posts/comment/{postId}
 ```
 
-| Parameter        | Type     | Description    | Required |
-| :--------------- | :------- | :------------- | :------- |
-| `authentication` | `string` | Your token     | yes      |
-| `id`             | `string` | ID of the post | yes      |
+| Parameter        | Type     | Description                         | Required |
+| :--------------- | :------- | :---------------------------------- | :------- |
+| `authentication` | `string` | Your token                          | yes      |
+| `postId`         | `string` | ID of the post to retrieve comments | yes      |
 
-## Feedback
+#### **Description:**
 
-If you have any feedback, please reach out to us at saddamarbaas@gmail.com
+- **Endpoint:** `GET /api/v1/posts/comment/{postId}`
+- **Functionality:** Retrieves all comments for a specific post identified by postId..
 
-## 🔗 Social Links
+### **Get User Comment in Post**
+
+```http
+GET /api/v1/posts/user-comment/{postId}
+```
+
+| Parameter        | Type     | Description                             | Required |
+| :--------------- | :------- | :-------------------------------------- | :------- |
+| `authentication` | `string` | Your token                              | yes      |
+| `postId`         | `string` | ID of the post to retrieve comments for | yes      |
+
+- **Endpoint:** `GET /api/v1/posts/user-comment/{postId}`
+- **Functionality:** Retrieves all comments made by the current logged-in user for a specific post identified by `postId`.
+
+### **Get All Comment in Post**
+
+```http
+GET /api/v1/posts/comment/{postId}
+```
+
+| Parameter        | Type     | Description                             | Required |
+| :--------------- | :------- | :-------------------------------------- | :------- |
+| `authentication` | `string` | Your token                              | yes      |
+| `postId`         | `string` | ID of the post to retrieve all comments | yes      |
+
+- **Endpoint:** `GET /api/v1/posts/comment/{postId}`
+- **Functionality:** Retrieves all comments for a specific post identified by `postId`.
+
+### **Delete Comment in Post**
+
+```http
+DELETE /api/v1/posts/comment
+```
+
+| Parameter        | Type     | Description | Required |
+| :--------------- | :------- | :---------- | :------- |
+| `authentication` | `string` | Your token  | yes      |
+
+- **Endpoint:** `DELETE /api/v1/posts/comment`
+- **Functionality:** Deletes a specific comment from a post by its `postId` and `commentId`.
+
+#### **Request Body:**
+
+```json
+{
+  "postId": "6755f41ddec28835fdf268d7",
+  "comment": "comment3"
+}
+```
+
+### **Delete User Comment in Post**
+
+```http
+DELETE /api/v1/posts/user-comment/{postId}
+```
+
+| Parameter        | Type     | Description                                    | Required |
+| :--------------- | :------- | :--------------------------------------------- | :------- |
+| `authentication` | `string` | Token of the currently logged-in user or admin | yes      |
+| `postId`         | `string` | ID of the post                                 | yes      |
+
+- **Endpoint:** `DELETE /api/v1/posts/user-comment/{postId}`
+- **Functionality:** Deletes all comments made by the currently logged-in user or a specified user in the given post using the `postId`.
+
+### **Delete All Comments in Post**
+
+```http
+DELETE /api/v1/posts/comment/{postId}
+```
+
+| Parameter        | Type     | Description                                    | Required |
+| :--------------- | :------- | :--------------------------------------------- | :------- |
+| `authentication` | `string` | Token of the currently logged-in user or admin | yes      |
+| `postId`         | `string` | ID of the post to delete all comments from     | yes      |
+
+# **Deployment**
+
+To deploy this application, follow these steps:
+
+## **Deploying to Production**
+
+1. **Prepare Environment Variables**:
+   Ensure that the necessary environment variables are set up in your production environment. This includes variables like:
+
+- `DB_URI`: MongoDB connection string (ensure this points to your production MongoDB database).
+- `PORT`: The port on which the app will run.
+- `JWT_SECRET`: Secret key used for JWT token signing.
+- Other environment-specific variables.
+
+**Important**: Make sure to check the `.env.example` file for required environment variables. Copy the `.env.example` file to a new `.env` file, and fill in the necessary values for your production environment.
+
+2. **Push your code to a Git repository**:
+   If you are using a service like GitHub, GitLab, or Bitbucket, push your code to a remote repository.
+
+3. **Set up a Hosting Service**:
+   You can deploy the app on platforms like:
+
+   - **Heroku**:
+     - Install the Heroku CLI and log in.
+     - Create a Heroku app with `heroku create`.
+     - Deploy the app using `git push heroku master`.
+     - Configure environment variables using `heroku config:set`.
+     - For more up-to-date instructions, check the [Heroku documentation](https://devcenter.heroku.com/articles/deploying-nodejs) as it may update over time.
+   - **Render**:
+     - Sign up or log in to [Render](https://render.com/).
+     - Create a new **Web Service** by connecting your GitHub (or GitLab) account and selecting the repository.
+     - In the **Environment** section, select **Node** as the environment.
+     - Under **Build & Deploy**, Render will automatically detect and install the required dependencies.
+     - Add environment variables:
+       - Go to the "Environment" section in your Render app dashboard and set environment variables like:
+         ```bash
+         DB_URI=your_mongo_db_connection_string
+         JWT_SECRET=your_jwt_secret_key
+         ```
+     - Click **Create Web Service** to deploy your app.
+       -. For more detailed and up-to-date instructions, check Render's [documentation](https://render.com/).
+
+4. **Set up MongoDB**:
+   - For production, ensure that MongoDB is either hosted on MongoDB Atlas or a self-hosted instance.
+   - If using MongoDB Atlas, follow their [documentation](https://www.mongodb.com/cloud/atlas) to set up a cluster and get the connection string.
+   - If using a self-hosted MongoDB instance, ensure it is properly configured and secured.
+
+- Once deployed, your application will be live, and you can start interacting with it via the provided URL.
+
+## **Contributing**
+
+We welcome contributions from the community! Here’s how you can help:
+
+### **How to Contribute**
+
+1. **Fork the repository**:
+
+   - Go to the project repository on GitHub and click on the **Fork** button to create a copy of the repository under your own GitHub account.
+
+2. **Clone the repository**:
+
+   - Clone your forked repository to your local machine:
+     ```bash
+     git clone https://github.com/your-username/node-express-mongodb-typescript-blog-rest-api.git
+     ```
+
+3. **Create a new branch**:
+
+   - Create a new branch for your feature or bug fix:
+     ```bash
+     git checkout -b your-feature-branch
+     ```
+
+4. **Make your changes**:
+
+   - Make your changes or additions to the project. Be sure to write clear, concise commit messages explaining your changes.
+
+5. **Test your changes**:
+
+   - Run tests and ensure everything works as expected.
+
+6. **Commit your changes**:
+
+   - Stage and commit your changes:
+     ```bash
+     git add .
+     git commit -m "Add/Update feature description"
+     ```
+
+7. **Push your changes**:
+
+   - Push your changes to your forked repository:
+     ```bash
+     git push origin your-feature-branch
+     ```
+
+8. **Create a Pull Request (PR)**:
+   - Go to the **Pull Requests** tab of the original repository and click **New Pull Request**.
+   - Select your branch and explain the changes you've made.
+   - Submit the PR for review.
+
+### **Code of Conduct**
+
+By participating in this project, you agree to abide by the project's Code of Conduct. Please be respectful and kind to other contributors.
+
+### **Issues and Bugs**
+
+If you find a bug or want to request a feature:
+
+1. **Check the issues**: Before opening a new issue, check if the problem or feature request already exists.
+2. **Report a bug or request a feature**: If the issue hasn’t been reported, create a new issue with a clear description of the problem or feature request. Please include:
+   - Steps to reproduce the issue (if applicable)
+   - Expected and actual behavior
+   - Any error messages or logs
+
+### **Documentation**
+
+If you're contributing to the documentation:
+
+1. Ensure that any new or updated features are properly documented in the **README.md**.
+2. Ensure that any API changes are reflected in the API documentation.
+
+### **Thanks for your contributions!**
+
+Your contributions help improve this project and make it better for everyone. Thank you for your help!
+
+# **Project Status**
+
+- **Current Status**: This project is in **active development**.
+- **Upcoming Features**:
+  - **Notifications**: Users will receive notifications for post likes, comments, mentions, follows, and other interactions.
+  - **Content Moderation**: Admins will be able to flag posts or comments based on keywords, reports, or other indicators. Implement content filters (e.g., profanity filters, image moderation) for posts and comments. Users can report posts and comments as inappropriate.
+- **Contributions**: Contributions are welcome! See the [Contributing](#contributing) section for more.
+- **Known Issues**:
+  - Issue 1: Add tests for admin endpoints.
+  - See the [GitHub Issues page] for more.
+
+# **Feedback**
+
+We value your feedback and would love to hear from you! If you have any suggestions, improvements, or bugs to report, please feel free to:
+
+- Open an issue on the [GitHub Issues page].
+- Send us an email at [saddamarbaas@gmail.com].
+
+Your feedback helps us improve the project and provide a better experience for everyone.
+
+# **Support**
+
+For support, email saddamarbaas@gmail.com.
+
+# **License**
+
+This project is licensed under the [MIT License](LICENSE).
+
+You are free to use, modify, and distribute the code, but please ensure you follow the terms of the license. See the [LICENSE](LICENSE) file for more details.
+
+# 🔗 Social Links
 
 [![linkedin](https://img.shields.io/badge/linkedin-Code?style=for-the-badge&logo=linkedin&logoColor=white&color=0077B5)](https://www.linkedin.com/in/saddamarbaa/)
 
 [![twitter](https://img.shields.io/badge/twitter-Code?style=for-the-badge&logo=twitter&logoColor=white&color=1DA1F2)](https://twitter.com/ArbaaSaddam)
 
-## Author
+# **Related Projects**
 
-- [@saddamarbaa](https://github.com/saddamarbaa)
+### **E-Commerce & Social API** built with Node.js, Express, MongoDB, and TypeScript
+
+- [**API Repository**](https://github.com/saddamarbaa/node-express-mongodb-typescript-ecom-social-rest-api)
+- An open-source RESTful API for User Authentication, E-commerce Management, and Social Media Post Management.
+- Includes features such as Filter, Pagination, Sort, and Search APIs to enhance your application.
+
+---
+
+### **Developer Match API** built with Node.js, Express, TypeScript, and MongoDB
+
+- [**API Repository**](https://github.com/saddamarbaa/node-express-mongodb-developer-match-rest-api)
+- An open-source RESTful API helping developers connect and collaborate.
+- Offers user authentication, developer profile management, and match-based interactions to foster collaboration.
+
+---
+
+### **Twitter API** built with Node.js, Express, and MongoDB
+
+- [**API Repository**](https://github.com/saddamarbaa/twitter-clone-api)
+- A simple Twitter clone API for building a social media platform with features like user authentication, tweets, follows.
+
+---
+
+### **Netflix API** built with Node.js, Express, and MongoDB
+
+- [**API Repository**](https://github.com/saddamarbaa/netflix-clone-api)
+- A clone of Netflix's backend API that allows you to manage movies, users, and subscriptions, with features such as authentication and content management.
+
+# Screenshots
+
+## Software Requirements
+
+https://docs.google.com/document/d/1lZvacY90Yo19QcnJxRJyy1AAZkTi0Vi5qXHTtptqAiU/edit
+
+![image](https://user-images.githubusercontent.com/51326421/111891042-f857f580-8a21-11eb-8bb9-310f0c666f91.png)
+
+## Business Requirements
+
+![image](https://user-images.githubusercontent.com/51326421/111891112-b4192500-8a22-11eb-92e9-20854d336b57.png)
+
+## Technical Requirements
+
+![image](https://user-images.githubusercontent.com/51326421/111891149-33a6f400-8a23-11eb-9f98-bea822a938f3.png)
+
+## User Flow
+
+https://app.diagrams.net/#G1DYvf-0FWMjC2nDzFbvAgbJ03Zg8DLfRZ
+
+![image](https://user-images.githubusercontent.com/51326421/111890990-5b955800-8a21-11eb-89db-3f552bd8f7ff.png)
+
+## Blog App: Wireframe
+
+https://app.diagrams.net/#G1Wo8rd6DVJUyCwp7aC6kLpvMkBM3Mgh8l
+
+## Rresponsive on large screens(Home Page)
+
+![image](https://user-images.githubusercontent.com/51326421/198089229-140a67d9-5cbc-42ea-b871-c84437bbebbe.png)
+
+## Responsive on mobile and tablet screens
+
+![image](https://user-images.githubusercontent.com/51326421/198090336-7f9db2bf-6f5f-4c77-84ea-74025d027e55.png)
+
+## Post detail page
+
+![image](https://user-images.githubusercontent.com/51326421/198090667-46907f31-58d1-44d8-a995-bea487ec9458.png)
+
+## Edit new post page
+
+![image](https://user-images.githubusercontent.com/51326421/198096430-5c5928b0-f39d-44c0-ad80-ab887615a743.png)
+
+## Edit post page
+
+![image](https://user-images.githubusercontent.com/51326421/198090907-759c57f7-c3ca-4d9e-bdd7-5f57bfcb57ac.png)
+
+## Login Page
+
+![image](https://user-images.githubusercontent.com/51326421/198091036-5306633d-60da-4c9b-8457-ef2e54c5ba0b.png)
+
+![image](https://user-images.githubusercontent.com/51326421/198091134-4582d1b6-33ed-403f-9f33-2544ee9372e7.png)
+
+![image](https://user-images.githubusercontent.com/51326421/198091226-a97c21f4-7661-4614-a6ca-e7b98aacf068.png)
+
+## Register page
+
+![image](https://user-images.githubusercontent.com/51326421/198091354-d8d03db0-97c1-4315-8a43-e8fb6351b230.png)
+
+![image](https://user-images.githubusercontent.com/51326421/198091554-d18d0adf-2a79-42cb-8d83-33920e2ba3d3.png)
+
+## Forgot password page
+
+![image](https://user-images.githubusercontent.com/51326421/198091856-c917f9b5-17a8-4aa6-b91e-f1636cfee361.png)
+
+![image](https://user-images.githubusercontent.com/51326421/198092467-0e393c59-fb00-48ad-9c93-55b116794f1d.png)
+
+## Reset password page
+
+![image](https://user-images.githubusercontent.com/51326421/198092583-0437999c-dc3e-4a5a-ac47-7f1eac4bba8d.png)
