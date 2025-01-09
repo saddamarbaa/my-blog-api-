@@ -1,5 +1,12 @@
 # **Blog REST API**
 
+[![Build Status](https://img.shields.io/badge/build-passing-brightgreen)](https://your-build-link)
+[![License](https://img.shields.io/badge/license-MIT-blue)](https://opensource.org/licenses/MIT)
+[![Node.js](https://img.shields.io/badge/Node.js-20.1.0-339933?style=flat&logo=node.js&logoColor=white)](https://nodejs.org/)
+[![Express](https://img.shields.io/badge/Express-4.21.1-blue)](https://expressjs.com/)
+[![MongoDB](https://img.shields.io/badge/MongoDB-5.0.3-47A248?style=flat&logo=mongodb&logoColor=white)](https://www.mongodb.com/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.6.3-blue)](https://www.typescriptlang.org/)
+
 An open-source, scalable, and fully-featured RESTful API built with **Node.js**, **Express**, **MongoDB**, and **TypeScript**. It provides a seamless experience for user authentication, blog post management, and advanced features such as filtering, pagination, sorting, and full-text search.
 
 This API is designed to support a wide range of blog functionalities, including user account management, content creation, commenting, and moderation, with robust admin capabilities for user and post management. It's optimized for performance and easy to extend for custom use cases.
@@ -23,6 +30,7 @@ This API is designed to support a wide range of blog functionalities, including 
 - [Getting Started](#getting-started)
 - [Deployment](#deployment)
 - [Contributing](#contributing)
+- [Sponsorship](#sponsorship)
 - [Project Status](#project-status)
 - [Related Projects](#related-projects)
 - [Feedback](#feedback)
@@ -407,6 +415,9 @@ POST /api/v1/auth/signup
 
 - **Endpoint:** `POST /api/v1/auth/signup`
 - **Functionality:** Registers a new user with the provided information and send verification email.
+- **Password Validation:** The password must match the confirm password field.
+- **Email Uniqueness:** The email address must be unique and not already registered in the system.
+- **Authorization:** None required.
 
 #### Example Request Body:
 
@@ -430,6 +441,139 @@ POST /api/v1/auth/signup
 
 ```
 
+- **firstName**: User's first name (required).
+- **lastName**: User's last name (required).
+- **email**: User's email address (required, must be unique).
+- **password**: User's password (required).
+- **confirmPassword**: Password confirmation (required).
+- **bio**: User's short biography (optional).
+- **skills**: Array of skills (optional).
+- **profileUrl**: URL of the user's profile picture (optional).
+- **acceptTerms**: Boolean indicating if the user accepts terms and conditions (required).
+- **confirmationCode**: A confirmation code (optional, for advanced validation).
+- **gender**: User's gender (optional).
+
+**Request Header:**
+
+```json
+{
+  "Content-Type": "application/json"
+}
+```
+
+**Request Example:**
+
+```http
+POST /api/v1/user/signup
+{
+  "firstName": "John",
+  "lastName": "Doe",
+  "email": "john.doe@example.com",
+  "password": "SecurePassword123",
+  "confirmPassword": "SecurePassword123",
+  "bio": "Developer passionate about technology.",
+  "skills": ["JavaScript", "Node.js", "React"],
+  "profileUrl": "https://example.com/profile.jpg",
+  "acceptTerms": true,
+  "confirmationCode": "abc123",
+  "gender": "male"
+}
+```
+
+**Response:**
+
+- **Success (201):**
+
+```json
+{
+  "success": true,
+  "error": false,
+  "message": "Auth Signup is success. An Email with Verification link has been sent to your account john.doe@example.com Please Verify Your Email first or use the email verification link which has been sent with the response body to verify your email",
+  "status": 201,
+  "data": {
+    "accessToken": "generatedAccessToken",
+    "refreshToken": "generatedRefreshToken",
+    "verifyEmailLink": "https://example.com/verify-email?id=12345&token=generatedRefreshToken"
+  }
+}
+```
+
+- **Error (422): Validation Error:**
+
+```json
+{
+  "success": false,
+  "error": "Validation error",
+  "message": "One or more fields are invalid.",
+  "status": 422,
+  "data": null
+}
+```
+
+- **Error Responses:**
+
+  - **(409) Email already exists:**
+
+  ```json
+  {
+    "success": false,
+    "error": true,
+    "message": "E-Mail address john.doe@example.com is already exists, please pick a different one.",
+    "status": 409
+  }
+  ```
+
+  - **(400) Passwords do not match:**
+
+  ```json
+  {
+    "success": false,
+    "error": true,
+    "message": "Password and confirm password do not match.",
+    "status": 400
+  }
+  ```
+
+  - **(400) Invalid email format:**
+
+  ```json
+  {
+    "success": false,
+    "error": true,
+    "message": "Invalid email format.",
+    "status": 400
+  }
+  ```
+
+  - **(500) Internal Server Error:**
+
+  ```json
+  {
+    "success": false,
+    "error": true,
+    "message": "Internal server error.",
+    "status": 500
+  }
+  ```
+
+#### **Flow:**
+
+1. The user sends a `POST` request with their details such as first name, last name, email, and password.
+2. The server checks if the email is already registered. If it is, it responds with a `409 Conflict` error.
+3. If the email is not registered, the server generates a user profile URL and determines the role based on the email address.
+4. The user is created in the database, and a new token instance (access and refresh tokens) is generated for the user.
+5. A verification email containing a link to confirm the user's email is sent.
+6. The server responds with a `201 Created` status, including the tokens and verification link in the response body.
+
+#### **Note:**
+
+- The user is required to verify their email address before completing the registration process.
+- If the email is already in use, the user is notified with a `409 Conflict` error.
+- The server uses environment variables to define token expiration times and other configurations.
+- Email errors are logged for debugging but do not interrupt the registration flow in the development environment.
+
+---
+
 ## **Verify Email**
 
 ```http
@@ -448,6 +592,98 @@ GET /api/v1/auth/verify-email/:userId/:token
 - **Endpoint:** `POST /api/v1/auth/verify-email/:userId/:token`
 - **Functionality:** Verifies the user's email using the provided verification code sent to the user's email address.
 
+- **Verification Token:** The token is used to verify the email address and ensure it is valid and not expired.
+- **Account Status:** After successful verification, the user's status is set to "active" and the account is marked as verified.
+
+#### **Success Response:**
+
+- **Success (200):**
+
+```json
+{
+  "success": true,
+  "error": false,
+  "message": "Your account has been successfully verified. Please Login.",
+  "status": 200,
+  "data": null
+}
+```
+
+#### **Error Responses:**
+
+- **(400) Invalid or Expired Token:**
+
+```json
+{
+  "success": false,
+  "error": true,
+  "message": "Email verification token is invalid or has expired. Please click on resend for verify your Email.",
+  "status": 400,
+  "data": null
+}
+```
+
+- **(200) Already Verified:**
+
+```json
+{
+  "success": true,
+  "error": false,
+  "message": "Your email has already been verified. Please Login.",
+  "status": 200,
+  "data": null
+}
+```
+
+- **(500) Internal Server Error:**
+
+```json
+{
+  "success": false,
+  "error": true,
+  "message": "Internal server error.",
+  "status": 500,
+  "data": null
+}
+```
+
+#### **Example Request:**
+
+```http
+POST /api/v1/auth/verify-email/12345/abc123
+```
+
+#### **Request Header:**
+
+```json
+{
+  "Content-Type": "application/json"
+}
+```
+
+#### **Request Example:**
+
+```http
+POST /api/v1/auth/verify-email/12345/abc123
+```
+
+#### **Flow:**
+
+1. The user clicks on the email verification link, which contains the `userId` and `token`.
+2. The server checks if the user exists using the `userId`. If the user is not found, an error response is returned.
+3. The server checks if the user is already verified. If the user is already verified and their status is `active`, the server responds with a success message indicating that they can log in.
+4. The server looks for the email verification token in the database. If the token is invalid or expired, an error response is returned.
+5. If the token is valid, the user's `isVerified` field is updated to `true`, and the status is set to `active`. The user is now marked as verified.
+6. The email verification token is deleted from the database.
+7. The server responds with a success message indicating that the user's account has been verified and that they can log in.
+
+#### **Notes:**
+
+- If the user has already verified their email, they will be notified that their email is already verified and can proceed to log in.
+- The server uses the `userId` and `token` to identify and verify the user. If either is invalid or expired, the server responds with a `400 Bad Request` error.
+- The token is deleted after successful email verification to prevent reuse.
+- If the token is valid and verification is successful, the user’s account status is updated to 'active', and the `isVerified` field is set to `true`.
+
 ## **User Login**
 
 ```http
@@ -463,16 +699,115 @@ POST /api/v1/auth/login
 #### **Description:**
 
 - **Endpoint:** `POST /api/v1/auth/login`
-- **Functionality:** Authenticates the user and returns a token for further use.
+- **Functionality:** Authenticates the user by validating their email and password. If valid, it generates an access token and a refresh token.
+- **Tokens:** The generated tokens (access and refresh) are returned and stored in cookies for future requests.
+- **Email Verification:** If the user's email is not verified or the account is inactive, the user will be prompted to verify their email.
 
-#### **Example request body**
+#### **Success Response:**
+
+- **Success (200):**
 
 ```json
 {
-  "email": "user@example.com",
-  "password": "userpassword123"
+  "success": true,
+  "error": false,
+  "message": "Auth logged in successful.",
+  "status": 200,
+  "data": {
+    "accessToken": "generatedAccessToken",
+    "refreshToken": "generatedRefreshToken",
+    "authToken": "generatedAccessToken"
+  }
 }
 ```
+
+#### **Error Responses:**
+
+- **(401) Invalid Credentials:**
+
+```json
+{
+  "success": false,
+  "error": true,
+  "message": "Auth Failed (Invalid Credentials)",
+  "status": 401,
+  "data": null
+}
+```
+
+- **(401) Email Not Verified:**
+
+```json
+{
+  "success": false,
+  "error": true,
+  "message": "Your Email has not been verified. An Email with Verification link has been sent to your account. Please verify your email first or use the email verification link sent with the response.",
+  "status": 401,
+  "data": {
+    "accessToken": "generatedAccessToken",
+    "refreshToken": "generatedRefreshToken",
+    "verifyEmailLink": "https://website.com/verify-email?id=userId&token=refreshToken"
+  }
+}
+```
+
+- **(422) Validation Error:**
+
+```json
+{
+  "success": false,
+  "error": "Validation error",
+  "message": "One or more fields are invalid, missing, or email not in the correct format.",
+  "status": 422,
+  "data": null
+}
+```
+
+- **(500) Internal Server Error:**
+
+```json
+{
+  "success": false,
+  "error": true,
+  "message": "Internal server error.",
+  "status": 500,
+  "data": null
+}
+```
+
+#### **Request Example:**
+
+```http
+POST /api/v1/auth/login
+Content-Type: application/json
+
+{
+  "email": "user@example.com",
+  "password": "password123"
+}
+```
+
+#### **Request Header:**
+
+```json
+{
+  "Content-Type": "application/json"
+}
+```
+
+#### **Cookies Set:**
+
+- `accessToken` (expires in 1 day)
+- `refreshToken` (expires in 7 days)
+
+#### **Flow:**
+
+1. The user submits their `email` and `password` to the server.
+2. The server verifies the user's credentials.
+3. If valid, the server generates an `accessToken` and `refreshToken`.
+4. If the email is not verified, the server sends a verification email with a link to verify the email address.
+5. If the credentials are incorrect, the user is notified of the failure.
+6. Tokens are stored in cookies for future use.
 
 ## **User Logout**
 
@@ -488,15 +823,88 @@ POST /api/v1/auth/logout
 #### **Description:**
 
 - **Endpoint:** `POST /api/v1/auth/logout`
-- **Functionality:** Logs out the current user by invalidating the authentication token.
+- **Functionality:** Logs the user out by removing their refresh token from the database and clearing the associated cookies (accessToken and refreshToken).
+- **Token Deletion:** The refresh token is removed from the database, and both access and refresh tokens are deleted from the user's cookies.
 
-#### Example request body:
+#### **Success Response:**
 
-```javascript
+- **Success (200):**
+
+```json
 {
-  "refreshToken":"your refreshToken"
+  "success": true,
+  "error": false,
+  "message": "Successfully logged out 😏 🍀",
+  "status": 200,
+  "data": null
 }
 ```
+
+#### **Error Responses:**
+
+- **(400) Bad Request:**
+
+```json
+{
+  "success": false,
+  "error": true,
+  "message": "Bad Request (Token not found or invalid)",
+  "status": 400,
+  "data": null
+}
+```
+
+- **(422) Validation Error:**
+
+```json
+{
+  "success": false,
+  "error": "Validation error",
+  "message": "refreshToken fields is invalid format.",
+  "status": 422,
+  "data": null
+}
+```
+
+- **(500) Internal Server Error:**
+
+```json
+{
+  "success": false,
+  "error": true,
+  "message": "Internal server error.",
+  "status": 500,
+  "data": null
+}
+```
+
+#### **Request Example:**
+
+```http
+POST /api/v1/auth/logout
+Content-Type: application/json
+
+{
+  "refreshToken": "yourRefreshTokenHere"
+}
+```
+
+#### **Request Header:**
+
+```json
+{
+  "Content-Type": "application/json"
+}
+```
+
+#### **Flow:**
+
+1. The user submits their `refreshToken` to log out.
+2. The server checks if the refresh token exists in the database.
+3. If the token is invalid or not found, the request returns a `400 Bad Request` error.
+4. If the refresh token is valid, the server deletes the refresh token from the database.
+5. The cookies containing `accessToken` and `refreshToken` are cleared.
+6. The user is successfully logged out, and the server returns a success resp
 
 ## **Remove Account**
 
@@ -512,17 +920,113 @@ DELETE /api/v1/auth/remove/:userId
 #### **Description:**
 
 - **Endpoint:** `DELETE /api/v1/auth/remove/:userId`
-- **Functionality:** Deletes the account of the user associated with the provided authentication token.
+- **Functionality:** This endpoint allows an authenticated user to delete their account. If the authenticated user is an admin, they are allowed to delete any user. However, an admin cannot delete themselves.
+- **Authorization:**
+  - **User:** A user can delete only their own profile.
+  - **Admin:** Admins can delete users, but they cannot delete their own account.
 
-#### Example request body:
+#### **Success Response:**
 
-To delete a user, send a DELETE request with the userId in the URL path:
+- **Success (200):**
 
-```javascript
+```json
 {
- DELETE /api/v1/auth/remove/60b73f8a4f1c2b001c45d1d5
+  "success": true,
+  "error": false,
+  "message": "Successfully deleted user by ID {userId}",
+  "status": 200,
+  "data": null
 }
 ```
+
+#### **Error Responses:**
+
+- **(400) Bad Request:**
+
+```json
+{
+  "success": false,
+  "error": true,
+  "message": "Bad Request (User not found)",
+  "status": 400,
+  "data": null
+}
+```
+
+- **(403) Forbidden:**
+
+```json
+{
+  "success": false,
+  "error": true,
+  "message": "Auth Failed (Admin can't remove themselves from admin, please ask another admin)",
+  "status": 403,
+  "data": null
+}
+```
+
+- **(403) Forbidden:**
+
+```json
+{
+  "success": false,
+  "error": true,
+  "message": "Auth Failed (Unauthorized)",
+  "status": 403,
+  "data": null
+}
+```
+
+- **(422) Unprocessable Entity:**
+
+```json
+{
+  "success": false,
+  "error": true,
+  "message": "Failed to delete user by given ID {userId}",
+  "status": 422,
+  "data": null
+}
+```
+
+- **(500) Internal Server Error:**
+
+```json
+{
+  "success": false,
+  "error": true,
+  "message": "Internal server error.",
+  "status": 500,
+  "data": null
+}
+```
+
+#### **Request Example:**
+
+```http
+DELETE /api/v1/users/{userId}
+Content-Type: application/json
+Authorization: Bearer {accessToken}
+```
+
+#### **Request Header:**
+
+```json
+{
+  "Authorization": "Bearer {accessToken}",
+  "Content-Type": "application/json"
+}
+```
+
+#### **Flow:**
+
+1. The authenticated user submits a request to delete a user by their `userId`.
+2. The server checks if the user exists.
+3. If the user is an admin trying to delete their own account, the request returns a `403 Forbidden` error.
+4. If the authenticated user is not authorized (i.e., not their own profile), the request returns a `403 Forbidden` error.
+5. If the user is found and eligible to delete, the account is deleted from the database.
+6. The server returns a success message if the deletion is successful.
+7. If there are any errors (e.g., user not found, deletion failed), the server returns an appropriate error response.
 
 ## **Update Account**
 
@@ -548,33 +1052,157 @@ PATCH  /api/v1/auth/update/:userId
 #### **Description:**
 
 - **Endpoint:** `PATCH  /api/v1/auth/update/:userId`
-- **Functionality:** Updates the account information for the user associated with the provided authentication token. The user can update their info.
+- **Functionality:** This endpoint allows an authenticated user to update their account details, including personal information like name, email, phone number, bio, skills, and more. Only the user themselves can update their account information, and they must be authenticated.
+- **Authorization:** The user must be authenticated, and the request must be made by the user themselves (based on the user ID in the request parameter).
 
-#### Example Request Body:
+#### **Request Parameters:**
 
-```javascript
+- **`:userId`** (path parameter): The ID of the user whose account is being updated.
+
+#### **Request Body:**
+
+```json
 {
- PATCH  /api/v1/auth/updat/60b73f8a4f1c2b001c45d1d5
+  "firstName": "string", // The user's first name.
+  "lastName": "string", // The user's last name.
+  "dateOfBirth": "string", // The user's date of birth (ISO 8601 date string).
+  "email": "string", // The user's email address.
+  "bio": "string", // The user's bio or description.
+  "skills": "array", // List of the user's skills.
+  "profileUrl": "string", // URL to the user's profile picture or website.
+  "acceptTerms": "boolean", // Boolean indicating if the user accepts the terms.
+  "phoneNumber": "string", // The user's phone number.
+  "gender": "string" // The user's gender.
 }
 ```
 
-```javascript
+#### **Success Response:**
+
+- **Success (200):**
+
+```json
+{
+  "success": true,
+  "error": false,
+  "message": "Successfully updated user by ID: userId",
+  "status": 200,
+  "data": {
+    "user": {
+      "firstName": "string",
+      "lastName": "string",
+      "dateOfBirth": "string",
+      "email": "string",
+      "bio": "string",
+      "skills": "array",
+      "profileUrl": "string",
+      "acceptTerms": "boolean",
+      "phoneNumber": "string",
+      "gender": "string"
+    }
+  }
+}
+```
+
+#### **Error Responses:**
+
+- **(400) Invalid User ID:**
+
+```json
+{
+  "success": false,
+  "error": true,
+  "message": "User not found.",
+  "status": 400,
+  "data": null
+}
+```
+
+- **(403) Unauthorized:**
+
+```json
+{
+  "success": false,
+  "error": true,
+  "message": "Auth Failed (Unauthorized)",
+  "status": 403,
+  "data": null
+}
+```
+
+- **(422) Email Already Exists:**
+
+```json
+{
+  "success": false,
+  "error": true,
+  "message": "E-Mail address is already exists, please pick a different one.",
+  "status": 422,
+  "data": null
+}
+```
+
+- **(500) Internal Server Error:**
+
+```json
+{
+  "success": false,
+  "error": true,
+  "message": "Internal server error.",
+  "status": 500,
+  "data": null
+}
+```
+
+#### **Request Example:**
+
+```http
+PUT /api/v1/users/12345/update
+Content-Type: application/json
+
 {
   "firstName": "John",
   "lastName": "Doe",
-  "email": "johndoe@example.com",
-  "bio": "This is my bio",
-  "skills": ["JavaScript", "Node.js"],
-  "profileUrl": "http://example.com/profile.jpg",
+  "email": "john.doe@example.com",
+  "bio": "Software developer with a passion for coding.",
+  "skills": ["JavaScript", "Node.js", "React"],
+  "profileUrl": "https://example.com/johndoe",
   "acceptTerms": true,
   "phoneNumber": "+1234567890",
-  "gender": "male",
-  "userAward": "Best Developer",
-  "plan": "premium",
-  "dateOfBirth": "1990-01-01"
+  "gender": "male"
 }
-
 ```
+
+#### **Flow:**
+
+1. **User Validation:**
+
+   - The server first checks if the user exists by querying the database using the `userId` from the request parameters.
+   - If the user is not found, a `400 Bad Request` error is returned.
+
+2. **Authorization Check:**
+
+   - The server checks if the request is made by the authenticated user themselves by comparing the `userId` from the request parameters with the `_id` of the authenticated user (`req.user._id`).
+   - If the user is not authorized, a `403 Forbidden` error is returned.
+
+3. **Email Validation:**
+
+   - If the user provides an email, the server checks if any other user with the same email exists. If a user with the same email exists and is not the same user, an error response (`422 Unprocessable Entity`) is returned.
+
+4. **Update User Details:**
+
+   - The server updates the user fields with the provided data, keeping the existing values if no new values are provided in the request body.
+
+5. **Save the Updated User:**
+
+   - The server saves the updated user data in the database.
+   - If the update fails, a `422 Unprocessable Entity` error is returned.
+
+6. **Successful Update:**
+
+   - On successful update, the server responds with the updated user details, excluding sensitive information like `password` and `role`.
+
+7. **Error Handling:**
+   - The server logs any errors and returns appropriate error messages based on the error type (e.g., invalid user, unauthorized access, or internal server errors).
 
 ## **Refresh Token**
 
@@ -590,15 +1218,100 @@ POST /api/v1/auth/refresh-token
 #### **Description:**
 
 - **Endpoint:** `POST /api/v1/auth/refresh-token`
-- **Functionality:** Refreshes the access and refresh tokens using a valid refresh token. This helps the user to continue using the API without re-authenticating.
+- **Functionality:** This endpoint allows a user to refresh their authentication tokens (access and refresh tokens) using a valid refresh token. If the refresh token is valid, the server will generate new access and refresh tokens and send them back to the client, typically for extended sessions without requiring the user to log in again.
+- **Authorization:** The request must include a valid `refreshToken`.
 
-#### Example request body:
+#### **Request Body:**
 
-```javascript
+```json
 {
-  "refreshToken":"your refreshToken"
+  "refreshToken": "string"
 }
 ```
+
+#### **Success Response:**
+
+- **Success (200):**
+
+```json
+{
+  "success": true,
+  "error": false,
+  "message": "Auth logged in successful.",
+  "status": 200,
+  "data": {
+    "user": {
+      "accessToken": "newAccessToken",
+      "refreshToken": "newRefreshToken"
+    }
+  }
+}
+```
+
+#### **Error Responses:**
+
+- **(400) Invalid or Expired Refresh Token:**
+
+```json
+{
+  "success": false,
+  "error": true,
+  "message": "Invalid or expired refresh token.",
+  "status": 400,
+  "data": null
+}
+```
+
+- **(500) Internal Server Error:**
+
+```json
+{
+  "success": false,
+  "error": true,
+  "message": "Internal server error.",
+  "status": 500,
+  "data": null
+}
+```
+
+#### **Request Example:**
+
+```http
+POST /api/v1/auth/refresh-token
+Content-Type: application/json
+
+{
+  "refreshToken": "yourRefreshTokenHere"
+}
+```
+
+#### **Flow:**
+
+1. **Token Lookup:**
+
+   - The server looks for the provided `refreshToken` in the database.
+   - If the token is not found, the server responds with a `400 Bad Request` error.
+
+2. **Token Verification:**
+
+   - The server attempts to verify the `refreshToken` to extract the associated user ID.
+   - If the token is invalid or expired, the server returns an error response indicating that the token is invalid or expired.
+
+3. **Token Generation:**
+
+   - If the refresh token is valid, the server generates new access and refresh tokens for the user.
+   - The server uses the `userId` extracted from the refresh token to create the new tokens.
+
+4. **Saving the New Tokens:**
+
+   - The new `accessToken` and `refreshToken` are saved in the database, updating the user's existing token record.
+
+5. **Response and Cookies:**
+   - The server sends the newly generated tokens in the response body.
+   - The new tokens are also set as cookies in the user's browser with the following properties:
+     - `accessToken` cookie (expires in 1 day)
+     - `refreshToken` cookie (expires in 7 days)
+   - The cookies are set as `httpOnly` for security, and the `secure` flag is set if the environment is in production.
 
 ## **Get Profile**
 
@@ -613,7 +1326,109 @@ GET /api/v1/auth/profile
 #### **Description:**
 
 - **Endpoint:** `GET /api/v1/auth/profile`
-- **Functionality:** Fetches the profile details of the currently authenticated user using the provided authentication token..
+- **Functionality:** This endpoint allows an authenticated user to retrieve their own profile information.
+- **Authorization:**
+  - **Authenticated User:** The request must include a valid authentication token (JWT) in the `Authorization` header. The profile returned will contain user data excluding sensitive information like `password`, `confirmPassword`, `status`, `isDeleted`, `acceptTerms`, and `isVerified`.
+
+#### **Success Response:**
+
+- **Success (200):**
+
+```json
+{
+  "success": true,
+  "error": false,
+  "message": "Successfully found user profile 🍀",
+  "status": 200,
+  "data": {
+    "user": {
+      "_id": "user_id",
+      "firstName": "John",
+      "lastName": "Doe",
+      "profileUrl": "http://example.com/profile.jpg",
+      "bio": "Hello, I am John Doe",
+      "following": [
+        {
+          "_id": "following_user_id",
+          "firstName": "Jane",
+          "lastName": "Smith",
+          "profileUrl": "http://example.com/jane.jpg",
+          "bio": "I love coding!"
+        }
+      ],
+      "followers": [
+        {
+          "_id": "follower_user_id",
+          "firstName": "Sam",
+          "lastName": "Green",
+          "profileUrl": "http://example.com/sam.jpg",
+          "bio": "I am a software developer!"
+        }
+      ],
+      "blocked": [
+        {
+          "_id": "blocked_user_id",
+          "firstName": "Blocked",
+          "lastName": "User",
+          "profileUrl": "http://example.com/blocked.jpg",
+          "bio": "This user is blocked"
+        }
+      ]
+    }
+  }
+}
+```
+
+#### **Error Responses:**
+
+- **(401) Unauthorized:**
+
+```json
+{
+  "success": false,
+  "error": true,
+  "message": "Auth Failed",
+  "status": 401,
+  "data": null
+}
+```
+
+- **(500) Internal Server Error:**
+
+```json
+{
+  "success": false,
+  "error": true,
+  "message": "Internal server error.",
+  "status": 500,
+  "data": null
+}
+```
+
+#### **Request Example:**
+
+```http
+GET /api/v1/users/profile
+Authorization: Bearer {accessToken}
+```
+
+#### **Request Header:**
+
+```json
+{
+  "Authorization": "Bearer {accessToken}"
+}
+```
+
+#### **Flow:**
+
+1. The user sends a `GET` request to retrieve their profile.
+2. The request must include a valid JWT token in the `Authorization` header.
+3. The server queries the database for the user's profile, excluding sensitive data such as `password`, `confirmPassword`, `status`, `isDeleted`, `acceptTerms`, and `isVerified`.
+4. The profile includes user information, as well as data on the user's followers, following, and blocked users.
+5. If the user is found, the profile is returned with a success message.
+6. If the user is not found, an `Auth Failed` error is returned with a `401 Unauthorized` status.
+7. If any server-side errors occur, an `Internal Server Error` message is returned.
 
 ## **Upload Profile Photo**
 
@@ -629,17 +1444,125 @@ GET /api/v1/auth/profile
 #### **Description:**
 
 - **Endpoint:** `POST /api/v1/auth/profile-photo-upload`
-- **Functionality:** Allows the user to upload a new profile photo by sending a file along with the authentication token.
+- **Functionality:** This endpoint allows an authenticated user to upload their profile photo. The profile photo will be stored on the server, and the user's profile will be updated with the new photo URL.
+- **Authorization:** The user must be authenticated and provide their authentication token in the request headers.
 
-#### Example Request Body:
+#### **Request Headers:**
 
-Form-data should be used to upload the image file.
+- **Authorization**: Bearer `<token>`
+  - The user must include their authentication token in the `Authorization` header for the request to be authorized.
 
-```javascript
-Content-Type: multipart/form-data
-Authorization: Bearer {authentication_token}
-file: {image_file}
+#### **Request Body:**
+
+The request should include the profile photo as a **multipart/form-data** upload.
+
+```multipart/form-data
+{
+  "profilePhoto": "<image file>"
+}
 ```
+
+- **`profilePhoto`** (required): The profile image file to upload. The image should be in an accepted format (e.g., JPG, PNG, JPEG).
+
+#### **Success Response:**
+
+- **Success (200):**
+
+```json
+{
+  "success": true,
+  "error": false,
+  "message": "Profile photo uploaded successfully.",
+  "status": 200,
+  "data": {
+    "user": {
+      "profileUrl": "string" // URL to the uploaded profile photo
+    }
+  }
+}
+```
+
+#### **Error Responses:**
+
+- **(400) Bad Request (Invalid File Format):**
+
+```json
+{
+  "success": false,
+  "error": true,
+  "message": "Invalid file format. Please upload a valid image file.",
+  "status": 400,
+  "data": null
+}
+```
+
+- **(403) Unauthorized:**
+
+```json
+{
+  "success": false,
+  "error": true,
+  "message": "Auth Failed (Unauthorized). Please login.",
+  "status": 403,
+  "data": null
+}
+```
+
+- **(500) Internal Server Error:**
+
+```json
+{
+  "success": false,
+  "error": true,
+  "message": "Internal server error. Please try again later.",
+  "status": 500,
+  "data": null
+}
+```
+
+#### **Request Example:**
+
+```http
+POST /api/v1/auth/profile-photo-upload
+Authorization: Bearer <your-auth-token>
+Content-Type: multipart/form-data
+
+{
+  "profilePhoto": "<image-file>"
+}
+```
+
+#### **Flow:**
+
+1. **Authentication Check:**
+
+   - The server checks if the request contains a valid `Authorization` token in the header.
+   - If the token is missing or invalid, a `403 Unauthorized` error is returned.
+
+2. **File Validation:**
+
+   - The server checks if the uploaded file is a valid image (e.g., JPG, PNG, JPEG).
+   - If the file format is invalid, a `400 Bad Request` error is returned.
+
+3. **Save Profile Photo:**
+
+   - The server saves the uploaded profile photo in the server’s designated directory.
+   - The URL of the uploaded photo is then stored in the user's profile.
+
+4. **Profile Update:**
+   - The user’s `profileUrl` is updated with the URL of the newly uploaded photo.
+5. **Successful Response:**
+
+   - Upon success, the server responds with the new `profileUrl` and a success message.
+
+6. **Error Handling:**
+   - In case of an internal error or an issue with the upload process, an appropriate error message and status code are returned.
+
+#### **Notes:**
+
+- Only authenticated users are allowed to upload a profile photo.
+- The uploaded photo is stored on the server and the URL is saved in the user's profile for future use.
+- Ensure the file is in an accepted format (JPG, PNG, JPEG) and within the allowed size limit (if applicable).
 
 ## **Forget Password**
 
@@ -655,18 +1578,99 @@ POST /api/v1/auth/forget-password
 
 #### **Description:**
 
-- **Endpoint:** `POST /api/v1/auth/forget-password`
-- **Functionality:** Sends a password reset link to the provided email address if it's associated with a registered user.
+- **Endpoint:** `POST /api/v1/auth/forgot-password`
+- **Functionality:** This endpoint allows a user to request a password reset by providing their email address. If the email is valid and associated with a registered user, a password reset link will be sent to the user's email address. The link includes a token that will allow the user to reset their password.
+- **Authorization:** None required.
 
-#### Example Request Body:
+#### **Request Body:**
 
-```javascript
+- **email**: The user's email address (required).
+
+```json
 {
-  "refreshToken": "eyJhbGciOi",
-  "email": "testverstion5@gmail.com"
+  "email": "user@example.com"
 }
-
 ```
+
+#### **Success Response:**
+
+- **Success (200):**
+
+```json
+{
+  "success": true,
+  "error": false,
+  "message": "Auth success. An Email with Rest password link has been sent to your account user@example.com  please check to rest your password or use the the link which is been send with the response body to rest your password",
+  "status": 200,
+  "data": {
+    "user": {
+      "resetPasswordToken": "https://example.com/reset-password?id=user_id&token=refresh_token"
+    }
+  }
+}
+```
+
+#### **Error Responses:**
+
+- **(401) Invalid Email:**
+
+```json
+{
+  "success": false,
+  "error": true,
+  "message": "The email address user@example.com is not associated with any account. Double-check your email address and try again.",
+  "status": 401,
+  "data": null
+}
+```
+
+- **(500) Internal Server Error:**
+
+```json
+{
+  "success": false,
+  "error": true,
+  "message": "Internal server error.",
+  "status": 500,
+  "data": null
+}
+```
+
+#### **Request Example:**
+
+```http
+POST /api/v1/auth/forgot-password
+Content-Type: application/json
+
+{
+  "email": "user@example.com"
+}
+```
+
+#### **Request Header:**
+
+```json
+{
+  "Content-Type": "application/json"
+}
+```
+
+#### **Flow:**
+
+1. The user sends a `POST` request with their email address in the body.
+2. The server checks if the provided email is associated with a registered user.
+3. If the email is valid, the server generates a new `accessToken` and `refreshToken` for the user.
+4. A password reset link is generated and sent to the user's email address.
+5. The email includes a link with a token to reset the user's password.
+6. If successful, the server responds with a `200 OK` status and a message confirming that the password reset email has been sent.
+7. If the email is not associated with any account, an error message is returned with a `401 Unauthorized` status.
+8. In case of server errors, a `500 Internal Server Error` response is returned.
+
+#### **Note:**
+
+- The email will contain a link to reset the password. The link will expire after a specified time, and users must reset their password before the link expires.
+- The password reset token is included in the reset link, which the user can use to reset their password.
+- Errors related to sending emails are ignored in the development environment but logged for debugging.
 
 ## **Reset Password**
 
@@ -685,20 +1689,117 @@ POST /api/v1/auth/reset-password/:userId/:token
 #### **Description:**
 
 - **Endpoint:** `POST /api/v1/auth/reset-password/:userId/:token`
-- **Functionality:** Resets the password for the user identified by `userId` using the provided `token` and new `password`.
+- **Functionality:** This endpoint allows a user to reset their password using a valid password reset token. The user must provide a new password and confirm password, which will be updated in the system. The reset token is verified for validity and expiration.
+- **Authorization:** None required (but the reset token must be valid).
 
-#### Example Request Body:
+#### **Request Parameters:**
 
-```javascript
-POST /api/v1/auth/reset-password/:userId/:token
-```
+- **userId**: The unique identifier of the user (in the URL).
+- **token**: The password reset token (in the URL).
 
-```javascript
+#### **Request Body:**
+
+- **password**: The new password (required).
+- **confirmPassword**: The confirmation of the new password (required).
+
+```json
 {
-  "password": "12345test8",
-  "confirmPassword":  "12345test8"
+  "password": "newPassword123",
+  "confirmPassword": "newPassword123"
 }
 ```
+
+#### **Success Response:**
+
+- **Success (200):**
+
+```json
+{
+  "success": true,
+  "error": false,
+  "message": "Your password has been Password Reset Successfully updated please login",
+  "status": 200,
+  "data": {
+    "loginLink": "https://example.com/login"
+  }
+}
+```
+
+#### **Error Responses:**
+
+- **(401) Invalid or Expired Token:**
+
+```json
+{
+  "success": false,
+  "error": true,
+  "message": "Password reset token is invalid or has expired.",
+  "status": 401,
+  "data": null
+}
+```
+
+- **(400) Bad Request:**
+
+```json
+{
+  "success": false,
+  "error": true,
+  "message": "Invalid password reset token.",
+  "status": 400,
+  "data": null
+}
+```
+
+- **(500) Internal Server Error:**
+
+```json
+{
+  "success": false,
+  "error": true,
+  "message": "Internal server error.",
+  "status": 500,
+  "data": null
+}
+```
+
+#### **Request Example:**
+
+```http
+POST /api/v1/auth/reset-password/12345/abcde12345
+Content-Type: application/json
+
+{
+  "password": "newPassword123",
+  "confirmPassword": "newPassword123"
+}
+```
+
+#### **Request Header:**
+
+```json
+{
+  "Content-Type": "application/json"
+}
+```
+
+#### **Flow:**
+
+1. The user sends a `POST` request with the new password and confirmation password along with the `userId` and `token` in the URL.
+2. The server checks if the user exists based on the `userId` provided.
+3. If the user does not exist, the server responds with a `401 Unauthorized` error.
+4. The server verifies the password reset token for the provided user (`userId` and `token`).
+5. If the token is invalid or expired, the server responds with a `401 Unauthorized` error.
+6. If the token is valid, the server updates the user's password and clears the associated tokens in the database.
+7. The server clears cookies for `accessToken` and `refreshToken` for security purposes.
+8. A confirmation email is sent to the user indicating the successful password reset, and a login link is provided.
+9. The server responds with a `200 OK` status and a message confirming the successful password reset along with a login link.
+
+#### **Note:**
+
+- The password reset token is checked for validity, and if it has expired, the user is informed via a `401 Unauthorized` response.
+- After a successful password reset, the user is logged out (cookies are cleared), and they are asked to log in again using their new password.
+- Email sending errors are ignored in the development environment but logged for debugging.
 
 # **Users API Reference**
 
@@ -1775,9 +2876,11 @@ To deploy this application, follow these steps:
 
 - Once deployed, your application will be live, and you can start interacting with it via the provided URL.
 
-## **Contributing**
+# **Contributing**
 
-We welcome contributions from the community! Here’s how you can help:
+Contributions are what make the open-source community such an amazing place to learn, inspire, and create. We deeply appreciate all contributions, whether it's fixing bugs, adding features, or suggesting improvements. Thank you for being a part of our community! 🥰
+
+If you'd like to contribute, please follow these steps:
 
 ### **How to Contribute**
 
@@ -1851,6 +2954,10 @@ If you're contributing to the documentation:
 ### **Thanks for your contributions!**
 
 Your contributions help improve this project and make it better for everyone. Thank you for your help!
+
+# **Sponsorship**
+
+If you find api helpful, please consider sponsoring us. Your support will help us to continue developing and maintaining the project.
 
 # **Project Status**
 
