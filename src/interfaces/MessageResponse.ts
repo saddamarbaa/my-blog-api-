@@ -1,5 +1,5 @@
 export interface ResponseT<T = null> {
-  data: T;
+  data: T | null;
   success: boolean;
   error: boolean;
   message: string;

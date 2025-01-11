@@ -293,3 +293,53 @@ export const unBlockUserService = async (req: AuthenticatedRequestBody<IUser>, r
     return next(InternalServerError);
   }
 };
+
+export const whoViewedMyProfileService = async (
+  req: AuthenticatedRequestBody<IUser>,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    // Check if the user is trying to view their own profile
+    if (req.user?._id.equals(req.params.userId)) {
+      return next(createHttpError(403, `You cannot view your own profile`));
+    }
+
+    // 1. Find the profile being viewed (the original user)
+    const toBeViewedUser = await User.findById(req.params.userId);
+    if (!toBeViewedUser) {
+      return next(createHttpError(404, 'User not found'));
+    }
+
+    // 2. Get the authenticated user who is viewing the profile
+    const userWhoViewed = req.user as IUser;
+
+    // 3. Check if the user has already viewed the profile
+    const isUserAlreadyViewed = toBeViewedUser.viewers.some(
+      (viewer) => viewer.toString() === userWhoViewed?._id.toString()
+    );
+
+    // 4. If already viewed, return an error
+    if (isUserAlreadyViewed) {
+      return next(createHttpError(400, 'You have already viewed this profile'));
+    }
+
+    // 5. If not viewed yet, add the authenticated user's ID to the viewers array
+    toBeViewedUser.viewers.push(userWhoViewed._id);
+
+    // 6. Save the updated user profile
+    await toBeViewedUser.save();
+
+    return res.status(200).send(
+      customResponse({
+        success: true,
+        error: false,
+        message: 'Profile view recorded successfully',
+        status: 200,
+        data: null
+      })
+    );
+  } catch (error) {
+    return next(InternalServerError);
+  }
+};
