@@ -37,6 +37,7 @@ This API is designed to support a wide range of blog functionalities, including 
 - [Support](#support)
 - [Screenshots](#screenshots)
 - [License](#license)
+- [Star History](#star-history)
 
 ---
 
@@ -2994,6 +2995,10 @@ You are free to use, modify, and distribute the code, but please ensure you foll
 [![linkedin](https://img.shields.io/badge/linkedin-Code?style=for-the-badge&logo=linkedin&logoColor=white&color=0077B5)](https://www.linkedin.com/in/saddamarbaa/)
 
 [![twitter](https://img.shields.io/badge/twitter-Code?style=for-the-badge&logo=twitter&logoColor=white&color=1DA1F2)](https://twitter.com/ArbaaSaddam)
+
+# Star history
+
+[![Star History Chart](https://api.star-history.com/svg?repos=saddamarbaa/node-express-mongodb-typescript-blog-rest-api&type=Date)](https://star-history.com/#&Date)
 
 # **Related Projects**
 
