@@ -6,7 +6,8 @@ import {
   getUserService,
   getUsersService,
   unBlockUserService,
-  unFollowUserService
+  unFollowUserService,
+  whoViewedMyProfileService
 } from '@src/services';
 import { AuthenticatedRequestBody, IUser } from '@src/interfaces';
 
@@ -27,3 +28,6 @@ export const getUsersController = (req: AuthenticatedRequestBody<IUser>, res: Re
 
 export const getUserController = (req: AuthenticatedRequestBody<IUser>, res: Response, next: NextFunction) =>
   getUserService(req, res, next);
+
+export const whoViewedMyProfileController = (req: AuthenticatedRequestBody<IUser>, res: Response, next: NextFunction) =>
+  whoViewedMyProfileService(req, res, next);
