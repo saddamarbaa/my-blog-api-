@@ -13,6 +13,7 @@ exports.environmentConfig = {
     TEST_ENV_MONGODB_CONNECTION_STRING: process.env.TEST_ENV_MONGODB_CONNECTION_STRING,
     JWT_TOKEN_SECRET: process.env.JWT_TOKEN_SECRET,
     WEBSITE_URL: process.env.WEBSITE_URL,
+    API_URL: process.env.API_URL,
     API_VERSION: process.env.API_VERSION,
     JWT_EXPIRE_TIME: process.env.JWT_EXPIRE_TIME,
     JWT_ISSUER: process.env.JWT_ISSUER,

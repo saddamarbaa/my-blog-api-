@@ -12,5 +12,6 @@ router.put('/:userId/block', middlewares_1.isLogin, middlewares_1.updateUserVali
 router.put('/:userId/unblock', middlewares_1.isLogin, middlewares_1.updateUserValidation, controllers_1.unBlockUserController);
 router.get('/users', middlewares_1.isLogin, controllers_1.getUsersController);
 router.get('/:userId', middlewares_1.isLogin, middlewares_1.updateUserValidation, controllers_1.getUserController);
+router.get('/:userId/view-profile', middlewares_1.isLogin, middlewares_1.userIdValidation, controllers_1.whoViewedMyProfileController);
 module.exports = router;
 //# sourceMappingURL=user.route.js.map

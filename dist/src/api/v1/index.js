@@ -10,6 +10,7 @@ const auth_route_1 = __importDefault(require("@src/routes/auth.route"));
 const user_route_1 = __importDefault(require("@src/routes/user.route"));
 const post_route_1 = __importDefault(require("@src/routes/post.route"));
 const admin_route_1 = __importDefault(require("@src/routes/admin.route"));
+const newsletter_route_1 = __importDefault(require("@src/routes/newsletter.route"));
 const router = express_1.default.Router();
 router.use('/', apiV1Welcome_route_1.default);
 router.use('/healthChecker', healthCheck_route_1.default);
@@ -17,5 +18,6 @@ router.use('/auth', auth_route_1.default);
 router.use('/user', user_route_1.default);
 router.use('/posts', post_route_1.default);
 router.use('/admin', admin_route_1.default);
+router.use('/newsletter', newsletter_route_1.default);
 exports.default = router;
 //# sourceMappingURL=index.js.map

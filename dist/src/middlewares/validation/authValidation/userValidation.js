@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.updateUserValidation = exports.resetPasswordValidation = exports.sendVerificationMailValidation = exports.verifyUserMailValidation = exports.userIdValidation = exports.refreshTokenValidation = exports.loginUserValidation = exports.signupUserValidation = void 0;
+exports.verifyToken = exports.updateUserValidation = exports.resetPasswordValidation = exports.sendVerificationMailValidation = exports.verifyUserMailValidation = exports.userIdValidation = exports.refreshTokenValidation = exports.loginUserValidation = exports.signupUserValidation = void 0;
 const validator_1 = __importDefault(require("../validator"));
 const userSchema_1 = require("./userSchema");
 const signupUserValidation = (req, res, next) => (0, validator_1.default)(userSchema_1.userSchema.signupUser, { ...req.body }, next);
@@ -26,4 +26,8 @@ const resetPasswordValidation = (req, res, next) => (0, validator_1.default)(use
 exports.resetPasswordValidation = resetPasswordValidation;
 const updateUserValidation = (req, res, next) => (0, validator_1.default)(userSchema_1.userSchema.updateUser, { ...req.body, ...req.params }, next);
 exports.updateUserValidation = updateUserValidation;
+const verifyToken = (req, res, next) => {
+    return (0, validator_1.default)(userSchema_1.userSchema.verifyToken, req.params, next);
+};
+exports.verifyToken = verifyToken;
 //# sourceMappingURL=userValidation.js.map

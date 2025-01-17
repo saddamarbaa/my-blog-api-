@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getUserController = exports.getUsersController = exports.unBlockUserController = exports.blockUserController = exports.unFollowUserController = exports.followUserController = void 0;
+exports.whoViewedMyProfileController = exports.getUserController = exports.getUsersController = exports.unBlockUserController = exports.blockUserController = exports.unFollowUserController = exports.followUserController = void 0;
 const services_1 = require("@src/services");
 const followUserController = (req, res, next) => (0, services_1.followUserService)(req, res, next);
 exports.followUserController = followUserController;
@@ -14,4 +14,6 @@ const getUsersController = (req, res, next) => (0, services_1.getUsersService)(r
 exports.getUsersController = getUsersController;
 const getUserController = (req, res, next) => (0, services_1.getUserService)(req, res, next);
 exports.getUserController = getUserController;
+const whoViewedMyProfileController = (req, res, next) => (0, services_1.whoViewedMyProfileService)(req, res, next);
+exports.whoViewedMyProfileController = whoViewedMyProfileController;
 //# sourceMappingURL=user.controller.js.map

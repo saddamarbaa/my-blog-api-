@@ -16,6 +16,6 @@ var __exportStar = (this && this.__exportStar) || function(m, exports) {
 Object.defineProperty(exports, "__esModule", { value: true });
 __exportStar(require("./checkIsAdmin"), exports);
 __exportStar(require("./checkIsAuth"), exports);
-__exportStar(require("./verifyRefreshToken"), exports);
 __exportStar(require("./customRole"), exports);
+__exportStar(require("./verifyRefreshToken"), exports);
 //# sourceMappingURL=index.js.map

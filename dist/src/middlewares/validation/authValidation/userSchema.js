@@ -117,6 +117,9 @@ exports.userSchema = {
         userId: vaildObjectId().required(),
         password: joi_1.default.string().min(6).required(),
         confirmPassword: joi_1.default.string().required().valid(joi_1.default.ref('password'))
+    }),
+    verifyToken: joi_1.default.object({
+        token: joi_1.default.string().min(3).max(300).required()
     })
 };
 exports.default = exports.userSchema;
