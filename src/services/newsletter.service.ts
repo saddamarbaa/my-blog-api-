@@ -135,12 +135,15 @@ export const unsubscribeFromNewsletterService = async (
     // Find the subscriber by email
     const subscriber = await Newsletter.findOne({ email: new RegExp(`^${email}$`, 'i') });
     if (!subscriber) {
-      return next(createHttpError(404, 'Email address not found in the newsletter subscription.'));
+      return next(createHttpError(404, 'Email address not found in the newsletter please subscribe.'));
     }
 
     // Unsubscribe the user
-    subscriber.isVerified = false;
-    await subscriber.save();
+    // subscriber.isVerified = false;
+    // await subscriber.save();
+
+    // Unsubscribe by removing the user from the system
+    await Newsletter.deleteOne({ email: new RegExp(`^${email}$`, 'i') });
 
     // Return success response
     const data = {
