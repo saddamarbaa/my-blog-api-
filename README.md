@@ -7,7 +7,7 @@
 [![MongoDB](https://img.shields.io/badge/MongoDB-5.0.3-47A248?style=flat&logo=mongodb&logoColor=white)](https://www.mongodb.com/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.6.3-blue)](https://www.typescriptlang.org/)
 
-An open-source, scalable, and fully-featured RESTful API built with **Node.js**, **Express**, **MongoDB**, and **TypeScript**. It provides a seamless experience for user authentication, blog post management, and advanced features such as filtering, pagination, sorting, and full-text search.
+**An open-source**, scalable, and fully-featured RESTful API built with **Node.js**, **Express**, **MongoDB**, and **TypeScript**. It provides a seamless experience for user authentication, blog post management, and advanced features such as filtering, pagination, sorting, full-text search, and a newsletter subscription.
 
 This API is designed to support a wide range of blog functionalities, including user account management, content creation, commenting, and moderation, with robust admin capabilities for user and post management. It's optimized for performance and easy to extend for custom use cases.
 
@@ -17,6 +17,7 @@ This API is designed to support a wide range of blog functionalities, including 
 - **Blog Management**: Create, read, update, delete posts, and manage user-generated content.
 - **Advanced Features**: Filtering, sorting, and pagination for posts and comments, along with full-text search functionality.
 - **Admin Capabilities**: User and post management, user blocking, and comment moderation.
+- **Newsletter Subscription**: Users can subscribe to receive newsletters, verify their email, and choose between weekly or daily updates.
 
 # Table of Contents
 
@@ -178,6 +179,14 @@ For more information, visit [GitHub Profile](https://github.com/saddamarbaa).
   - Admins can delete specific comments based on content or user.
   - Admins can manage user-generated reports for posts or comments.
 
+### **Newsletter Subscription**
+
+- Users can subscribe to receive newsletters.
+- Email verification is required to confirm the subscription.
+- Users can select the frequency of their newsletters: **weekly** or **daily**.
+- The system sends a confirmation email with a unique verification link upon subscription.
+- Users can unsubscribe at any time, and the system will handle the cancellation of their subscription.
+
 ### **Post and User Activity Tracking**
 
 - Track the last date a post was created or updated.
@@ -289,6 +298,10 @@ For more information, visit [GitHub Profile](https://github.com/saddamarbaa).
   - [Delete Comment in Post](#delete-comment-in-post)
   - [Delete User Comment in Post](#delete-user-comment-in-post)
   - [Delete All Comment in Post](#delete-all-comments-in-post)
+- [Newsletter](#newsletter-api-reference)
+  - [Newsletter Subscribe](#newsletter-subscribe)
+  - [Newsletter Unsubscribe](#newsletter-unsubscribe)
+  - [Newsletter Verify Email](#newsletter-verify-email)
 
 # **Getting Started**
 
@@ -2443,6 +2456,264 @@ DELETE /api/v1/admin/posts/comment/6755f41ddec28835fdf268d7
   "commentId": "6755f445dec28835fdf268e5"
 }
 ```
+
+# **Newsletter API Reference**
+
+## **Newsletter Subscribe**
+
+```http
+POST /api/v1/newsletter/subscribe
+```
+
+| Parameter | Type     | Description              | Required |
+| :-------- | :------- | :----------------------- | :------- |
+| `email`   | `string` | The user's email address | yes      |
+
+#### **Description:**
+
+- **Endpoint:** `POST /api/v1/newsletter/subscribe`
+- **Functionality:** Subscribes the user to the newsletter. The user will receive email updates about new content, promotions, or updates.
+- **Subscription Confirmation:** A confirmation email will be sent to the user’s email address with a link to verify the subscription.
+
+#### **Success Response:**
+
+- **Success (200):**
+
+```json
+{
+  "success": true,
+  "error": false,
+  "message": "You have successfully subscribed to the newsletter.",
+  "status": 200,
+  "data": {
+    "email": "user@example.com"
+  }
+}
+```
+
+#### **Error Responses:**
+
+- **(400) Bad Request:**
+
+```json
+{
+  "success": false,
+  "error": true,
+  "message": "Email is already subscribed or invalid email format.",
+  "status": 400,
+  "data": null
+}
+```
+
+- **(422) Validation Error:**
+
+```json
+{
+  "success": false,
+  "error": "Validation error",
+  "message": "One or more fields are invalid or missing.",
+  "status": 422,
+  "data": null
+}
+```
+
+- **(500) Internal Server Error:**
+
+```json
+{
+  "success": false,
+  "error": true,
+  "message": "Internal server error.",
+  "status": 500,
+  "data": null
+}
+```
+
+#### **Request Example:**
+
+```http
+POST /api/v1/newsletter/subscribe
+Content-Type: application/json
+
+{
+  "email": "user@example.com",
+  "name": "John Doe",
+  "preferences": {
+    "topics": ["Technology", "Business"],
+    "frequency": "Weekly"
+  }
+}
+```
+
+#### **Request Header:**
+
+```json
+{
+  "Content-Type": "application/json"
+}
+```
+
+#### **Flow:**
+
+1. The user submits their `email` and `name` to subscribe to the newsletter.
+2. A confirmation email with a subscription verification link is sent to the provided email address.
+3. The user clicks on the verification link to confirm their subscription.
+4. Upon successful verification, the user will start receiving the newsletter.
+
+---
+
+## **Newsletter Unsubscribe**
+
+```http
+POST /api/v1/newsletter/unsubscribe
+```
+
+| Parameter | Type     | Description              | Required |
+| :-------- | :------- | :----------------------- | :------- |
+| `email`   | `string` | The user's email address | yes      |
+
+#### **Description:**
+
+- **Endpoint:** `POST /api/v1/newsletter/unsubscribe`
+- **Functionality:** Unsubscribes the user from the newsletter. The user will no longer receive email updates.
+
+#### **Success Response:**
+
+- **Success (200):**
+
+```json
+{
+  "success": true,
+  "error": false,
+  "message": "You have successfully unsubscribed from the newsletter.",
+  "status": 200,
+  "data": {
+    "email": "user@example.com"
+  }
+}
+```
+
+#### **Error Responses:**
+
+- **(400) Bad Request:**
+
+```json
+{
+  "success": false,
+  "error": true,
+  "message": "Email is not subscribed or invalid email format.",
+  "status": 400,
+  "data": null
+}
+```
+
+- **(500) Internal Server Error:**
+
+```json
+{
+  "success": false,
+  "error": true,
+  "message": "Internal server error.",
+  "status": 500,
+  "data": null
+}
+```
+
+#### **Request Example:**
+
+```http
+POST /api/v1/newsletter/unsubscribe
+Content-Type: application/json
+
+{
+  "email": "user@example.com"
+}
+```
+
+#### **Request Header:**
+
+```json
+{
+  "Content-Type": "application/json"
+}
+```
+
+#### **Flow:**
+
+1. The user submits their `email` to unsubscribe from the newsletter.
+2. The user will no longer receive the newsletter emails.
+3. If the email is not found in the system, the user is notified of the error.
+
+---
+
+## **Newsletter Verify Email**
+
+```http
+GET /api/v1/newsletter/verify-email/:token
+```
+
+| Parameter | Type     | Description                  | Required |
+| :-------- | :------- | :--------------------------- | :------- |
+| `token`   | `string` | The email verification token | yes      |
+
+#### **Description:**
+
+- **Endpoint:** `GET /api/v1/newsletter/verify-email/:token`
+- **Functionality:** Verifies the user's email address by the provided `token`. Once the email is verified, the user will be successfully subscribed to the newsletter.
+
+#### **Success Response:**
+
+- **Success (200):**
+
+```json
+{
+  "success": true,
+  "error": false,
+  "message": "Email verified successfully. You are now subscribed to the newsletter.",
+  "status": 200,
+  "data": {
+    "email": "user@example.com"
+  }
+}
+```
+
+#### **Error Responses:**
+
+- **(400) Bad Request:**
+
+```json
+{
+  "success": false,
+  "error": true,
+  "message": "Invalid or expired verification token.",
+  "status": 400,
+  "data": null
+}
+```
+
+- **(500) Internal Server Error:**
+
+```json
+{
+  "success": false,
+  "error": true,
+  "message": "Internal server error.",
+  "status": 500,
+  "data": null
+}
+```
+
+#### **Request Example:**
+
+```http
+GET /api/v1/newsletter/verify-email/verificationToken123
+```
+
+#### **Flow:**
+
+1. The user clicks on the verification link sent to their email.
+2. The system verifies the `token` and subscribes the user to the newsletter.
+3. The user receives a confirmation message that their email has been verified and the subscription is complete.
 
 # **Posts API Reference**
 
