@@ -4,6 +4,6 @@ import { emailValidation } from '@src/middlewares';
 
 const router = express.Router();
 
-router.post('/newsletter', emailValidation, subscriberToNewsletterController);
+router.post('/subscribe', emailValidation, subscriberToNewsletterController);
 
 export = router;

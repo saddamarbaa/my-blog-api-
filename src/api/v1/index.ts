@@ -6,7 +6,7 @@ import authRoutes from '@src/routes/auth.route';
 import userRoutes from '@src/routes/user.route';
 import postRoutes from '@src/routes/post.route';
 import adminRoutes from '@src/routes/admin.route';
-import subscribeRoutes from '@src/routes/subscribe.route';
+import subscribeRoutes from '@src/routes/newsletter.route';
 
 const router = express.Router();
 
@@ -29,6 +29,6 @@ router.use('/posts', postRoutes);
 router.use('/admin', adminRoutes);
 
 // Subscribe routes (for newsletter and waitlist)
-router.use('/subscribe', subscribeRoutes);
+router.use('/newsletter', subscribeRoutes);
 
 export default router;
