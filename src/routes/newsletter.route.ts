@@ -4,7 +4,7 @@ import {
   unsubscribeFromNewsController,
   verifyEmailSubscriptionController
 } from '@src/controllers';
-import { emailValidation, verifyUserMailValidation } from '@src/middlewares';
+import { emailValidation, verifyToken } from '@src/middlewares';
 
 const router = express.Router();
 
@@ -15,6 +15,6 @@ router.post('/subscribe', emailValidation, subscriberToNewsletterController);
 router.post('/unsubscribe', emailValidation, unsubscribeFromNewsController);
 
 // Route for verifying email subscription
-router.get('/verify-email/:token', verifyUserMailValidation, verifyEmailSubscriptionController);
+router.get('/verify-email/:token', verifyToken, verifyEmailSubscriptionController);
 
 export = router;

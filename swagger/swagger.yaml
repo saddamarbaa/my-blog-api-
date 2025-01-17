@@ -3280,7 +3280,7 @@ paths:
               schema:
                 '$ref': '#/components/schemas/ServerErrorResponse'
 
-  /newsletter/verify-email:
+  /newsletter/verify-email/{token}:
     get:
       summary: Verify email for newsletter subscription
       tags:

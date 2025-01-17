@@ -26,3 +26,7 @@ export const resetPasswordValidation: RequestHandler = (req, res, next) =>
 
 export const updateUserValidation: RequestHandler = (req, res, next) =>
   validator(userSchema.updateUser, { ...req.body, ...req.params }, next);
+
+export const verifyToken: RequestHandler = (req, res, next) => {
+  return validator(userSchema.verifyToken, req.params, next);
+};
