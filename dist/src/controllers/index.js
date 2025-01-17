@@ -17,5 +17,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 __exportStar(require("./admin.controller"), exports);
 __exportStar(require("./auth.controller"), exports);
 __exportStar(require("./post.controller"), exports);
+__exportStar(require("./newsletter.controller"), exports);
 __exportStar(require("./user.controller"), exports);
 //# sourceMappingURL=index.js.map

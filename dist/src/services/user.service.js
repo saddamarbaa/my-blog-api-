@@ -26,7 +26,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.unBlockUserService = exports.blockUserService = exports.unFollowUserService = exports.followUserService = exports.getUserService = exports.getUsersService = void 0;
+exports.whoViewedMyProfileService = exports.unBlockUserService = exports.blockUserService = exports.unFollowUserService = exports.followUserService = exports.getUserService = exports.getUsersService = void 0;
 const http_errors_1 = __importStar(require("http-errors"));
 const utils_1 = require("@src/utils");
 const User_model_1 = __importDefault(require("@src/models/User.model"));
@@ -263,4 +263,33 @@ const unBlockUserService = async (req, res, next) => {
     }
 };
 exports.unBlockUserService = unBlockUserService;
+const whoViewedMyProfileService = async (req, res, next) => {
+    try {
+        if (req.user?._id.equals(req.params.userId)) {
+            return next((0, http_errors_1.default)(403, `You cannot view your own profile`));
+        }
+        const toBeViewedUser = await User_model_1.default.findById(req.params.userId);
+        if (!toBeViewedUser) {
+            return next((0, http_errors_1.default)(404, 'User not found'));
+        }
+        const userWhoViewed = req.user;
+        const isUserAlreadyViewed = toBeViewedUser.viewers.some((viewer) => viewer.toString() === userWhoViewed?._id.toString());
+        if (isUserAlreadyViewed) {
+            return next((0, http_errors_1.default)(400, 'You have already viewed this profile'));
+        }
+        toBeViewedUser.viewers.push(userWhoViewed._id);
+        await toBeViewedUser.save();
+        return res.status(200).send((0, utils_1.customResponse)({
+            success: true,
+            error: false,
+            message: 'Profile view recorded successfully',
+            status: 200,
+            data: null
+        }));
+    }
+    catch (error) {
+        return next(http_errors_1.InternalServerError);
+    }
+};
+exports.whoViewedMyProfileService = whoViewedMyProfileService;
 //# sourceMappingURL=user.service.js.map

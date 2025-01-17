@@ -17,6 +17,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 __exportStar(require("./CustomTypes"), exports);
 __exportStar(require("./ErrorResponse"), exports);
 __exportStar(require("./MessageResponse"), exports);
+__exportStar(require("./Newsletter"), exports);
 __exportStar(require("./Post"), exports);
 __exportStar(require("./Token"), exports);
 __exportStar(require("./User"), exports);

@@ -6,14 +6,29 @@ import authRoutes from '@src/routes/auth.route';
 import userRoutes from '@src/routes/user.route';
 import postRoutes from '@src/routes/post.route';
 import adminRoutes from '@src/routes/admin.route';
+import subscribeRoutes from '@src/routes/newsletter.route';
 
 const router = express.Router();
 
+// Root route
 router.use('/', apiV1RootRoute);
+
+// Health check route
 router.use('/healthChecker', healthCheckRoute);
+
+// Authentication routes
 router.use('/auth', authRoutes);
+
+// User-related routes
 router.use('/user', userRoutes);
+
+// Post-related routes
 router.use('/posts', postRoutes);
+
+// Admin-related routes
 router.use('/admin', adminRoutes);
+
+// Subscribe routes (for newsletter and waitlist)
+router.use('/newsletter', subscribeRoutes);
 
 export default router;

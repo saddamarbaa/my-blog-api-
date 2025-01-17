@@ -116,6 +116,9 @@ export const userSchema = {
     userId: vaildObjectId().required(),
     password: Joi.string().min(6).required(),
     confirmPassword: Joi.string().required().valid(Joi.ref('password'))
+  }),
+  verifyToken: Joi.object({
+    token: Joi.string().min(3).max(300).required()
   })
 };
 

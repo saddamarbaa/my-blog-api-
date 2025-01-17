@@ -17,5 +17,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 __exportStar(require("./admin.service"), exports);
 __exportStar(require("./auth.service"), exports);
 __exportStar(require("./post.service"), exports);
+__exportStar(require("./newsletter.service"), exports);
 __exportStar(require("./user.service"), exports);
 //# sourceMappingURL=index.js.map

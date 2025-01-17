@@ -3118,6 +3118,228 @@ paths:
               schema:
                 '$ref': '#/components/schemas/ServerErrorResponse'
 
+  /newsletter/subscribe:
+    post:
+      summary: Subscribe to the newsletter
+      tags:
+        - Newsletter
+      description: Allows users to subscribe to the newsletter by providing their email address.
+      requestBody:
+        description: The email address and optional subscription type for the newsletter
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  description: User's email address
+                  example: user@example.com
+                subscriptionType:
+                  type: string
+                  description: Type of subscription (optional, defaults to 'daily')
+                  example: weekly
+      responses:
+        '200':
+          description: Successfully subscribed to the newsletter
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  error:
+                    type: boolean
+                    example: false
+                  status:
+                    type: integer
+                    example: 200
+                  message:
+                    type: string
+                    example: Thank you for subscribing! Please check your email to confirm your subscription.
+                  data:
+                    type: object
+                    properties:
+                      verifyEmailLink:
+                        type: string
+                        example: https://example.com/newsletters/verify?token=abc123token
+                      request:
+                        type: object
+                        properties:
+                          type:
+                            type: string
+                            example: Get
+                          description:
+                            type: string
+                            example: Get all posts
+                          url:
+                            type: string
+                            example: https://api.example.com/api/v1/posts
+        '409':
+          description: Email address is already subscribed to the newsletter
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  error:
+                    type: boolean
+                    example: true
+                  status:
+                    type: integer
+                    example: 409
+                  message:
+                    type: string
+                    example: Email address user@example.com is already subscribed to the newsletter.
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                '$ref': '#/components/schemas/ServerErrorResponse'
+
+  /newsletter/unsubscribe:
+    post:
+      summary: Unsubscribe from the newsletter
+      tags:
+        - Newsletter
+      description: Allows users to unsubscribe from the newsletter by providing their email address.
+      requestBody:
+        description: The email address of the user unsubscribing from the newsletter
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  description: User's email address
+                  example: user@example.com
+      responses:
+        '200':
+          description: Successfully unsubscribed from the newsletter
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  error:
+                    type: boolean
+                    example: false
+                  status:
+                    type: integer
+                    example: 200
+                  message:
+                    type: string
+                    example: You have successfully unsubscribed from the newsletter.
+                  data:
+                    type: object
+                    properties:
+                      message:
+                        type: string
+                        example: You have successfully unsubscribed from the newsletter.
+        '404':
+          description: Email address not found in the subscription list
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  error:
+                    type: boolean
+                    example: true
+                  status:
+                    type: integer
+                    example: 404
+                  message:
+                    type: string
+                    example: Email address not found in the newsletter subscription.
+        '400':
+          description: Bad request, invalid input
+          content:
+            application/json:
+              schema:
+                '$ref': '#/components/schemas/BadRequestResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                '$ref': '#/components/schemas/ServerErrorResponse'
+
+  /newsletter/verify-email/{token}:
+    get:
+      summary: Verify email for newsletter subscription
+      tags:
+        - Newsletter
+      description: Verifies the user's email for the newsletter subscription using a verification token.
+      parameters:
+        - in: query
+          name: token
+          description: Verification token sent to the user's email
+          required: true
+          schema:
+            type: string
+            example: abc123token
+      responses:
+        '200':
+          description: Successfully verified the email for the newsletter
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  error:
+                    type: boolean
+                    example: false
+                  status:
+                    type: integer
+                    example: 200
+                  message:
+                    type: string
+                    example: Email has been successfully verified. You are now subscribed to the newsletter.
+        '400':
+          description: Invalid or expired verification token
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  error:
+                    type: boolean
+                    example: true
+                  status:
+                    type: integer
+                    example: 400
+                  message:
+                    type: string
+                    example: Invalid or expired verification token.
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                '$ref': '#/components/schemas/ServerErrorResponse'
+
   # Moderator
 
   /moderator/users:
